@@ -1,0 +1,18 @@
+<div class="sidebar">
+    <div class="logo">
+        <div class="logo-icon">A</div>
+        <div class="logo-text">
+            <h3>Smart Tracking</h3>
+            <p>presences</p>
+        </div>
+    </div>
+
+    <ul class="menu">
+        <li *ngFor="let item of menuItems" [class.active]="item.active">
+            <a [routerLink]="item.route">
+                <i [class]="'feather-' + item.icon"></i>
+                <span>{{ item.label }}</span>
+            </a>
+        </li>
+    </ul>
+</div>
