@@ -1,0 +1,158 @@
+.activity-container {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+  .activity-header {
+    margin-bottom: 20px;
+
+    h2 {
+      font-size: 18px;
+      margin: 0;
+      color: #333;
+    }
+  }
+
+  .activity-table {
+    .activity-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .user-info {
+        flex: 2;
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+
+        .name {
+          font-weight: 500;
+        }
+      }
+
+      .id {
+        flex: 1;
+        color: #666;
+      }
+
+      .class-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .class-label {
+          font-size: 12px;
+          color: #999;
+        }
+
+        .class-value {
+          font-weight: 500;
+        }
+      }
+
+      .amount {
+        flex: 1;
+        font-weight: 500;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+
+        button {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: none;
+          background-color: #f5f5f5;
+          cursor: pointer;
+          transition: background-color 0.2s;
+
+          &:hover {
+            background-color: #e0e0e0;
+          }
+
+          i {
+            font-size: 16px;
+            color: #666;
+          }
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+
+    .showing-info {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+
+      .btn-prev, .btn-next {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: none;
+        background-color: #f5f5f5;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      }
+
+      .page-numbers {
+        display: flex;
+        margin: 0 10px;
+
+        .page-number {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: none;
+          background-color: transparent;
+          margin: 0 5px;
+          cursor: pointer;
+
+          &:hover:not(.active) {
+            background-color: #f5f5f5;
+          }
+
+          &.active {
+            background-color: #5e4dcd;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}

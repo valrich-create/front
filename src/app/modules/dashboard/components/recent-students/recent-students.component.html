@@ -1,0 +1,29 @@
+<div class="students-container">
+    <div class="students-header">
+        <h2>Recent Students</h2>
+        <div class="count">You have {{ studentCount }} students</div>
+        <button class="btn-add">
+            <i class="feather-plus"></i>
+        </button>
+    </div>
+
+    <div class="students-list">
+        <div class="student-item" *ngFor="let student of students">
+            <div class="student-info">
+                <img [src]="student.avatar" alt="{{ student.name }}" class="avatar">
+                <div class="details">
+                    <div class="name">{{ student.name }}</div>
+                    <div class="class">Class {{ student.class }}</div>
+                </div>
+            </div>
+
+            <button class="btn-message">
+                <i class="feather-mail"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="view-more">
+        <button class="btn-view-more">View More</button>
+    </div>
+</div>

@@ -1,1 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Polices */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Feather icons */
+@import url('https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css');
+
+/* Reset et styles de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f9;
+    color: #333;
+}
+
+/* Variables globales */
+:root {
+    --primary-color: #5e4dcd;
+    --secondary-color: #ff7a59;
+    --tertiary-color: #ffb84d;
+    --text-color: #333;
+    --light-text: #666;
+    --lighter-text: #999;
+    --border-color: #eee;
+    --background-color: #f5f5f9;
+    --card-background: #ffffff;
+}

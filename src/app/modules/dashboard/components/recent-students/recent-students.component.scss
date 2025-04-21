@@ -1,0 +1,118 @@
+@use "sass:color";
+
+.students-container {
+  background-color: #f8f7ff;
+  border-radius: 12px;
+  padding: 20px;
+
+  .students-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h2 {
+      font-size: 18px;
+      margin: 0;
+      color: #333;
+    }
+
+    .count {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .btn-add {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background-color: #5e4dcd;
+      color: white;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+
+      &:hover {
+        //background-color: darken(#5e4dcd, 5%);
+        background-color: color.adjust(#5e4dcd, $lightness: -5%);
+      }
+    }
+  }
+
+  .students-list {
+    .student-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .student-info {
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+
+        .details {
+          .name {
+            font-weight: 500;
+            margin-bottom: 3px;
+          }
+
+          .class {
+            font-size: 13px;
+            color: #666;
+          }
+        }
+      }
+
+      .btn-message {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #f0f0f0;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #e0e0e0;
+        }
+
+        i {
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .view-more {
+    margin-top: 15px;
+    text-align: center;
+
+    .btn-view-more {
+      background-color: transparent;
+      border: none;
+      color: #5e4dcd;
+      font-weight: 500;
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

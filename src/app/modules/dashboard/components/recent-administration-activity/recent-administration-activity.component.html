@@ -1,0 +1,58 @@
+<div class="activity-container">
+    <div class="activity-header">
+        <h2>Recent Administration Activity</h2>
+    </div>
+
+    <div class="activity-table">
+        <div class="activity-item" *ngFor="let item of activities">
+            <div class="user-info">
+                <img [src]="item.avatar" alt="{{ item.user }}" class="avatar">
+                <span class="name">{{ item.user }}</span>
+            </div>
+
+            <div class="id">
+                ID {{ item.id }}
+            </div>
+
+            <div class="class-info">
+                <span class="class-label">Class</span>
+                <span class="class-value">{{ item.class }}</span>
+            </div>
+
+            <div class="amount">
+                {{ item.amount }}
+            </div>
+
+            <div class="actions">
+                <button class="btn-print">
+                    <i class="feather-printer"></i>
+                </button>
+                <button class="btn-more">
+                    <i class="feather-more-horizontal"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <div class="showing-info">
+            Showing {{ pagination.showingFrom }}-{{ pagination.showingTo }} from {{ pagination.total }} data
+        </div>
+
+        <div class="pagination-controls">
+            <button class="btn-prev">
+                <i class="feather-chevron-left"></i>
+            </button>
+
+            <div class="page-numbers">
+                <button class="page-number active">1</button>
+                <button class="page-number">2</button>
+                <button class="page-number">3</button>
+            </div>
+
+            <button class="btn-next">
+                <i class="feather-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>

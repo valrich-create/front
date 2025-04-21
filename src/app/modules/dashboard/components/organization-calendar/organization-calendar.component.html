@@ -1,0 +1,27 @@
+<div class="calendar-container">
+    <div class="calendar-header">
+        <h2>Organization Calendar</h2>
+        <div class="month-selector">
+            <span>{{ currentMonth }}</span>
+            <i class="feather-chevron-down"></i>
+        </div>
+    </div>
+
+    <div class="calendar">
+        <div class="weekdays">
+            <div class="weekday" *ngFor="let day of weekDays">{{ day }}</div>
+        </div>
+
+        <div class="days">
+            <div
+                    *ngFor="let day of calendarDays"
+                    class="day"
+                    [class.not-current-month]="!day.isCurrentMonth"
+                    [class.has-event]="day.hasEvent"
+                    [class.highlighted]="day.isHighlighted"
+            >
+                {{ day.date }}
+            </div>
+        </div>
+    </div>
+</div>

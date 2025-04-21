@@ -1,0 +1,23 @@
+<div class="messages-container">
+    <div class="messages-header">
+        <h2>Messages</h2>
+    </div>
+
+    <div class="messages-list">
+        <div class="message-item" *ngFor="let message of messages">
+            <div class="sender-info">
+                <img [src]="message.avatar" alt="{{ message.sender }}" class="avatar">
+                <div class="details">
+                    <div class="name">{{ message.sender }}</div>
+                    <div class="content">{{ message.content }}</div>
+                </div>
+            </div>
+
+            <div class="time">{{ message.time }}</div>
+        </div>
+    </div>
+
+    <div class="view-more">
+        <button class="btn-view-more">View More</button>
+    </div>
+</div>
