@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fe;
+            font-family: Arial, sans-serif;
+        }
+        .profile-header {
+            background-color: #4e3aa7;
+            height: 70px;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #d8d3f2;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            border: 4px solid white;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .profile-content {
+            padding: 60px 20px 20px 20px;
+        }
+        .profile-name {
+            color: #303952;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .profile-title {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .profile-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .profile-info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+        }
+        .icon-location {
+            background-color: #ff7675;
+        }
+        .icon-phone {
+            background-color: #fdcb6e;
+        }
+        .icon-email {
+            background-color: #ff7f50;
+        }
+        .section-title {
+            color: #303952;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+        .education-item {
+            margin-bottom: 10px;
+        }
+        .education-year {
+            color: #888;
+            font-size: 13px;
+        }
+        .expertise-tags {
+            color: #6c5ce7;
+        }
+        .attendance-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-day {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .present {
+            background-color: #a3ffab;
+        }
+        .absent {
+            background-color: #ffabab;
+        }
+        .partial {
+            background-color: #fff6a5;
+        }
+        .neutral {
+            background-color: #e0e0e0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .see-more {
+            color: #6c5ce7;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .modal-day {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .day-details {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fe;
+        }
+        .hour-slot {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .circle-decoration {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid #fdcb6e;
+        }
+        .circle-decoration-2 {
+            position: absolute;
+            top: 20px;
+            right: 90px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid #ff7f50;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Column -->
+        <div class="col-lg-7 mb-4">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="circle-decoration"></div>
+                    <div class="circle-decoration-2"></div>
+                </div>
+                <div class="profile-avatar"></div>
+
+                <div class="profile-content">
+                    <h2 class="profile-name">Maria Historia</h2>
+                    <div class="profile-title">History Teacher</div>
+
+                    <div class="profile-info">
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <span>Jakarta, Indonesia</span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-phone">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <span>+12 345 6789 0</span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-email">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span>Historia@mail.com</span>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h3 class="section-title">About:</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+
+                    <div class="education-section">
+                        <h3 class="section-title">Education:</h3>
+                        <ul class="list-unstyled">
+                            <li class="education-item">
+                                <div><i class="fas fa-circle-dot me-2"></i>History Major, University Akademi Historia</div>
+                                <div class="education-year">2013-2017</div>
+                            </li>
+                            <li class="education-item">
+                                <div><i class="fas fa-circle-dot me-2"></i>Master of History, University Akademi Historia</div>
+                                <div class="education-year">2017-2020</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="expertise-section">
+                        <h3 class="section-title">Expertise:</h3>
+                        <div class="expertise-tags">
+                            World History, Philosophy, Prehistoric, Culture, Ancient
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column for Additional Sections -->
+        <div class="col-lg-5">
+            <!-- Attendance History Section -->
+            <div class="profile-card mb-4">
+                <div class="profile-content">
+                    <div class="section-header">
+                        <h3 class="section-title">Historique de présence</h3>
+                        <a class="see-more" data-bs-toggle="modal" data-bs-target="#attendanceModal">See more</a>
+                    </div>
+
+                    <div class="attendance-calendar">
+                        <!-- Calendar Header (Days of Week) -->
+                        <div class="text-center fw-bold">L</div>
+                        <div class="text-center fw-bold">M</div>
+                        <div class="text-center fw-bold">M</div>
+                        <div class="text-center fw-bold">J</div>
+                        <div class="text-center fw-bold">V</div>
+                        <div class="text-center fw-bold">S</div>
+                        <div class="text-center fw-bold">D</div>
+
+                        <!-- Calendar Days -->
+                        <div class="calendar-day neutral"></div>
+                        <div class="calendar-day present">1</div>
+                        <div class="calendar-day present">2</div>
+                        <div class="calendar-day present">3</div>
+                        <div class="calendar-day absent">4</div>
+                        <div class="calendar-day neutral">5</div>
+                        <div class="calendar-day neutral">6</div>
+
+                        <div class="calendar-day present">7</div>
+                        <div class="calendar-day present">8</div>
+                        <div class="calendar-day partial">9</div>
+                        <div class="calendar-day present">10</div>
+                        <div class="calendar-day present">11</div>
+                        <div class="calendar-day neutral">12</div>
+                        <div class="calendar-day neutral">13</div>
+
+                        <div class="calendar-day present">14</div>
+                        <div class="calendar-day present">15</div>
+                        <div class="calendar-day present">16</div>
+                        <div class="calendar-day present">17</div>
+                        <div class="calendar-day present">18</div>
+                        <div class="calendar-day neutral">19</div>
+                        <div class="calendar-day neutral">20</div>
+
+                        <div class="calendar-day absent">21</div>
+                        <div class="calendar-day present">22</div>
+                        <div class="calendar-day present">23</div>
+                        <div class="calendar-day present">24</div>
+                        <div class="calendar-day present">25</div>
+                        <div class="calendar-day neutral">26</div>
+                        <div class="calendar-day neutral">27</div>
+
+                        <div class="calendar-day present">28</div>
+                        <div class="calendar-day present">29</div>
+                        <div class="calendar-day present">30</div>
+                        <div class="calendar-day neutral"></div>
+                        <div class="calendar-day neutral"></div>
+                        <div class="calendar-day neutral"></div>
+                        <div class="calendar-day neutral"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-in Location Section -->
+            <div class="profile-card">
+                <div class="profile-content">
+                    <div class="section-header">
+                        <h3 class="section-title">Lieu de pointage</h3>
+                        <a class="see-more">See more</a>
+                    </div>
+
+                    <div class="check-in-locations">
+                        <div class="card mb-2">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Campus principal</h6>
+                                        <small class="text-muted">Dernière présence: 19 Avril 2025</small>
+                                    </div>
+                                    <span class="badge bg-success">Actif</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-2">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Campus secondaire</h6>
+                                        <small class="text-muted">Dernière présence: 15 Mars 2025</small>
+                                    </div>
+                                    <span class="badge bg-secondary">Inactif</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">Centre de recherche</h6>
+                                        <small class="text-muted">Dernière présence: 10 Avril 2025</small>
+                                    </div>
+                                    <span class="badge bg-success">Actif</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attendanceModalLabel">Historique de présence détaillé</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <select class="form-select" id="monthSelect">
+                            <option value="1">Janvier</option>
+                            <option value="2">Février</option>
+                            <option value="3">Mars</option>
+                            <option value="4" selected>Avril</option>
+                            <option value="5">Mai</option>
+                            <option value="6">Juin</option>
+                            <option value="7">Juillet</option>
+                            <option value="8">Août</option>
+                            <option value="9">Septembre</option>
+                            <option value="10">Octobre</option>
+                            <option value="11">Novembre</option>
+                            <option value="12">Décembre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="yearSelect">
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025" selected>2025</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <!-- Calendar Header -->
+                        <div class="modal-calendar mb-3">
+                            <div class="fw-bold text-center">Lun</div>
+                            <div class="fw-bold text-center">Mar</div>
+                            <div class="fw-bold text-center">Mer</div>
+                            <div class="fw-bold text-center">Jeu</div>
+                            <div class="fw-bold text-center">Ven</div>
+                            <div class="fw-bold text-center">Sam</div>
+                            <div class="fw-bold text-center">Dim</div>
+
+                            <!-- Calendar Days -->
+                            <div class="modal-day neutral"></div>
+                            <div class="modal-day present">1</div>
+                            <div class="modal-day present">2</div>
+                            <div class="modal-day present">3</div>
+                            <div class="modal-day absent">4</div>
+                            <div class="modal-day neutral">5</div>
+                            <div class="modal-day neutral">6</div>
+
+                            <div class="modal-day present">7</div>
+                            <div class="modal-day present">8</div>
+                            <div class="modal-day partial">9</div>
+                            <div class="modal-day present">10</div>
+                            <div class="modal-day present">11</div>
+                            <div class="modal-day neutral">12</div>
+                            <div class="modal-day neutral">13</div>
+
+                            <div class="modal-day present">14</div>
+                            <div class="modal-day present">15</div>
+                            <div class="modal-day present">16</div>
+                            <div class="modal-day present">17</div>
+                            <div class="modal-day present">18</div>
+                            <div class="modal-day neutral">19</div>
+                            <div class="modal-day neutral">20</div>
+
+                            <div class="modal-day absent">21</div>
+                            <div class="modal-day present">22</div>
+                            <div class="modal-day present">23</div>
+                            <div class="modal-day present">24</div>
+                            <div class="modal-day present">25</div>
+                            <div class="modal-day neutral">26</div>
+                            <div class="modal-day neutral">27</div>
+
+                            <div class="modal-day present">28</div>
+                            <div class="modal-day present">29</div>
+                            <div class="modal-day present">30</div>
+                            <div class="modal-day neutral"></div>
+                            <div class="modal-day neutral"></div>
+                            <div class="modal-day neutral"></div>
+                            <div class="modal-day neutral"></div>
+                        </div>
+
+                        <div class="d-flex mb-3">
+                            <div class="me-3">
+                                <span class="status-indicator present"></span> Présent
+                            </div>
+                            <div class="me-3">
+                                <span class="status-indicator absent"></span> Absent
+                            </div>
+                            <div>
+                                <span class="status-indicator partial"></span> Partiel
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="day-details">
+                            <h6 class="mb-3">Détails du 15 Avril 2025</h6>
+
+                            <div class="hour-slot">
+                                <span>08:00 - 09:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>09:00 - 10:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>10:00 - 11:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>11:00 - 12:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>12:00 - 13:00</span>
+                                <span class="status-indicator absent"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>13:00 - 14:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>14:00 - 15:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>15:00 - 16:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                            <div class="hour-slot">
+                                <span>16:00 - 17:00</span>
+                                <span class="status-indicator present"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Script to handle calendar day click in the modal
+    document.querySelectorAll('.modal-day').forEach(day => {
+        day.addEventListener('click', function() {
+            // Remove active class from all days
+            document.querySelectorAll('.modal-day').forEach(d => {
+                d.classList.remove('active', 'border', 'border-primary');
+            });
+
+            // Add active class to clicked day
+            if (this.textContent) {
+                this.classList.add('active', 'border', 'border-primary');
+
+                // Update day details title
+                const dayNumber = this.textContent;
+                const month = document.getElementById('monthSelect').options[document.getElementById('monthSelect').selectedIndex].text;
+                const year = document.getElementById('yearSelect').value;
+
+                document.querySelector('.day-details h6').textContent = `Détails du ${dayNumber} ${month} ${year}`;
+            }
+        });
+    });
+
+    // Initialize the first day with present dates as active
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstPresentDay = document.querySelector('.modal-day.present');
+        if (firstPresentDay) {
+            firstPresentDay.click();
+        }
+    });
+</script>
+</body>
+</html>
+
+

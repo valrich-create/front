@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fe;
+            font-family: Arial, sans-serif;
+        }
+        .profile-header {
+            background-color: #4e3aa7;
+            height: 70px;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #d8d3f2;
+            border-radius: 50%;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            border: 4px solid white;
+        }
+        .profile-card {
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .profile-content {
+            padding: 60px 20px 20px 20px;
+        }
+        .profile-name {
+            color: #303952;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .profile-title {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .profile-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .profile-info-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+        }
+        .icon-location {
+            background-color: #ff7675;
+        }
+        .icon-phone {
+            background-color: #fdcb6e;
+        }
+        .icon-email {
+            background-color: #ff7f50;
+        }
+        .section-title {
+            color: #303952;
+            font-weight: 600;
+            margin: 25px 0 15px 0;
+        }
+        .education-item {
+            margin-bottom: 10px;
+        }
+        .education-year {
+            color: #888;
+            font-size: 13px;
+        }
+        .expertise-tags {
+            color: #6c5ce7;
+        }
+        .attendance-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-day {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .present {
+            background-color: #a3ffab;
+        }
+        .absent {
+            background-color: #ffabab;
+        }
+        .partial {
+            background-color: #fff6a5;
+        }
+        .neutral {
+            background-color: #e0e0e0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .see-more {
+            color: #6c5ce7;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .modal-day {
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .day-details {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fe;
+        }
+        .hour-slot {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .circle-decoration {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid #fdcb6e;
+        }
+        .circle-decoration-2 {
+            position: absolute;
+            top: 20px;
+            right: 90px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid #ff7f50;
+        }
+        .modal-day.active {
+            border: 2px solid #4e3aa7;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="row">
+        <!-- Profile Column -->
+        <div class="col-lg-7 mb-4">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="circle-decoration"></div>
+                    <div class="circle-decoration-2"></div>
+                </div>
+                <div class="profile-avatar"></div>
+
+                <div class="profile-content">
+                    <h2 class="profile-name">Maria Historia</h2>
+                    <div class="profile-title">History Teacher</div>
+
+                    <div class="profile-info">
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <span>Jakarta, Indonesia</span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-phone">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <span>+12 345 6789 0</span>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <div class="profile-info-icon icon-email">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span>Historia@mail.com</span>
+                        </div>
+                    </div>
+
+                    <div class="about-section">
+                        <h3 class="section-title">About:</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
+
+                    <div class="education-section">
+                        <h3 class="section-title">Education:</h3>
+                        <ul class="list-unstyled">
+                            <li class="education-item">
+                                <div><i class="fas fa-circle-dot me-2"></i>History Major, University Akademi Historia</div>
+                                <div class="education-year">2013-2017</div>
+                            </li>
+                            <li class="education-item">
+                                <div><i class="fas fa-circle-dot me-2"></i>Master of History, University Akademi Historia</div>
+                                <div class="education-year">2017-2020</div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="expertise-section">
+                        <h3 class="section-title">Expertise:</h3>
+                        <div class="expertise-tags">
+                            World History, Philosophy, Prehistoric, Culture, Ancient
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column for Additional Sections -->
+        <div class="col-lg-5">
+            <!-- Attendance History Section -->
+            <div class="profile-card mb-4">
+                <div class="profile-content">
+                    <div class="section-header">
+                        <h3 class="section-title">Historique de présence</h3>
+                        <a class="see-more" data-bs-toggle="modal" data-bs-target="#attendanceModal">See more</a>
+                    </div>
+
+                    <div id="mini-calendar" class="attendance-calendar">
+                        <!-- Calendar will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Check-in Location Section -->
+            <div class="profile-card">
+                <div class="profile-content">
+                    <div class="section-header">
+                        <h3 class="section-title">Lieu de pointage</h3>
+                        <a class="see-more">See more</a>
+                    </div>
+
+                    <div id="check-in-locations">
+                        <!-- Locations will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Modal -->
+<div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="attendanceModalLabel">Historique de présence détaillé</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <select class="form-select" id="monthSelect">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" id="yearSelect">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <div id="modal-calendar" class="modal-calendar mb-3">
+                            <!-- Modal calendar will be generated by JavaScript -->
+                        </div>
+
+                        <div class="d-flex mb-3">
+                            <div class="me-3">
+                                <span class="status-indicator present"></span> Présent
+                            </div>
+                            <div class="me-3">
+                                <span class="status-indicator absent"></span> Absent
+                            </div>
+                            <div>
+                                <span class="status-indicator partial"></span> Partiel
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="day-details">
+                            <h6 class="mb-3">Détails du jour</h6>
+                            <div id="hourly-details">
+                                <!-- Hourly details will be generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Sample attendance data (this would typically come from an API)
+    const attendanceData = {
+        '2025-04': {
+            // Format: day: 'present', 'absent', 'partial', or 'neutral'
+            1: 'present',
+            2: 'present',
+            3: 'present',
+            4: 'absent',
+            7: 'present',
+            8: 'present',
+            9: 'partial',
+            10: 'present',
+            11: 'present',
+            14: 'present',
+            15: 'present',
+            16: 'present',
+            17: 'present',
+            18: 'present',
+            21: 'absent',
+            22: 'present',
+            23: 'present',
+            24: 'present',
+            25: 'present',
+            28: 'present',
+            29: 'present',
+            30: 'present'
+        }
+    };
+
+    // Sample hourly attendance data
+    const hourlyData = {
+        '2025-04-15': [
+            { time: '08:00 - 09:00', status: 'present' },
+            { time: '09:00 - 10:00', status: 'present' },
+            { time: '10:00 - 11:00', status: 'present' },
+            { time: '11:00 - 12:00', status: 'present' },
+            { time: '12:00 - 13:00', status: 'absent' },
+            { time: '13:00 - 14:00', status: 'present' },
+            { time: '14:00 - 15:00', status: 'present' },
+            { time: '15:00 - 16:00', status: 'present' },
+            { time: '16:00 - 17:00', status: 'present' }
+        ]
+    };
+
+    // Sample check-in locations
+    const locations = [
+        { name: 'Campus principal', lastVisit: '19 Avril 2025', status: 'Actif' },
+        { name: 'Campus secondaire', lastVisit: '15 Mars 2025', status: 'Inactif' },
+        { name: 'Centre de recherche', lastVisit: '10 Avril 2025', status: 'Actif' }
+    ];
+
+    // Function to generate calendar days
+    function generateCalendar(containerId, year, month, isModalCalendar = false) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = ''; // Clear existing content
+
+        // Add day headers for the week
+        const dayNames = isModalCalendar ?
+            ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] :
+            ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+
+        dayNames.forEach(day => {
+            const dayHeader = document.createElement('div');
+            dayHeader.className = 'text-center fw-bold';
+            dayHeader.textContent = day;
+            container.appendChild(dayHeader);
+        });
+
+        // Get first day of the month and total days
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0);
+        const totalDays = lastDay.getDate();
+
+        // Get day of week for the first day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        let firstDayOfWeek = firstDay.getDay(); // 0 is Sunday in JavaScript
+        firstDayOfWeek = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; // Convert to Monday = 0, ... Sunday = 6
+
+        // Add empty cells for days before the first day of month
+        for (let i = 0; i < firstDayOfWeek; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = isModalCalendar ? 'modal-day neutral' : 'calendar-day neutral';
+            container.appendChild(emptyDay);
+        }
+
+        // Get attendance data key
+        const dataKey = `${year}-${month.toString().padStart(2, '0')}`;
+        const monthData = attendanceData[dataKey] || {};
+
+        // Add days of the month
+        for (let day = 1; day <= totalDays; day++) {
+            const dayCell = document.createElement('div');
+            const status = monthData[day] || 'neutral';
+
+            dayCell.className = isModalCalendar ? `modal-day ${status}` : `calendar-day ${status}`;
+            dayCell.textContent = day;
+
+            if (isModalCalendar && status !== 'neutral') {
+                dayCell.dataset.date = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                dayCell.addEventListener('click', handleDayClick);
+            }
+
+            container.appendChild(dayCell);
+        }
+
+        // Add empty cells after the last day of month to complete the grid
+        const totalCellsFilled = firstDayOfWeek + totalDays;
+        const totalRows = Math.ceil(totalCellsFilled / 7);
+        const totalCells = totalRows * 7;
+
+        for (let i = totalCellsFilled; i < totalCells; i++) {
+            const emptyDay = document.createElement('div');
+            emptyDay.className = isModalCalendar ? 'modal-day neutral' : 'calendar-day neutral';
+            container.appendChild(emptyDay);
+        }
+    }
+
+    // Function to handle day click in modal
+    function handleDayClick(event) {
+        // Remove active class from all days
+        document.querySelectorAll('.modal-day').forEach(day => {
+            day.classList.remove('active');
+        });
+
+        // Add active class to clicked day
+        event.currentTarget.classList.add('active');
+
+        const date = event.currentTarget.dataset.date;
+        const day = parseInt(date.split('-')[2]);
+        const month = document.getElementById('monthSelect').selectedOptions[0].text;
+        const year = document.getElementById('yearSelect').value;
+
+        // Update day details title
+        document.querySelector('.day-details h6').textContent = `Détails du ${day} ${month} ${year}`;
+
+        // Generate hourly details
+        generateHourlyDetails(date);
+    }
+
+    // Function to generate hourly details
+    function generateHourlyDetails(date) {
+        const container = document.getElementById('hourly-details');
+        container.innerHTML = ''; // Clear existing content
+
+        const dayData = hourlyData[date] || generateRandomHourlyData();
+
+        dayData.forEach(slot => {
+            const hourSlot = document.createElement('div');
+            hourSlot.className = 'hour-slot';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.textContent = slot.time;
+
+            const statusIndicator = document.createElement('span');
+            statusIndicator.className = `status-indicator ${slot.status}`;
+
+            hourSlot.appendChild(timeSpan);
+            hourSlot.appendChild(statusIndicator);
+            container.appendChild(hourSlot);
+        });
+    }
+
+    // Generate random hourly data for days without data
+    function generateRandomHourlyData() {
+        const hours = [];
+        for (let i = 8; i < 17; i++) {
+            const startHour = i.toString().padStart(2, '0');
+            const endHour = (i + 1).toString().padStart(2, '0');
+            const time = `${startHour}:00 - ${endHour}:00`;
+
+            // Random status with more weight to 'present'
+            const rand = Math.random();
+            let status;
+            if (rand < 0.7) status = 'present';
+            else if (rand < 0.9) status = 'absent';
+            else status = 'partial';
+
+            hours.push({ time, status });
+        }
+        return hours;
+    }
+
+    // Function to generate check-in locations
+    function generateLocations() {
+        const container = document.getElementById('check-in-locations');
+
+        locations.forEach(location => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body py-2';
+
+            const flexDiv = document.createElement('div');
+            flexDiv.className = 'd-flex justify-content-between align-items-center';
+
+            const infoDiv = document.createElement('div');
+
+            const title = document.createElement('h6');
+            title.className = 'mb-0';
+            title.textContent = location.name;
+
+            const lastVisit = document.createElement('small');
+            lastVisit.className = 'text-muted';
+            lastVisit.textContent = `Dernière présence: ${location.lastVisit}`;
+
+            const badge = document.createElement('span');
+            badge.className = location.status === 'Actif' ? 'badge bg-success' : 'badge bg-secondary';
+            badge.textContent = location.status;
+
+            infoDiv.appendChild(title);
+            infoDiv.appendChild(lastVisit);
+
+            flexDiv.appendChild(infoDiv);
+            flexDiv.appendChild(badge);
+
+            cardBody.appendChild(flexDiv);
+            card.appendChild(cardBody);
+            container.appendChild(card);
+        });
+    }
+
+    // Function to populate date selectors in modal
+    function populateDateSelectors() {
+        const monthSelect = document.getElementById('monthSelect');
+        const yearSelect = document.getElementById('yearSelect');
+
+        // Populate months
+        const months = [
+            'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+            'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+        ];
+
+        months.forEach((month, index) => {
+            const option = document.createElement('option');
+            option.value = index + 1;
+            option.textContent = month;
+            // Set April as selected by default
+            if (index === 3) option.selected = true;
+            monthSelect.appendChild(option);
+        });
+
+        // Populate years (current year and two previous years)
+        const currentYear = 2025; // Hard-coded to match our sample data
+        for (let year = currentYear - 2; year <= currentYear; year++) {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            if (year === currentYear) option.selected = true;
+            yearSelect.appendChild(option);
+        }
+
+        // Add event listeners for date changes
+        monthSelect.addEventListener('change', updateModalCalendar);
+        yearSelect.addEventListener('change', updateModalCalendar);
+    }
+
+    // Function to update modal calendar when month/year selection changes
+    function updateModalCalendar() {
+        const month = parseInt(document.getElementById('monthSelect').value);
+        const year = parseInt(document.getElementById('yearSelect').value);
+
+        generateCalendar('modal-calendar', year, month, true);
+
+        // Select the first non-neutral day if available
+        setTimeout(() => {
+            const firstDay = document.querySelector('.modal-day.present') ||
+                document.querySelector('.modal-day.absent') ||
+                document.querySelector('.modal-day.partial');
+            if (firstDay) {
+                firstDay.click();
+            }
+        }, 10);
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get current date (for demonstration purposes, we'll use April 2025)
+        const currentYear = 2025;
+        const currentMonth = 4; // April
+
+        // Generate mini calendar
+        generateCalendar('mini-calendar', currentYear, currentMonth);
+
+        // Populate date selectors in modal
+        populateDateSelectors();
+
+        // Generate modal calendar
+        generateCalendar('modal-calendar', currentYear, currentMonth, true);
+
+        // Generate check-in locations
+        generateLocations();
+
+        // Initialize modal calendar with first available day selected
+        document.getElementById('attendanceModal').addEventListener('shown.bs.modal', function() {
+            const firstDay = document.querySelector('.modal-day.present') ||
+                document.querySelector('.modal-day.absent') ||
+                document.querySelector('.modal-day.partial');
+            if (firstDay) {
+                firstDay.click();
+            }
+        });
+    });
+</script>
+</body>
+</html>
