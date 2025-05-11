@@ -1,0 +1,53 @@
+<!-- users-list.component.html -->
+<div class="users-list card">
+    <div class="card-header">
+        <h2>All Users in {{ className }}</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="users-table">
+                <thead>
+                <tr>
+                    <th>User</th>
+                    <th>ID</th>
+                    <th>Class</th>
+                    <th>Presence Rate</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of users">
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar"></div>
+                            <div class="user-name">{{ user.name }}</div>
+                        </div>
+                    </td>
+                    <td>ID {{ user.id }}</td>
+                    <td>
+                        <div class="class-badge">
+                            <span>{{ user.class }}</span>
+                        </div>
+                    </td>
+                    <td>$ {{ user.presenceRate }},036</td>
+                    <td class="actions-cell">
+                        <button class="action-button">
+                            <fa-icon [icon]="faEllipsisV"></fa-icon>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <div class="showing-info">
+                Showing 1-5 from {{ totalItems }} data
+            </div>
+            <app-pagination
+                    [currentPage]="currentPage"
+                    [totalItems]="totalItems"
+                    [itemsPerPage]="itemsPerPage">
+            </app-pagination>
+        </div>
+    </div>
+</div>

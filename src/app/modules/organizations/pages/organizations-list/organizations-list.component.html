@@ -1,0 +1,55 @@
+<app-layout>
+    <div class="organizations-container">
+
+        <app-navbar
+                pageTitle="Organizations">
+        </app-navbar>
+
+        <div class="filter-container">
+            <app-filter-tabs
+                    [tabs]="timePeriods"
+                    [activeTab]="selectedTimePeriod"
+                    (tabChange)="handleTimePeriodChange($event)">
+            </app-filter-tabs>
+        </div>
+
+        <div class="organizations-list">
+            <app-organization-card
+                    *ngFor="let org of organizations"
+                    [establishment]="org"
+                    [timePeriod]="selectedTimePeriod"
+                    (click)="navigateToDetail(org.id)">
+            </app-organization-card>
+        </div>
+
+        <div class="pagination">
+            <button
+                    class="pagination-button prev"
+                    [disabled]="currentPage === 1"
+                    (click)="goToPage(currentPage - 1)">
+                <span class="material-icons">chevron_left</span>
+            </button>
+
+            <div class="page-numbers">
+                <button
+                        *ngFor="let page of getPageNumbers()"
+                        class="page-number"
+                        [class.active]="page === currentPage"
+                        (click)="goToPage(page)">
+                    {{ page }}
+                </button>
+            </div>
+
+            <button
+                    class="pagination-button next"
+                    [disabled]="currentPage === totalPages"
+                    (click)="goToPage(currentPage + 1)">
+                <span class="material-icons">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="pagination-info">
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, totalItems) }} from {{ totalItems }} data
+        </div>
+    </div>
+</app-layout>

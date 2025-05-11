@@ -1,0 +1,42 @@
+/* events-event-form.component.scss */
+.events-page {
+  padding: 1rem;
+
+  @media (min-width: 768px) {
+    padding: 1.5rem;
+  }
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 1.5rem 0;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  @media (min-width: 992px) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.calendar-section {
+  width: 100%;
+
+  @media (min-width: 992px) {
+    flex: 2;
+  }
+}
+
+.events-section {
+  width: 100%;
+
+  @media (min-width: 992px) {
+    flex: 1;
+  }
+}

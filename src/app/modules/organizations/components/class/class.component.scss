@@ -1,0 +1,392 @@
+/* classe-a.component.scss */
+.classe-a-container {
+  padding: 1.5rem;
+
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  // Stats Cards
+  .stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .stat-card {
+      background-color: #fff;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+      .stat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+
+        i {
+          font-size: 1.5rem;
+          color: #fff;
+        }
+
+        &.user-icon {
+          background-color: #5B5FCE;
+        }
+
+        &.chief-icon {
+          background-color: #FF7A59;
+        }
+
+        &.presence-icon {
+          background-color: #FFC107;
+        }
+      }
+
+      .stat-content {
+        .stat-label {
+          font-size: 0.875rem;
+          color: #888;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #333;
+        }
+      }
+    }
+  }
+
+  // Card styling
+  .card {
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f0f0f0;
+
+      h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+      }
+
+      .card-actions {
+        display: flex;
+        align-items: center;
+
+        .legend-container {
+          display: flex;
+          margin-right: 1.5rem;
+
+          .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+
+            .legend-dot {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+              margin-right: 0.5rem;
+
+              &.presence-dot {
+                background-color: #FFC107;
+              }
+
+              &.absence-dot {
+                background-color: #FF7A59;
+              }
+            }
+
+            .legend-value {
+              font-weight: 600;
+              margin-left: 0.5rem;
+            }
+          }
+        }
+
+        .filter-dropdown {
+          .filter-select {
+            border: 1px solid #ddd;
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+
+            &:focus {
+              border-color: #5B5FCE;
+            }
+          }
+        }
+      }
+    }
+
+    .card-body {
+      padding: 1.5rem;
+      position: relative;
+    }
+  }
+
+  // Presence Balance Chart
+  .presence-balance-card {
+    .chart-container {
+      height: 300px;
+      position: relative;
+    }
+
+    .chart-highlight {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      .highlight-marker {
+        background-color: #5B5FCE;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        position: relative;
+
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 8px solid #5B5FCE;
+        }
+
+        .marker-label {
+          font-weight: 700;
+          font-size: 1rem;
+          margin-bottom: 0.25rem;
+        }
+
+        .marker-date {
+          font-size: 0.75rem;
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  // Lists container
+  .lists-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 1.5rem;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Tables
+  .table-responsive {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+
+      th {
+        font-weight: 600;
+        color: #888;
+        font-size: 0.875rem;
+      }
+
+      td {
+        color: #333;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  // User info
+  .user-info {
+    display: flex;
+    align-items: center;
+
+    .user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: #e0e0e0;
+      margin-right: 0.75rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+    }
+  }
+
+  // Class badge
+  .class-badge {
+    background-color: #f8f8f8;
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+
+    span {
+      color: #FF7A59;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+  }
+
+  // Actions button
+  .action-button {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+
+    &:hover {
+      color: #333;
+    }
+  }
+
+  // Presence ID styling
+  .presence-id {
+    display: flex;
+    align-items: center;
+
+    .id-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: #FF7A59;
+      margin-right: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        color: #fff;
+        font-size: 1.2rem;
+      }
+    }
+
+    .id-details {
+      .id-number {
+        font-weight: 600;
+      }
+
+      .id-timestamp {
+        font-size: 0.75rem;
+        color: #888;
+      }
+    }
+  }
+
+  // Presence rate styling
+  .presence-rate {
+    font-weight: 700;
+
+    .status-complete {
+      color: #4CAF50;
+    }
+
+    .status-pending {
+      color: #FFC107;
+    }
+
+    .status-canceled {
+      color: #F44336;
+    }
+  }
+
+  // Absence rate styling
+  .absence-rate {
+    .absence-value {
+      color: #F44336;
+      font-weight: 700;
+    }
+  }
+
+  // Table footer
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+    .showing-info {
+      font-size: 0.875rem;
+      color: #888;
+    }
+  }
+
+  // Additional responsive styles
+  @media (max-width: 768px) {
+    .stats-cards {
+      grid-template-columns: 1fr;
+    }
+
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .card-actions {
+        margin-top: 1rem;
+        flex-direction: column;
+        width: 100%;
+
+        .legend-container {
+          margin-bottom: 1rem;
+          margin-right: 0;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        .filter-dropdown {
+          width: 100%;
+
+          .filter-select {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .presence-balance-card .chart-container {
+      height: 200px;
+    }
+  }
+}

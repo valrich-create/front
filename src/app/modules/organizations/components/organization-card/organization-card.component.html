@@ -1,0 +1,97 @@
+<div class="org-row">
+    <div class="org-thumbnail"></div>
+
+    <!-- Informations de l'organisation -->
+    <div class="org-info">
+        <div class="category-badge">{{ establishment.ville }}, {{ establishment.pays }}</div>
+        <h3 class="org-name">{{ establishment.nom }}</h3>
+    </div>
+
+    <!-- Statistiques utilisateurs (graphique en barres) -->
+    <div class="stat-item">
+<!--        <app-bar-chart [userStats]="[establishment.nombreMaxUtilisateurs, establishment.nombreUtilisateursActuels ]"></app-bar-chart>-->
+        <div class="stat-details">
+            <div class="stat-value">{{ establishment.nombreUtilisateursActuels }}</div>
+            <div class="stat-label">Utilisateurs</div>
+        </div>
+    </div>
+
+    <!-- Indicateur de croissance -->
+    <div class="stat-item">
+        <app-growth-indicator
+                [currentUsers]="establishment.nombreUtilisateursActuels"
+                [maxUsers]="establishment.nombreMaxUtilisateurs">
+        </app-growth-indicator>
+    </div>
+
+    <!-- Cercle de pourcentage -->
+    <div class="stat-item">
+        <app-percentage-circle [establishment]="establishment"></app-percentage-circle>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+        <button class="action-button" (click)="toggleActions($event)">
+            <span class="material-icons">more_horiz</span>
+            <div class="actions-menu" *ngIf="showActions">
+                <div class="action-item" (click)="onEdit($event)">Edit</div>
+                <div class="action-item" (click)="onViewDetail($event)">View Detail</div>
+                <div class="action-item action-delete" (click)="onDelete($event)">Delete</div>
+            </div>
+        </button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!-- <div class="org-row">-->
+<!--    &lt;!&ndash; Vignette de l'organisation &ndash;&gt;-->
+<!--    <div class="org-thumbnail"></div>-->
+
+<!--    &lt;!&ndash; Informations de l'organisation &ndash;&gt;-->
+<!--    <div class="org-info">-->
+<!--        <div class="category-badge">{{ organization.category }}</div>-->
+<!--        <h3 class="org-name">{{ organization.name }}</h3>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Statistiques utilisateurs (graphique en barres) &ndash;&gt;-->
+<!--    <div class="stat-item">-->
+<!--        <app-bar-chart [data]="organization.userStats"></app-bar-chart>-->
+<!--        <div class="stat-details">-->
+<!--            <div class="stat-value">{{ organization.totalOrder }}</div>-->
+<!--            <div class="stat-label">Total Order</div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Indicateur de croissance &ndash;&gt;-->
+<!--    <div class="stat-item">-->
+<!--        <app-growth-indicator [value]="organization.growth"></app-growth-indicator>-->
+<!--        <div class="stat-details">-->
+<!--            <div class="stat-value">{{ organization.interest }}%</div>-->
+<!--            <div class="stat-label">Interest</div>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Cercle de pourcentage &ndash;&gt;-->
+<!--    <div class="stat-item">-->
+<!--        <app-percentage-circle [organization]="org"></app-percentage-circle>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; Actions &ndash;&gt;-->
+<!--    <div class="actions">-->
+<!--        <button class="action-button" (click)="toggleActions($event)">-->
+<!--            <span class="material-icons">more_horiz</span>-->
+
+<!--            <div class="actions-menu" *ngIf="showActions">-->
+<!--                <div class="action-item" (click)="onEdit($event)">Edit</div>-->
+<!--                <div class="action-item" (click)="onViewDetail($event)">View Detail</div>-->
+<!--                <div class="action-item action-delete" (click)="onDelete($event)">Delete</div>-->
+<!--            </div>-->
+<!--        </button>-->
+<!--    </div>-->
+<!--</div>-->

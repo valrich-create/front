@@ -27,7 +27,7 @@ import {RouterModule} from "@angular/router";
             {{ currentSort | titlecase }}
           </button>
           <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-            <li><a class="dropdown-item" (click)="onSortChange('newest')">Newest</a></li>
+            <li><a class="dropdown-item" (click)="onSortChange('createdAt')">Newest</a></li>
             <li><a class="dropdown-item" (click)="onSortChange('oldest')">Oldest</a></li>
             <li><a class="dropdown-item" (click)="onSortChange('age')">Age</a></li>
             <li><a class="dropdown-item" (click)="onSortChange('class')">Class</a></li>
@@ -59,7 +59,7 @@ import {RouterModule} from "@angular/router";
 export class SearchBarComponent {
   @Input() newButtonText: string = 'New Item';
   @Input() newItemRoute: string = '/';
-  @Input() currentSort: SortOption = 'newest';
+  @Input() currentSort: SortOption = 'createdAt';
 
   @Output() sortChange = new EventEmitter<SortOption>();
   @Output() searchChange = new EventEmitter<string>();

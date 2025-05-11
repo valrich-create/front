@@ -1,0 +1,57 @@
+<app-layout>
+
+    <app-navbar
+            [pageTitle]="'Information'">
+    </app-navbar>
+
+    <div class="content-container">
+        <div class="event-form-container">
+            <div class="form-card">
+                <div class="card-header">
+                    <h2>New</h2>
+                </div>
+
+                <div class="card-content">
+                    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+                        <div class="form-group">
+                            <label for="title">Title <span class="required">*</span></label>
+                            <input
+                                    type="text"
+                                    id="title"
+                                    formControlName="title"
+                                    placeholder="Enter event title"
+                                    class="form-control"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('title')}"
+                            >
+                            <div class="error-message" *ngIf="isFieldInvalid('title')">
+                                Title is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="details">Details <span class="required">*</span></label>
+                            <textarea
+                                    id="details"
+                                    formControlName="details"
+                                    placeholder="Enter event details"
+                                    class="form-control text-area"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('details')}"
+                            ></textarea>
+                            <div class="character-count" [ngClass]="{'warning': detailsLength > 2700, 'danger': detailsLength > 2900}">
+                                {{ detailsLength }}/3000
+                            </div>
+                            <div class="error-message" *ngIf="isFieldInvalid('details')">
+                                Details are required
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                            <button type="submit" class="btn-submit" [disabled]="eventForm.invalid">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

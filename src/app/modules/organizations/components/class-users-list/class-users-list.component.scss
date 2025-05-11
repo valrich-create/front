@@ -1,0 +1,85 @@
+/* users-list.component.scss */
+.users-list {
+  .table-responsive {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+
+      th {
+        font-weight: 600;
+        color: #888;
+        font-size: 0.875rem;
+      }
+
+      td {
+        color: #333;
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  .user-info {
+    display: flex;
+    align-items: center;
+
+    .user-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: #e0e0e0;
+      margin-right: 0.75rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+    }
+  }
+
+  .class-badge {
+    background-color: #f8f8f8;
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+
+    span {
+      color: #FF7A59;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+  }
+
+  .action-button {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+
+    &:hover {
+      color: #333;
+    }
+  }
+
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+    .showing-info {
+      font-size: 0.875rem;
+      color: #888;
+    }
+  }
+}

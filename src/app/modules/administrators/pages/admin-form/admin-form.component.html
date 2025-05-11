@@ -1,0 +1,200 @@
+<app-layout>
+    <div class="admin-form-container">
+        <app-navbar [pageTitle]="isEditMode ? 'Edit Admin' : 'New Admin'"></app-navbar>
+
+        <form [formGroup]="adminForm" (ngSubmit)="onSubmit()">
+            <!-- Personal Details Section -->
+            <div class="form-section">
+                <h2>Personal Details</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <input
+                                type="text"
+                                id="firstName"
+                                formControlName="firstName"
+                                placeholder="Maria"
+                                [ngClass]="{'invalid': adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched">
+                            First name is required
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name <span class="required">*</span></label>
+                        <input
+                                type="text"
+                                id="lastName"
+                                formControlName="lastName"
+                                placeholder="Historia"
+                                [ngClass]="{'invalid': adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched">
+                            Last name is required
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input
+                                type="email"
+                                id="email"
+                                formControlName="email"
+                                placeholder="historia@email.com"
+                                [ngClass]="{'invalid': adminForm.get('email')?.invalid && adminForm.get('email')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('email')?.invalid && adminForm.get('email')?.touched">
+                            Valid email is required
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone <span class="required">*</span></label>
+                        <input
+                                type="tel"
+                                id="phoneNumber"
+                                formControlName="phoneNumber"
+                                placeholder="+1234567890"
+                                [ngClass]="{'invalid': adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched">
+                            Phone number is required
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dateOfBirth">Date of Birth</label>
+                        <input
+                                type="date"
+                                id="dateOfBirth"
+                                formControlName="dateOfBirth"
+                                [max]="maxBirthDate | date:'yyyy-MM-dd'"
+                                [ngClass]="{'invalid': adminForm.get('dateOfBirth')?.invalid && adminForm.get('dateOfBirth')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('dateOfBirth')?.errors?.['futureDate']">
+                            Birth date cannot be in the future
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="placeOfBirth">Place of Birth</label>
+                        <input
+                                type="text"
+                                id="placeOfBirth"
+                                formControlName="placeOfBirth"
+                                placeholder="City, Country"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="organization">Organization <span class="required">*</span></label>
+                        <div class="select-wrapper">
+                            <select
+                                    id="organization"
+                                    formControlName="organization"
+                                    [ngClass]="{'invalid': adminForm.get('organization')?.invalid && adminForm.get('organization')?.touched}"
+                            >
+                                <option value="" disabled selected>Select organization</option>
+                                <option *ngFor="let org of organizations" [value]="org.id">{{ org.nom }}</option>
+                            </select>
+                            <div class="error-message" *ngIf="adminForm.get('organization')?.invalid && adminForm.get('organization')?.touched">
+                                Organization is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Role <span class="required">*</span></label>
+                        <div class="select-wrapper">
+                            <select
+                                    id="role"
+                                    formControlName="role"
+                                    [ngClass]="{'invalid': adminForm.get('role')?.invalid && adminForm.get('role')?.touched}"
+                            >
+                                <option value="" disabled selected>Select role</option>
+                                <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+                            </select>
+                            <div class="error-message" *ngIf="adminForm.get('role')?.invalid && adminForm.get('role')?.touched">
+                                Role is required
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Authorization Section -->
+                <div class="authorization-section">
+                    <h3>Permissions</h3>
+                    <div class="auth-grid">
+                        <div class="auth-row" *ngFor="let permission of authorizations; let i = index">
+                            <div class="auth-item">
+                                <input
+                                        type="checkbox"
+                                        [id]="permission"
+                                        [formControlName]="i"
+                                >
+                                <label [for]="permission">{{ permission }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="isEditMode" class="password-note">
+                <p>Leave password fields blank to keep current password</p>
+            </div>
+
+            <!-- Account Credentials Section -->
+            <div class="form-section">
+                <h2>Account credentials</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password {{ isEditMode ? '' : '*' }}</label>
+                        <input
+                                type="password"
+                                id="password"
+                                formControlName="password"
+                                placeholder="••••••••"
+                                [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('password')?.invalid && adminForm.get('password')?.touched">
+                            Password must be at least 8 characters
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password {{ isEditMode ? '' : '*' }}</label>
+                        <input
+                                type="password"
+                                id="confirmPassword"
+                                formControlName="confirmPassword"
+                                placeholder="••••••••"
+                                [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">
+                            Passwords do not match
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="cancel()">Cancel</button>
+                <button type="submit" class="btn-submit" [disabled]="adminForm.invalid">
+                    {{ isEditMode ? 'Update' : 'Create' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</app-layout>

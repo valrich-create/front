@@ -1,0 +1,41 @@
+<!-- stats-cards.component.html -->
+<div class="stats-cards">
+    <div class="stat-card">
+        <div class="stat-icon user-icon">
+            <i class="material-icons">group</i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Total users</div>
+            <div class="stat-value">{{ totalUsers }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon chief-icon">
+            <i class="material-icons">person</i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Total chiefs</div>
+            <div class="stat-value">{{ totalChiefs }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon presence-icon">
+            <i class="material-icons">verified_user</i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-label">Today Presence</div>
+            <div class="stat-value">{{ presenceRate }}%</div>
+        </div>
+    </div>
+
+    <div class="stat-actions">
+        <button class="action-button pointing-zone" (click)="openPointingZone()">
+            View Pointing Zone
+        </button>
+        <button class="action-button edit-service" (click)="openEditService()">
+            Edit Service
+        </button>
+    </div>
+</div>

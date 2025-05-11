@@ -1,0 +1,45 @@
+<!-- classe-a.component.html -->
+<app-layout>
+
+    <div class="classe-a-container">
+
+        <app-navbar
+                pageTitle="{{ className }}">
+        </app-navbar>
+
+    <!--    <h1 class="event-form-title">{{ className }}</h1>-->
+
+        <!-- Stats Cards -->
+        <app-class-stats-cards
+                [totalUsers]="totalUsers"
+                [totalChiefs]="totalChiefs"
+                [presenceRate]="presenceRate">
+        </app-class-stats-cards>
+
+        <!-- Presence Balance -->
+        <app-class-presence-balance
+                [presencesCount]="presencesCount"
+                [absencesCount]="absencesCount">
+        </app-class-presence-balance>
+
+        <!-- Two column layout for lists -->
+        <div class="lists-container">
+            <!-- All Users in Class -->
+            <app-class-users-list
+                    [className]="className"
+                    [users]="users"
+                    [currentPage]="currentPage"
+                    [totalItems]="totalItems"
+                    [itemsPerPage]="itemsPerPage">
+            </app-class-users-list>
+
+            <!-- Presence Classement -->
+            <app-class-presence-classement
+                    [topPresenceUsers]="topPresenceUsers"
+                    [currentPage]="currentPage"
+                    [totalItems]="totalItems"
+                    [itemsPerPage]="itemsPerPage">
+            </app-class-presence-classement>
+        </div>
+    </div>
+</app-layout>

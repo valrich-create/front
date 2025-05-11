@@ -1,0 +1,43 @@
+<!-- presence-classement.component.html -->
+<div class="presence-classement card">
+    <div class="card-header">
+        <h2>Presence classement</h2>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="presence-table">
+                <tbody>
+                <tr *ngFor="let user of topPresenceUsers">
+                    <td>
+                        <div class="presence-id">
+                            <div class="id-icon">
+                                <i class="material-icons">trending_up</i>
+                            </div>
+                            <div class="id-details">
+                                <div class="id-number">#{{ user.id }}</div>
+                                <div class="id-timestamp">{{ user.timestamp }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="presence-rate">
+                        <span [class]="getStatusClass(user.status)">{{ user.presenceRate }}%</span>
+                    </td>
+                    <td class="absence-rate">
+                        <span class="absence-value">{{ user.absenceRate }}%</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <div class="showing-info">
+                Showing 1-5 from {{ totalItems }} data
+            </div>
+            <app-pagination
+                    [currentPage]="currentPage"
+                    [totalItems]="totalItems"
+                    [itemsPerPage]="itemsPerPage">
+            </app-pagination>
+        </div>
+    </div>
+</div>

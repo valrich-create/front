@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import {User} from "../../users.models";
+import { Component, Input } from '@angular/core';
+import { UserResponse } from "../../users.models";
 
 @Component({
   selector: 'app-user-profile-header',
@@ -11,29 +11,22 @@ import {User} from "../../users.models";
         <div class="circle-decoration-2"></div>
       </div>
       <div class="profile-avatar">
-        <span class="initials">{{getInitials(user?.name)}}</span>
+        <span class="initials">{{getInitials(user?.firstName + ' ' + user?.lastName)}}</span>
       </div>
 
       <div class="profile-content">
-        <h2 class="profile-name">{{user?.name}}</h2>
-        <div class="profile-title">{{user?.function}}</div>
+        <h2 class="profile-name">{{user?.firstName}} {{user?.lastName}}</h2>
+        <div class="profile-title">{{user?.role || 'No role specified'}}</div>
 
         <div class="profile-info">
-          <div class="profile-info-item">
-            <div class="profile-info-icon icon-location">
-              <i class="fas fa-map-marker-alt"></i>
-            </div>
-            <span>{{user?.city}}, {{user?.country}}</span>
-          </div>
-
-          <div class="profile-info-item">
+          <div class="profile-info-item" *ngIf="user?.phoneNumber">
             <div class="profile-info-icon icon-phone">
               <i class="fas fa-phone"></i>
             </div>
-            <span>{{user?.phone}}</span>
+            <span>{{user?.phoneNumber}}</span>
           </div>
 
-          <div class="profile-info-item">
+          <div class="profile-info-item" *ngIf="user?.email">
             <div class="profile-info-icon icon-email">
               <i class="fas fa-envelope"></i>
             </div>
@@ -41,25 +34,25 @@ import {User} from "../../users.models";
           </div>
         </div>
 
-        <div class="about-section">
-          <h3 class="section-title">About:</h3>
-          <p>{{user?.bio || 'No biography available'}}</p>
-        </div>
+<!--        <div class="about-section" *ngIf="user?.bio">-->
+<!--          <h3 class="section-title">About:</h3>-->
+<!--          <p>{{user?.bio}}</p>-->
+<!--        </div>-->
 
-        <div class="education-section">
+        <div class="education-section" *ngIf="user?.establishmentName?.length">
           <h3 class="section-title">Education:</h3>
           <ul class="list-unstyled">
-            <li class="education-item" *ngFor="let edu of user?.education">
+            <li class="education-item" *ngFor="let edu of user?.establishmentName">
               <div><i class="fas fa-circle-dot me-2"></i>{{edu.degree}}, {{edu.institution}}</div>
               <div class="education-year">{{edu.yearFrom}} - {{edu.yearTo}}</div>
             </li>
           </ul>
         </div>
 
-        <div class="expertise-section">
+        <div class="expertise-section" *ngIf="user?.classeServiceNom?.length">
           <h3 class="section-title">Expertise:</h3>
           <div class="expertise-tags">
-            <span *ngFor="let skill of user?.expertise">{{skill}}</span>
+            <span *ngFor="let skill of user?.classeManagerNom">{{skill}}</span>
           </div>
         </div>
       </div>
@@ -67,9 +60,8 @@ import {User} from "../../users.models";
   `,
   styles: ``
 })
-
 export class UserProfileHeaderComponent {
-  @Input() user: User | null = null;
+  @Input() user: UserResponse | null = null;
 
   getInitials(name?: string): string {
     if (!name) return '';

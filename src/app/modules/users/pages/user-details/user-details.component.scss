@@ -1,0 +1,83 @@
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4e3aa7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.attendance-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-header {
+  display: contents;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.calendar-header span {
+  padding: 4px 0;
+}
+
+.calendar-days {
+  display: contents;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.day.present {
+  background-color: #a3ffab;
+}
+
+.day.absent {
+  background-color: #ffabab;
+}
+
+.day.partial {
+  background-color: #fff6a5;
+}
+
+.locations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.location-item {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.location-item:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 992px) {
+  .col-lg-9, .col-lg-3 {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

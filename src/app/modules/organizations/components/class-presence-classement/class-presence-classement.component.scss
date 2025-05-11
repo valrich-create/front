@@ -1,0 +1,84 @@
+/* presence-classement.component.scss */
+.presence-classement {
+  .table-responsive {
+    overflow-x: auto;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+      }
+    }
+  }
+
+  .presence-id {
+    display: flex;
+    align-items: center;
+
+    .id-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background-color: #FF7A59;
+      margin-right: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      i {
+        color: #fff;
+        font-size: 1.2rem;
+      }
+    }
+
+    .id-details {
+      .id-number {
+        font-weight: 600;
+      }
+
+      .id-timestamp {
+        font-size: 0.75rem;
+        color: #888;
+      }
+    }
+  }
+
+  .presence-rate {
+    font-weight: 700;
+
+    .status-complete {
+      color: #4CAF50;
+    }
+
+    .status-pending {
+      color: #FFC107;
+    }
+
+    .status-canceled {
+      color: #F44336;
+    }
+  }
+
+  .absence-rate {
+    .absence-value {
+      color: #F44336;
+      font-weight: 700;
+    }
+  }
+
+  .table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+
+    .showing-info {
+      font-size: 0.875rem;
+      color: #888;
+    }
+  }
+}

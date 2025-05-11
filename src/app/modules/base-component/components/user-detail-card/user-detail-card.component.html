@@ -1,0 +1,177 @@
+<app-layout>
+    <div class="admin-detail-container">
+        <app-navbar [pageTitle]="pageTitle"></app-navbar>
+
+        <div class="admin-header">
+            <div class="header-actions">
+                <div class="search-container"></div>
+            </div>
+        </div>
+
+        <div class="profile-card" *ngIf="user">
+            <!-- Banner -->
+            <div class="profile-banner">
+                <div class="banner-decorations">
+                    <div class="decoration circle-1"></div>
+                    <div class="decoration circle-2"></div>
+                </div>
+            </div>
+
+            <!-- Profile picture or initials -->
+            <div class="profile-picture-container">
+                <div class="profile-picture">
+                    <ng-container *ngIf="user.profileImg; else initials">
+                        <img [src]="user.profileImg" alt="Profile Image" />
+                    </ng-container>
+                    <ng-template #initials>
+                        {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+                    </ng-template>
+                </div>
+            </div>
+
+            <!-- Main Profile Info -->
+            <div class="profile-info">
+                <div class="profile-main-info">
+                    <h2 class="profile-name">{{ user.firstName }} {{ user.lastName }}</h2>
+                    <p class="profile-role">{{ user.role }}</p>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="profile-contact-info">
+                    <div class="contact-item" *ngIf="user.placeOfBirth">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>{{ user.placeOfBirth }}</span>
+                    </div>
+                    <div class="contact-item" *ngIf="user.phoneNumber">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>{{ user.phoneNumber }}</span>
+                    </div>
+                    <div class="contact-item" *ngIf="user.email">
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>{{ user.email }}</span>
+                    </div>
+                </div>
+
+                <!-- Date Section -->
+                <div class="profile-section">
+                    <h3 class="section-title">Dates:</h3>
+                    <ul class="education-list">
+                        <li class="education-item" *ngIf="user.dateOfBirth">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree">Date of Birth</p>
+                                <p class="years">{{ user.dateOfBirth | date }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.lastAccess">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree">Last Access</p>
+                                <p class="years">{{ user.lastAccess | date }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.createdAt">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree">Created At</p>
+                                <p class="years">{{ user.createdAt | date:'medium' }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.updatedAt">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree">Updated At</p>
+                                <p class="years">{{ user.updatedAt | date:'medium' }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Establishment & Class -->
+                <div class="profile-section" *ngIf="user.establishmentName || user.classeServiceNom || user.classeManagerNom">
+                    <h3 class="section-title">Assignments:</h3>
+                    <ul class="education-list">
+                        <li class="education-item" *ngIf="user.establishmentName">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-building"></i> Establishment</p>
+                                <p class="years">{{ user.establishmentName }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.classeServiceNom">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-people-fill"></i> Class (Service)</p>
+                                <p class="years">{{ user.classeServiceNom }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.classeManagerNom">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-person-lines-fill"></i> Class (Manager)</p>
+                                <p class="years">{{ user.classeManagerNom }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- User Stats -->
+                <div class="profile-section" *ngIf="!isAdmin">
+                    <h3 class="section-title">Statistics:</h3>
+                    <ul class="education-list">
+                        <li class="education-item" *ngIf="user.pointagesCount">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-fingerprint"></i> Pointages</p>
+                                <p class="years">{{ user.pointagesCount }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.pointagesConfirmesCount">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-check-circle-fill"></i> Confirmed Pointages</p>
+                                <p class="years">{{ user.pointagesConfirmesCount }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.messagesEnvoyesCount">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-send-fill"></i> Messages Sent</p>
+                                <p class="years">{{ user.messagesEnvoyesCount }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.receivedMessagesCount">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-inbox-fill"></i> Messages Received</p>
+                                <p class="years">{{ user.receivedMessagesCount }}</p>
+                            </div>
+                        </li>
+                        <li class="education-item" *ngIf="user.createdEventsCount">
+                            <div class="bullet-point"></div>
+                            <div class="education-details">
+                                <p class="degree"><i class="bi bi-calendar-event-fill"></i> Created Events</p>
+                                <p class="years">{{ user.createdEventsCount }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="profile-actions-buttons">
+                    <button class="action-button edit-button" (click)="onEdit(user)">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+
+                    <button class="action-button delete-button" (click)="onDelete(user)">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+
+                    <button *ngIf="onAssignToClass" class="action-button assign-button" (click)="onAssignToClass(user)">
+                        <i class="bi bi-arrow-right-square-fill"></i> Assign to Class
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

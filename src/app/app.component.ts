@@ -12,5 +12,5 @@ import {ToastComponent} from "./modules/base-component/components/toast/toast.co
   styles: [],
 })
 export class AppComponent {
-  title = 'fdkj-front';
+  title = 'Smart Tracking Presence';
 }

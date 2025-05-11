@@ -1,13 +1,14 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {CommonModule} from "@angular/common";
-import {RouterModule} from "@angular/router";
-import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
-import {SearchBarComponent} from "../../../base-component/components/search-bar/search-bar.component";
-import {UserRowComponent} from "../../components/user-row/user-row.component";
-import {UserService} from "../../services/user.service";
-import {ToastService} from "../../../base-component/services/toast/toast.service";
-import {SortOption, User} from "../../users.models";
-import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
+import { NavbarComponent } from "../../../base-component/components/navbar/navbar.component";
+import { SearchBarComponent } from "../../../base-component/components/search-bar/search-bar.component";
+import { UserRowComponent } from "../../components/user-row/user-row.component";
+import { UserService } from "../../services/user.service";
+import { ToastService } from "../../../base-component/services/toast/toast.service";
+import { UserResponse, SortOption } from "../../users.models";
+import { LayoutComponent } from "../../../base-component/components/layout/layout.component";
+import { Page } from "../../users.models";
 
 @Component({
   selector: 'app-user-list',
@@ -17,10 +18,7 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
     <app-layout>
       <div class="container-fluid p-0">
         <app-navbar
-            pageTitle="Users"
-            userName="Nabila A."
-            userRole="Admin"
-            userInitials="NA">
+            [pageTitle]="'Users'">
         </app-navbar>
 
         <div class="px-4">
@@ -52,24 +50,8 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
               <strong>Date</strong>
             </div>
 
-            <div class="d-none d-md-block text-center" style="width: 120px;">
-              <strong>Class</strong>
-            </div>
-
-            <div class="d-none d-md-block text-center" style="width: 80px;">
-              <strong>Age</strong>
-            </div>
-
-            <div class="d-none d-lg-block text-center" style="width: 100px;">
-              <strong>City</strong>
-            </div>
-
-            <div class="text-center" style="width: 80px;">
-              <strong>Contact</strong>
-            </div>
-
             <div class="text-center" style="width: 100px;">
-              <strong>Function</strong>
+              <strong>Role</strong>
             </div>
 
             <div style="width: 40px;">
@@ -80,33 +62,34 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
           <!-- User Rows -->
           <div class="user-list">
             <app-user-row
-                *ngFor="let user of users"
+                *ngFor="let user of usersPage?.content || []"
                 [user]="user"
                 [isSelected]="selectedUserIds.includes(user.id)"
                 (toggleSelect)="toggleUserSelection($event)"
-                (delete)="deleteUser($event)"
-                (showPhone)="showPhoneNumber($event)">
+                (delete)="deleteUser($event)">
             </app-user-row>
           </div>
 
           <!-- Pagination -->
-          <div class="d-flex justify-content-between align-items-center py-3">
+          <div class="d-flex justify-content-between align-items-center py-3" *ngIf="usersPage">
             <div class="text-muted">
-              Showing 1-{{ users.length }} from {{ totalUsers }} data
+<!--              Showing {{usersPage.number * usersPage.size + 1}}-{{usersPage.number * usersPage.size + usersPage.numberOfElements}} -->
+<!--              from {{ usersPage.totalElements }} users-->
+              {{ getPaginationText() }}
             </div>
 
             <nav aria-label="User pagination">
               <ul class="pagination mb-0">
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Previous">
+                <li class="page-item" [class.disabled]="usersPage.first">
+                  <a class="page-link" (click)="loadPage(usersPage.number - 1)" aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                  <a class="page-link" href="#" aria-label="Next">
+                <li class="page-item" *ngFor="let page of getPages()" [class.active]="page === usersPage.number">
+                  <a class="page-link" (click)="loadPage(page)">{{page + 1}}</a>
+                </li>
+                <li class="page-item" [class.disabled]="usersPage.last">
+                  <a class="page-link" (click)="loadPage(usersPage.number + 1)" aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                   </a>
                 </li>
@@ -116,12 +99,14 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
         </div>
       </div>
     </app-layout>
-    
   `,
   styles: [`
     .user-list {
       max-height: calc(100vh - 250px);
       overflow-y: auto;
+    }
+    .page-link {
+      cursor: pointer;
     }
   `]
 })
@@ -129,38 +114,64 @@ export class UserListComponent implements OnInit {
   private userService = inject(UserService);
   private toastService = inject(ToastService);
 
-  users: User[] = [];
+  usersPage: Page<UserResponse> | null = null;
   selectedUserIds: string[] = [];
-  totalUsers: number = 100;
-  currentSort: SortOption = 'newest';
+  currentSort: SortOption = 'createdAt';
   currentSearchTerm: string = '';
   allSelected: boolean = false;
 
   ngOnInit(): void {
-    this.loadUsers();
-
+    this.loadUsers(0);
     this.userService.selectedUsers$.subscribe(ids => {
       this.selectedUserIds = ids;
       this.updateAllSelectedState();
     });
   }
 
-  loadUsers(): void {
-    this.userService.getUsers(this.currentSearchTerm, this.currentSort)
-        .subscribe(users => {
-          this.users = users;
-          this.updateAllSelectedState();
+  loadUsers(page: number = 0, size: number = 20): void {
+    this.userService.getUsersByRoleAndEstablishment(page, size, this.currentSort)
+        .subscribe({
+          next: (page) => {
+            this.usersPage = page;
+            this.updateAllSelectedState();
+          },
+          error: (err) => console.error('Error loading users', err)
         });
+  }
+
+  loadPage(page: number): void {
+    if (page >= 0 && page < (this.usersPage?.totalPages || 0)) {
+      this.loadUsers(page);
+    }
+  }
+
+  getPages(): number[] {
+    if (!this.usersPage) return [];
+    const totalPages = this.usersPage.totalPages;
+    const currentPage = this.usersPage.number;
+
+    let start = Math.max(0, currentPage - 2);
+    let end = Math.min(totalPages - 1, currentPage + 2);
+
+    if (currentPage <= 2) {
+      end = Math.min(4, totalPages - 1);
+    }
+
+    if (currentPage >= totalPages - 3) {
+      start = Math.max(totalPages - 5, 0);
+    }
+
+    return Array.from({length: end - start + 1}, (_, i) => start + i);
   }
 
   onSortChange(sortOption: SortOption): void {
     this.currentSort = sortOption;
-    this.loadUsers();
+    this.loadUsers(0);
   }
 
   onSearchChange(searchTerm: string): void {
     this.currentSearchTerm = searchTerm;
-    this.loadUsers();
+    // Implémentez la recherche si nécessaire
   }
 
   toggleUserSelection(userId: string): void {
@@ -168,35 +179,46 @@ export class UserListComponent implements OnInit {
   }
 
   toggleAllSelection(): void {
+    if (!this.usersPage) return;
+
     if (this.allSelected) {
       this.userService.clearSelection();
     } else {
-      // Sélectionner tous les utilisateurs actuellement affichés
       this.userService.clearSelection();
-      this.users.forEach(user => {
+      this.usersPage.content.forEach(user => {
         this.userService.toggleUserSelection(user.id);
       });
     }
   }
 
   updateAllSelectedState(): void {
-    this.allSelected = this.users.length > 0 &&
-        this.users.every(user => this.selectedUserIds.includes(user.id));
+    if (!this.usersPage) {
+      this.allSelected = false;
+      return;
+    }
+    this.allSelected = this.usersPage.content.length > 0 &&
+        this.usersPage.content.every(user => this.selectedUserIds.includes(user.id));
   }
 
   deleteUser(userId: string): void {
-    this.userService.deleteUser(userId).subscribe(success => {
-      if (success) {
-        this.users = this.users.filter(user => user.id !== userId);
-        this.toastService.show('Utilisateur supprimé avec succès', 'success');
-      } else {
-        this.toastService.show('Erreur lors de la suppression de l\'utilisateur', 'danger');
+    this.userService.deleteUser(userId).subscribe({
+      next: () => {
+        this.toastService.show('User deleted successfully', 'success');
+        this.loadUsers(this.usersPage?.number || 0);
+      },
+      error: (err) => {
+        console.error('Delete error:', err);
+        this.toastService.show('Error deleting user', 'danger');
       }
     });
   }
 
-  showPhoneNumber(data: {id: string, phone: string}): void {
-    this.toastService.show(`Téléphone: ${data.phone}`, 'info');
+  getPaginationText(): string {
+    if (!this.usersPage) return '';
+
+    const start = (this.usersPage.number * this.usersPage.size) + 1;
+    const end = (this.usersPage.number * this.usersPage.size) + this.usersPage.content.length;
+
+    return `Showing ${start}-${end} of ${this.usersPage.totalElements} users`;
   }
 }
-

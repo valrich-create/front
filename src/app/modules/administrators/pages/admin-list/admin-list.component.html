@@ -1,0 +1,36 @@
+<app-layout>
+    <app-navbar
+            [pageTitle]="'Administrators'">
+    </app-navbar>
+
+    <div class="users-container">
+        <app-search-bar
+                newButtonText="New Admin"
+                newItemRoute="/administrators/new"
+                [currentSort]="currentSort"
+                (sortChange)="onSortChange($event)"
+                (searchChange)="onSearchChange($event)">
+        </app-search-bar>
+
+        <div class="users-grid">
+            <app-admin-card
+                    *ngFor="let admin of admins"
+                    [admin]="admin"
+                    (action)="handleAction($event)">
+            </app-admin-card>
+        </div>
+
+        <div class="pagination-container">
+            <ngb-pagination
+                    [collectionSize]="totalAdmins"
+                    [(page)]="currentPage"
+                    [pageSize]="pageSize"
+                    (pageChange)="loadAdmins()">
+            </ngb-pagination>
+            <div class="pagination-info">
+                Showing {{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, totalAdmins) }}
+                from {{ totalAdmins }} data
+            </div>
+        </div>
+    </div>
+</app-layout>

@@ -1,0 +1,44 @@
+<div class="admin-card" (click)="goToDetails()">
+    <!-- Header avec menu déroulant -->
+    <div class="card-header">
+        <div class="action-menu">
+            <button class="menu-toggle" (click)="toggleMenu($event)">
+                <fa-icon [icon]="faEllipsisH"></fa-icon>
+            </button>
+            <div class="menu-actions" [class.show]="showMenu">
+                <button class="menu-action" (click)="onAction('edit', $event); $event.stopPropagation()">
+                    Éditer
+                </button>
+                <button class="menu-action" (click)="onAction('delete', $event); $event.stopPropagation()">
+                    Supprimer
+                </button>
+                <button class="menu-action" (click)="onAction('details', $event); $event.stopPropagation()">
+                    Détails
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar -->
+    <div class="user-avatar">
+        <div class="avatar-circle">
+            {{ getInitials() }}
+        </div>
+    </div>
+
+    <!-- Infos utilisateur -->
+    <div class="user-info">
+        <h5 class="user-name">{{ admin.lastName }}, {{ admin.firstName }}</h5>
+        <p class="user-subject">{{ admin.role }}</p>
+    </div>
+
+    <!-- Actions -->
+    <div class="user-actions">
+        <button class="action-btn" (click)="callUser()">
+            <fa-icon [icon]="faPhone"></fa-icon>
+        </button>
+        <button class="action-btn" (click)="emailUser()">
+            <fa-icon [icon]="faEnvelope"></fa-icon>
+        </button>
+    </div>
+</div>

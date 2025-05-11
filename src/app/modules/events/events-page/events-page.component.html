@@ -1,0 +1,18 @@
+<!-- events-event-form.component.html -->
+<app-layout>
+    <app-navbar
+            [pageTitle]="'Information'">
+    </app-navbar>
+    <div class="events-page">
+
+        <div class="content-container">
+            <div class="calendar-section">
+                <app-calendar [selectedDate]="selectedDate()" (daySelected)="onDaySelected($event)"></app-calendar>
+            </div>
+
+            <div class="events-section">
+                <app-event-list [selectedDate]="selectedDate()"></app-event-list>
+            </div>
+        </div>
+    </div>
+</app-layout>

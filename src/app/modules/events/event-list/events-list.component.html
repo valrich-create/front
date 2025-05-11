@@ -1,0 +1,48 @@
+<!-- event-list.component.html -->
+    <div class="schedule-details">
+        <h2>Information Details</h2>
+        <p class="selected-date">{{ selectedDate() | date:'EEEE, dd MMMM, yyyy' }}</p>
+
+        <div class="events-container" *ngIf="events().length > 0; else noEvents">
+            <div *ngFor="let event of events()" class="event-card" [style.border-left-color]="event.color">
+                <div class="event-header">
+                    <h3>{{ event.title }}</h3>
+                    <span class="event-category">{{ event.category }}</span>
+                </div>
+
+                <div class="event-details">
+                    <div class="event-time">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span>{{ event.startTime | date:'HH:mm' }} - {{ event.endTime | date:'HH:mm' }} {{ event.startTime | date:'a' }}</span>
+                    </div>
+
+                    <div class="event-date">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>{{ event.startTime | date:'MMMM dd, yyyy' }}</span>
+                    </div>
+
+                    <div class="event-attendees" *ngIf="event.attendees && event.attendees.length">
+                        <div class="attendee-avatar" *ngFor="let attendee of event.attendees.slice(0, 3)">
+                            <span>{{ attendee.name.charAt(0) }}</span>
+                        </div>
+                        <span class="more-attendees" *ngIf="event.attendees.length > 3">+{{ event.attendees.length - 3 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ng-template #noEvents>
+            <div class="no-events">
+                <p>Aucune information pour cette journée</p>
+            </div>
+        </ng-template>
+    </div>
+

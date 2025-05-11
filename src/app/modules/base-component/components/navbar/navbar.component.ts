@@ -1,9 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {CommonModule} from "@angular/common";
 import {RouterModule} from "@angular/router";
+import {AuthService} from "../../../auth/service/auth.service";
 
 @Component({
-  selector: 'app-navbar',standalone: true,
+  selector: 'app-navbar',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
     <div class="d-flex justify-content-between align-items-center py-3 px-4 border-bottom">
@@ -46,9 +48,21 @@ import {RouterModule} from "@angular/router";
   `]
 
 })
-export class NavbarComponent {
+
+export class NavbarComponent implements OnInit {
   @Input() pageTitle: string = 'Dashboard';
-  @Input() userName: string = 'User Name';
-  @Input() userRole: string = 'Role';
-  @Input() userInitials: string = 'UN';
+  userName: string = 'User Name';
+  userRole: string = 'Role';
+  userInitials: string = 'UN';
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    const user = this.authService.getUser();
+    if (user) {
+      this.userName = `${user.firstName} ${user.lastName}`;
+      this.userRole = user.role;
+      this.userInitials = `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+  }
 }

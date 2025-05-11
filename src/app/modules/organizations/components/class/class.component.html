@@ -1,0 +1,177 @@
+<!-- classe-a.component.html -->
+<div class="classe-a-container">
+    <h1 class="page-title">{{ className }}</h1>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-icon user-icon">
+                <i class="material-icons">group</i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Total users</div>
+                <div class="stat-value">{{ totalUsers }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon chief-icon">
+                <i class="material-icons">person</i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Total chiefs</div>
+                <div class="stat-value">{{ totalChiefs }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon presence-icon">
+                <i class="material-icons">verified_user</i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">Presence</div>
+                <div class="stat-value">{{ presenceRate }}%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presence Balance -->
+    <div class="presence-balance-card card">
+        <div class="card-header">
+            <h2>Presence Balance</h2>
+            <div class="card-actions">
+                <div class="legend-container">
+                    <div class="legend-item">
+                        <span class="legend-dot presence-dot"></span>
+                        <span>Presences</span>
+                        <span class="legend-value">{{ presencesCount }}</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot absence-dot"></span>
+                        <span>Absences</span>
+                        <span class="legend-value">{{ absencesCount }}</span>
+                    </div>
+                </div>
+                <div class="filter-dropdown">
+                    <select [(ngModel)]="selectedFilter" (change)="updateChartFilter(selectedFilter)" class="filter-select">
+                        <option *ngFor="let filter of filters" [value]="filter">{{ filter }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="presenceBalanceChart"></canvas>
+            </div>
+            <div class="chart-highlight" *ngIf="selectedFilter === 'Month'">
+                <div class="highlight-marker">
+                    <div class="marker-label">$1,345</div>
+                    <div class="marker-date">July 2020</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two column layout for lists -->
+    <div class="lists-container">
+        <!-- All Users in Class -->
+        <div class="users-list card">
+            <div class="card-header">
+                <h2>All Users in {{ className }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="users-table">
+                        <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>ID</th>
+                            <th>Class</th>
+                            <th>Presence Rate</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let user of users">
+                            <td>
+                                <div class="user-info">
+                                    <div class="user-avatar"></div>
+                                    <div class="user-name">{{ user.name }}</div>
+                                </div>
+                            </td>
+                            <td>ID {{ user.id }}</td>
+                            <td>
+                                <div class="class-badge">
+                                    <span>{{ user.class }}</span>
+                                </div>
+                            </td>
+                            <td>$ {{ user.presenceRate }},036</td>
+                            <td class="actions-cell">
+                                <button class="action-button">
+                                    <fa-icon [icon]="faEllipsisV"></fa-icon>
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="showing-info">
+                        Showing 1-5 from {{ totalItems }} data
+                    </div>
+                    <app-pagination
+                            [currentPage]="currentPage"
+                            [totalItems]="totalItems"
+                            [itemsPerPage]="itemsPerPage"
+                            (pageChange)="onPageChange($event)">
+                    </app-pagination>
+                </div>
+            </div>
+        </div>
+
+        <!-- Presence Classement -->
+        <div class="presence-classement card">
+            <div class="card-header">
+                <h2>Presence classement</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="presence-table">
+                        <tbody>
+                        <tr *ngFor="let user of topPresenceUsers">
+                            <td>
+                                <div class="presence-id">
+                                    <div class="id-icon">
+                                        <i class="material-icons">trending_up</i>
+                                    </div>
+                                    <div class="id-details">
+                                        <div class="id-number">#{{ user.id }}</div>
+                                        <div class="id-timestamp">{{ user.timestamp }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="presence-rate">
+                                <span [class]="getStatusClass(user.status)">{{ user.presenceRate }}%</span>
+                            </td>
+                            <td class="absence-rate">
+                                <span class="absence-value">{{ user.absenceRate }}%</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="showing-info">
+                        Showing 1-5 from {{ totalItems }} data
+                    </div>
+                    <app-pagination
+                            [currentPage]="currentPage"
+                            [totalItems]="totalItems"
+                            [itemsPerPage]="itemsPerPage"
+                            (pageChange)="onPageChange($event)">
+                    </app-pagination>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

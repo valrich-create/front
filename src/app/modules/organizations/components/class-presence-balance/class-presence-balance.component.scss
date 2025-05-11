@@ -1,0 +1,165 @@
+/* presence-balance.component.scss */
+.presence-balance-card {
+  .chart-container {
+    height: 300px;
+    //width: 100%;
+    position: relative
+
+    //canvas {
+    //  width: 100% !important;
+    //  height: 100% !important;
+    //}
+  }
+
+  .chart-highlight {
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .highlight-marker {
+      background-color: #5B5FCE;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      position: relative;
+
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #5B5FCE;
+      }
+
+      .marker-label {
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      .marker-date {
+        font-size: 0.75rem;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+
+    .card-actions {
+      display: flex;
+      align-items: center;
+
+      .legend-container {
+        display: flex;
+        margin-right: 1.5rem;
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          margin-right: 1rem;
+
+          .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+
+            &.presence-dot {
+              background-color: #FFC107;
+            }
+
+            &.absence-dot {
+              background-color: #FF7A59;
+            }
+          }
+
+          .legend-value {
+            font-weight: 600;
+            margin-left: 0.5rem;
+          }
+        }
+      }
+
+      .filter-dropdown {
+        .filter-select {
+          border: 1px solid #ddd;
+          border-radius: 2rem;
+          padding: 0.5rem 1.5rem;
+          font-size: 0.875rem;
+          background-color: #fff;
+          cursor: pointer;
+          outline: none;
+
+          &:focus {
+            border-color: #5B5FCE;
+          }
+        }
+      }
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+    position: relative;
+  }
+}
+
+@media (max-width: 768px) {
+  .presence-balance-card .chart-container {
+    height: 200px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .card-actions {
+      margin-top: 1rem;
+      flex-direction: column;
+      width: 100%;
+
+      .legend-container {
+        margin-bottom: 1rem;
+        margin-right: 0;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .filter-dropdown {
+        width: 100%;
+
+        .filter-select {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

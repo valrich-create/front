@@ -1,254 +1,216 @@
-import {inject, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of} from "rxjs";
-import {SortOption, User} from "../users.models";
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, catchError, Observable, switchMap, throwError} from "rxjs";
+import {Page, SortOption, UserRegistrationRequest, UserResponse, UserRole, UserUpdateRequest} from "../users.models";
+import {HttpClient, HttpParams} from "@angular/common/http";
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
+
 export class UserService {
-  constructor(private http: HttpClient) {} // Injection correcte
+	// private apiUrl = '/users';
+	private apiUrl = '/api/users';
+	private selectedUsersSubject = new BehaviorSubject<string[]>([]);
+	selectedUsers$ = this.selectedUsersSubject.asObservable();
 
-  // private http = inject(HttpClient);
-  private apiUrl = '/users'; // URL à ajuster selon votre backend
+	constructor(private http: HttpClient) { }
 
-  // Pour la démonstration, nous utiliserons des données mockées
-  private mockUsers: User[] = [
-    {
-      id: 'STU001',
-      name: 'Samanta William',
-      email: 'samanta.william@email.com',
-      phone: '+33612345678',
-      profilePicture: 'assets/avatars/avatar1.png',
-      age: 16,
-      class: 'VII A',
-      parentName: 'Maria William',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Délégué',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Passionate about history and literature. Class delegate for 2 years.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta International School',
-          yearFrom: 2018,
-          yearTo: 2023
-        }
-      ],
-      expertise: ['History', 'Literature', 'Debate'],
-      attendanceRecords: [],
-      checkInLocations: []
-    },
-    {
-      id: 'STU002',
-      name: 'Tony Soap',
-      email: 'tony.soap@email.com',
-      phone: '+33623456789',
-      profilePicture: 'assets/avatars/avatar2.png',
-      age: 17,
-      class: 'VII B',
-      parentName: 'James Soap',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Utilisateur',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Science enthusiast with focus on physics and mathematics.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta Science High School',
-          yearFrom: 2017,
-          yearTo: 2022
-        }
-      ],
-      expertise: ['Physics', 'Mathematics', 'Robotics'],
-      attendanceRecords: [],
-      checkInLocations: []
-    },
-    {
-      id: 'STU003',
-      name: 'Karen Hope',
-      email: 'karen.hope@email.com',
-      phone: '+33634567890',
-      profilePicture: 'assets/avatars/avatar3.png',
-      age: 18,
-      class: 'VII C',
-      parentName: 'Justin Hope',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Délégué adjoint',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Art and design specialist. Vice-delegate helping with class organization.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta Arts Academy',
-          yearFrom: 2016,
-          yearTo: 2021
-        }
-      ],
-      expertise: ['Painting', 'Graphic Design', 'Photography'],
-      attendanceRecords: [],
-      checkInLocations: []
-    },
-    {
-      id: 'STU004',
-      name: 'Jordan Nico',
-      email: 'jordan.nico@email.com',
-      phone: '+33645678901',
-      profilePicture: 'assets/avatars/avatar4.png',
-      age: 15,
-      class: 'VII A',
-      parentName: 'Amanda Nico',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Utilisateur',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Youngest in class but excelling in computer science.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta Tech School',
-          yearFrom: 2019,
-          yearTo: 2024
-        }
-      ],
-      expertise: ['Programming', 'Web Development', 'AI'],
-      attendanceRecords: [],
-      checkInLocations: []
-    },
-    {
-      id: 'STU005',
-      name: 'Nadila Adja',
-      email: 'nadila.adja@email.com',
-      phone: '+33656789012',
-      profilePicture: 'assets/avatars/avatar5.png',
-      age: 16,
-      class: 'VII B',
-      parentName: 'Jack Adja',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Délégué',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Sports captain and class delegate. Specializes in biology.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta Sports Academy',
-          yearFrom: 2018,
-          yearTo: 2023
-        }
-      ],
-      expertise: ['Biology', 'Athletics', 'Leadership'],
-      attendanceRecords: [],
-      checkInLocations: []
-    },
-    {
-      id: 'STU006',
-      name: 'Johnny Ahmad',
-      email: 'johnny.ahmad@email.com',
-      phone: '+33667890123',
-      profilePicture: 'assets/avatars/avatar6.png',
-      age: 16,
-      class: 'VII C',
-      parentName: 'Danny Ahmad',
-      city: 'Jakarta',
-      country: 'Indonesia',
-      function: 'Délégué',
-      organization: 'Akademi Historia',
-      dateCreated: new Date('2021-03-25'),
-      bio: 'Music prodigy and class representative. Plays 3 instruments.',
-      education: [
-        {
-          degree: 'Secondary Education',
-          institution: 'Jakarta Music College',
-          yearFrom: 2018,
-          yearTo: 2023
-        }
-      ],
-      expertise: ['Music', 'Piano', 'Composition'],
-      attendanceRecords: [],
-      checkInLocations: []
-    }
-  ];
+	createUser(request: UserRegistrationRequest): Observable<UserResponse> {
+		return this.http.post<UserResponse>(this.apiUrl, request);
+		// return this.http.post<UserResponse>(this.apiUrl, userData);
+	}
 
-  private selectedUsersSubject = new BehaviorSubject<string[]>([]);
-  selectedUsers$ = this.selectedUsersSubject.asObservable();
+	getUsersByRoleAndEstablishment(page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
+		return this.getCurrentUser().pipe(
+			switchMap(user => {
+				const establishmentId = user.establishmentId;
+				if (!establishmentId) {
+					return throwError(() => new Error('No establishment associated with current user'));
+				}
 
-  getUsers(searchTerm: string = '', sortBy: SortOption = 'newest'): Observable<User[]> {
-    // Dans un environnement réel, nous utiliserions le service HTTP
-    // return this.http.get<User[]>(this.apiUrl);
+				if (user.role === UserRole.SUPER_ADMIN) {
+					return this.getAdvancedUsersByEstablishment(establishmentId, page, size, sort);
+				} else {
+					return this.getBasicUsersByEstablishment(establishmentId, page, size, sort);
+				}
+			}),
+			catchError(error => {
+				console.error('Error determining user role or fetching users', error);
+				return throwError(() => new Error('Failed to fetch users by role'));
+			})
+		);
+	}
 
-    // Mais pour la démonstration, nous filtrons et trions nos données mockées
-    let filteredUsers = this.mockUsers;
+	getUserById(userId: string): Observable<UserResponse> {
+		return this.http.get<UserResponse>(`${this.apiUrl}/${userId}`)
+			.pipe(
+				catchError(error => {
+					console.error('Error fetching user', error);
+					return throwError(() => new Error('Failed to fetch user'));
+				})
+			);
+	}
 
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      filteredUsers = filteredUsers.filter(user =>
-          user.name.toLowerCase().includes(term) ||
-          user.id.toLowerCase().includes(term) ||
-          user.city.toLowerCase().includes(term) ||
-          user.class.toLowerCase().includes(term)
-      );
-    }
+	getAllUsers(page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString())
+			.set('sort', sort);
 
-    // Tri des utilisateurs
-    return of(this.sortUsers(filteredUsers, sortBy));
-  }
+		return this.http.get<Page<UserResponse>>(this.apiUrl, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error Getting all users', error);
+					return throwError(() => new Error('Failed to Get users'));
+				})
+			);
+	}
 
-  getUserById(id: string): Observable<User | undefined> {
-    // Dans un environnement réel, nous utiliserions le service HTTP
-    // return this.http.get<User>(`${this.apiUrl}/${id}`);
+	getBasicUsersByEstablishment(establishmentId: string, page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString())
+			.set('sort', sort);
 
-    // Mais pour la démonstration, nous trouvons l'utilisateur dans nos données mockées
-    const user = this.mockUsers.find(u => u.id === id);
-    return of(user);
-  }
+		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/basic/${establishmentId}`, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error getting basic users by establishment', error);
+					return throwError(() => new Error('Failed to get basic users by establishment'));
+				})
+			);
+	}
 
-  // getUserById(id: string): Observable<User> {
-  //   return this.http.get<User>(`/api/users/${id}`);
-  // }
+	getAdvancedUsersByEstablishment(establishmentId: string | undefined, page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString())
+			.set('sort', sort);
 
-  toggleUserSelection(userId: string): void {
-    const currentSelection = this.selectedUsersSubject.value;
-    if (currentSelection.includes(userId)) {
-      this.selectedUsersSubject.next(currentSelection.filter(id => id !== userId));
-    } else {
-      this.selectedUsersSubject.next([...currentSelection, userId]);
-    }
-  }
+		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/advanced/${establishmentId}`, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error getting advanced users by establishment', error);
+					return throwError(() => new Error('Failed to get advanced users by establishment'));
+				})
+			);
+	}
 
-  clearSelection(): void {
-    this.selectedUsersSubject.next([]);
-  }
+	getUsersByClassId(classId: string, page: number = 0, size: number = 20): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString());
 
-  deleteUser(id: string): Observable<boolean> {
-    // Logique de suppression
-    return of(true);
-  }
+		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/by-class/${classId}`, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error Getting all users', error);
+					return throwError(() => new Error('Failed to Get users'));
+				})
+			);
+	}
 
-  private sortUsers(users: User[], sortBy: SortOption): User[] {
-    return [...users].sort((a, b) => {
-      switch (sortBy) {
-        case 'newest':
-          return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
-        case 'oldest':
-          return new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime();
-        case 'age':
-          return a.age - b.age;
-        case 'class':
-          return a.class.localeCompare(b.class);
-        default:
-          return 0;
-      }
-    });
-  }
+	getUsersByEstablishmentId(establishmentId: string, page: number = 0, size: number = 20): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString());
 
-  // constructor() { }
+		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/by-establishment/${establishmentId}`, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error Getting all users', error);
+					return throwError(() => new Error('Failed to Get users'));
+				})
+			);
+	}
+
+	updateUser(userId: string, request: UserUpdateRequest): Observable<UserResponse> {
+		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}`, request)
+			.pipe(
+				catchError(error => {
+					console.error('Error try later', error);
+					return throwError(() => new Error('Failures'));
+				})
+			);
+	}
+
+	addUserToClassService(userId: string, classId: string): Observable<UserResponse> {
+		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}/assign-class/${classId}`, {})
+			.pipe(
+				catchError(error => {
+					console.error('Error try later', error);
+					return throwError(() => new Error('Failures'));
+				})
+			);
+	}
+
+	addUserToEstablishment(userId: string, establishmentId: string): Observable<UserResponse> {
+		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}/assign-establishment/${establishmentId}`, {})
+			.pipe(
+				catchError(error => {
+					console.error('Error try later', error);
+					return throwError(() => new Error('Failures'));
+				})
+			);
+	}
+
+	deleteUser(userId: string): Observable<void> {
+		return this.http.delete<void>(`${this.apiUrl}/${userId}`)
+			.pipe(
+				catchError(error => {
+					console.error('Error try later', error);
+					return throwError(() => new Error('Failures'));
+				})
+			);
+	}
+
+	getCurrentUser(): Observable<UserResponse> {
+		return this.http.get<UserResponse>(`${this.apiUrl}/current-user`)
+			.pipe(
+				catchError(error => {
+					console.error('Error fetching user', error);
+					return throwError(() => new Error('Failed to fetch user'));
+				})
+			);
+	}
+
+	getCurrentUserId(): Observable<{ userId: string }> {
+		return this.http.get<{ userId: string }>(`${this.apiUrl}/current-user-id`)
+			.pipe(
+				catchError(error => {
+					console.error('Error fetching user', error);
+					return throwError(() => new Error('Failed to fetch user'));
+				})
+			);
+	}
+
+	toggleUserSelection(userId: string): void {
+		const currentSelection = this.selectedUsersSubject.value;
+		if (currentSelection.includes(userId)) {
+			this.selectedUsersSubject.next(currentSelection.filter(id => id !== userId));
+		} else {
+			this.selectedUsersSubject.next([...currentSelection, userId]);
+		}
+	}
+
+	clearSelection(): void {
+		this.selectedUsersSubject.next([]);
+	}
+
+	private sortUsers(users: UserResponse[], sortBy: SortOption): UserResponse[] {
+		return [...users].sort((a, b) => {
+			switch (sortBy) {
+				case 'createdAt':
+					return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+				case 'oldest':
+					return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+				// case 'age':
+				//   return a.age - b.age;
+				// case 'class':
+				//   return a.class.localeCompare(b.class);
+				default:
+					return 0;
+			}
+		});
+	}
 }
