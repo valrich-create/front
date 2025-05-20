@@ -20,11 +20,22 @@ import {LayoutComponent} from "../layout/layout.component";
 })
 
 export class UserDetailCardComponent {
-	@Input() user!: UserResponse | Admin;
+	@Input() user!: UserResponse | Admin | null;
 	@Input() isAdmin: boolean = false;
 	@Input() pageTitle: string = 'User Details';
 
 	@Input() onEdit!: (user: UserResponse | Admin) => void;
 	@Input() onDelete!: (user: UserResponse |  Admin) => void;
-	@Input() onAssignToClass?: (user: UserResponse | Admin) => void; // facultatif
+	@Input() onAssignToClass?: (user: UserResponse | Admin) => void;
+
+	getInitials(): string {
+		const firstInitial = this.user?.firstName?.charAt(0) || '';
+		const lastInitial = this.user?.lastName?.charAt(0) || '';
+		return firstInitial + lastInitial;
+	}
+
+	hasProfileImage(): boolean {
+		return !!this.user?.profileImageUrl;
+	}
+
 }

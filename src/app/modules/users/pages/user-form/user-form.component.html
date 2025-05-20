@@ -1,8 +1,6 @@
 <app-layout>
     <div class="user-form-container">
-        <app-navbar
-                pageTitle="New User">
-        </app-navbar>
+        <app-navbar pageTitle="{{ isEditMode ? 'Edit User' : 'Create New User' }}"></app-navbar>
 
         <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
             <!-- Personal Details Section -->
@@ -11,148 +9,181 @@
 
                 <div class="form-grid">
                     <!-- Photo Upload -->
-                    <div class="form-group photo-upload">
-                        <label for="photo">Photo <span class="required">*</span></label>
-                        <div class="photo-upload-area" (click)="fileInput.click()">
-                            <input
-                                    type="file"
-                                    id="photo"
-                                    hidden
-                                    #fileInput
-                                    (change)="onFileSelected($event)"
-                                    accept="image/*"
-                            >
-                            <div class="upload-placeholder">
-                                <p>Drag and drop or</p>
-                                <p>click here to select file</p>
+                    <div class="photo-column">
+                        <div class="form-group photo-upload">
+                            <label for="profileImage">Photo <span class="required">*</span></label>
+                            <div class="photo-upload-area" (click)="fileInput.click()">
+                                <input
+                                        type="file"
+                                        id="profileImage"
+                                        hidden
+                                        #fileInput
+                                        (change)="onFileSelected($event)"
+                                        accept="image/*"
+                                >
+
+                                <div *ngIf="previewImageUrl; else uploadPlaceholder" class="image-preview">
+                                    <img [src]="previewImageUrl" alt="Preview">
+                                </div>
+
+                                <ng-template #uploadPlaceholder>
+                                    <div class="upload-placeholder">
+                                        <p>Drag and drop or</p>
+                                        <p>click here to select file</p>
+                                    </div>
+                                </ng-template>
                             </div>
                         </div>
                     </div>
 
-                    <!-- First Name -->
-                    <div class="form-group">
-                        <label for="firstName">First Name <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="firstName"
-                                formControlName="firstName"
-                                placeholder="Samantha"
-                                [ngClass]="{'invalid': userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched}"
-                        >
-                    </div>
+                    <!-- Right Column -->
+                    <div class="details-columns">
+                        <!-- First Row: First Name + Last Name -->
+                        <div class="form-row">
+                            <div class="form-group name-group">
+                                <label for="firstName">First Name <span class="required">*</span></label>
+                                <input
+                                        type="text"
+                                        id="firstName"
+                                        formControlName="firstName"
+                                        placeholder="Samantha"
+                                        [ngClass]="{'invalid': userForm.get('firstName')?.invalid && userForm.get('firstName')?.touched}"
+                                >
+                            </div>
 
-                    <!-- Last Name -->
-                    <div class="form-group">
-                        <label for="lastName">Last Name <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="lastName"
-                                formControlName="lastName"
-                                placeholder="William"
-                                [ngClass]="{'invalid': userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched}"
-                        >
-                    </div>
+                            <div class="form-group name-group">
+                                <label for="lastName">Last Name <span class="required">*</span></label>
+                                <input
+                                        type="text"
+                                        id="lastName"
+                                        formControlName="lastName"
+                                        placeholder="William"
+                                        [ngClass]="{'invalid': userForm.get('lastName')?.invalid && userForm.get('lastName')?.touched}"
+                                >
+                            </div>
+                        </div>
 
-                    <!-- Date of Birth -->
-                    <div class="form-group">
-                        <label for="dateOfBirth">Date & Place of Birth <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="dateOfBirth"
-                                formControlName="dateOfBirth"
-                                placeholder="24 Februari 1997"
-                                [ngClass]="{'invalid': userForm.get('dateOfBirth')?.invalid && userForm.get('dateOfBirth')?.touched}"
-                        >
-                    </div>
+                        <!-- Second Row: Date & Place of Birth -->
+                        <div class="form-group birth-group">
+                            <label for="dateOfBirth">Date & Place of Birth <span class="required">*</span></label>
+                            <div class="birth-inputs">
+                                <input
+                                        type="date"
+                                        id="dateOfBirth"
+                                        formControlName="dateOfBirth"
+                                        [ngClass]="{'invalid': userForm.get('dateOfBirth')?.invalid && userForm.get('dateOfBirth')?.touched}"
+                                >
+                                <input
+                                        type="text"
+                                        id="placeOfBirth"
+                                        formControlName="placeOfBirth"
+                                        placeholder="Jakarta"
+                                        [ngClass]="{'invalid': userForm.get('placeOfBirth')?.invalid && userForm.get('placeOfBirth')?.touched}"
+                                >
+                            </div>
+                        </div>
 
-                    <!-- Place of Birth -->
-                    <div class="form-group">
-                        <input
-                                type="text"
-                                id="placeOfBirth"
-                                formControlName="placeOfBirth"
-                                placeholder="Jakarta"
-                                [ngClass]="{'invalid': userForm.get('placeOfBirth')?.invalid && userForm.get('placeOfBirth')?.touched}"
-                        >
-                    </div>
+                        <!-- Third Row: Email + Phone -->
+                        <div class="form-row">
+                            <div class="form-group contact-group">
+                                <label for="email">Email <span class="required">*</span></label>
+                                <input
+                                        type="email"
+                                        id="email"
+                                        formControlName="email"
+                                        placeholder="william@gmail.com"
+                                        [ngClass]="{'invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched}"
+                                >
+                            </div>
 
-                    <!-- Role -->
-                    <div class="form-group">
-                        <label for="role">Role <span class="required">*</span></label>
-                        <div class="select-container">
-                            <select
-                                    id="role"
-                                    formControlName="role"
-                                    [ngClass]="{'invalid': userForm.get('role')?.invalid && userForm.get('role')?.touched}"
-                            >
-                                <option value="" disabled selected>Select the user role in the mobile app</option>
-                                <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-                            </select>
-                            <div class="select-arrow"></div>
+                            <div class="form-group contact-group">
+                                <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                                <input
+                                        type="tel"
+                                        id="phoneNumber"
+                                        formControlName="phoneNumber"
+                                        placeholder="+1234567890"
+                                        [ngClass]="{'invalid': userForm.get('phoneNumber')?.invalid && userForm.get('phoneNumber')?.touched}"
+                                >
+                            </div>
+                        </div>
+
+                        <!-- Fourth Row: Role + Service -->
+                        <div class="form-row">
+                            <div class="form-group role-group">
+                                <label for="role">Role <span class="required">*</span></label>
+                                <div class="select-container">
+<!--                                    <select-->
+<!--                                            id="role"-->
+<!--                                            formControlName="role"-->
+<!--                                            [ngClass]="{'invalid': userForm.get('role')?.invalid && userForm.get('role')?.touched}"-->
+<!--                                    >-->
+<!--                                        <option value="" disabled selected>Select the user role in the mobile app</option>-->
+<!--                                        <option *ngFor="let role of roles" [value]="role">{{ role }}</option>-->
+<!--                                    </select>-->
+                                    <select
+                                            id="role"
+                                            formControlName="role"
+                                            [ngClass]="{'invalid': userForm.get('role')?.invalid && userForm.get('role')?.touched}"
+                                    >
+                                        <option value="" disabled selected>Select the user role</option>
+                                        <option *ngFor="let role of filteredRoles" [value]="role">{{ role }}</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group service-group">
+                                <label for="service">{{fieldLabel}}</label>
+                                <div class="select-container">
+                                    <select
+                                            id="service"
+                                            formControlName="service"
+                                            [ngClass]="{'invalid': userForm.get('service')?.invalid && userForm.get('service')?.touched}"
+                                    >
+                                        <option value="" disabled selected>Select {{fieldLabel.toLowerCase()}}</option>
+                                        <option *ngFor="let option of options" [value]="option.id">{{ option.name }}</option>
+                                    </select>
+                                    <div class="select-arrow"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Email -->
-                    <div class="form-group">
-                        <label for="email">Email <span class="required">*</span></label>
-                        <input
-                                type="email"
-                                id="email"
-                                formControlName="email"
-                                placeholder="william@gmail.com"
-                                [ngClass]="{'invalid': userForm.get('email')?.invalid && userForm.get('email')?.touched}"
-                        >
+                    <!-- Permissions Section -->
+                    <div class="permissions-section" *ngIf="showPermissions">
+                        <h3 class="section-subtitle">Permissions</h3>
+                        <div class="permissions-grid" formGroupName="permissions" *ngIf="userForm.get('permissions')">
+                            <div class="permission-item" *ngFor="let permission of permissionsList">
+                                <input
+                                        type="checkbox"
+                                        [id]="'perm-'+permission"
+                                        [formControlName]="permission"
+                                >
+                                <label [for]="'perm-'+permission">{{ permission }}</label>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Phone -->
-                    <div class="form-group">
-                        <label for="phone">Phone <span class="required">*</span></label>
-                        <input
-                                type="tel"
-                                id="phone"
-                                formControlName="phone"
-                                placeholder="+1234567890"
-                                [ngClass]="{'invalid': userForm.get('phone')?.invalid && userForm.get('phone')?.touched}"
-                        >
-                    </div>
-
-                    <!-- Address -->
+                    <!-- Address (full width) -->
                     <div class="form-group full-width">
-                        <label for="address">Address <span class="required">*</span></label>
+                        <label for="address">Address</label>
                         <textarea
                                 id="address"
                                 formControlName="address"
                                 placeholder="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
                                 [ngClass]="{'invalid': userForm.get('address')?.invalid && userForm.get('address')?.touched}"
                         ></textarea>
-                        <div class="char-count">0/1000</div>
-                    </div>
-
-                    <!-- Service -->
-                    <div class="form-group">
-                        <label for="service">Service <span class="required">*</span></label>
-                        <div class="select-container">
-                            <select
-                                    id="service"
-                                    formControlName="service"
-                                    [ngClass]="{'invalid': userForm.get('service')?.invalid && userForm.get('service')?.touched}"
-                            >
-                                <option value="" disabled selected>Select the right Service of user</option>
-                                <option value="service1">Service 1</option>
-                                <option value="service2">Service 2</option>
-                                <option value="service3">Service 3</option>
-                            </select>
-                            <div class="select-arrow"></div>
-                        </div>
+                        <div class="char-count">{{ (userForm.get('address')?.value || '')?.length }}/1000</div>
                     </div>
                 </div>
             </div>
 
             <!-- Account Credentials Section -->
-            <div class="form-section">
+            <div class="form-section" *ngIf="!isEditMode">
                 <h2 class="section-title">Account credentials</h2>
 
-                <div class="form-grid">
+                <div class="form-row">
                     <!-- Password -->
                     <div class="form-group">
                         <label for="password">Password</label>
@@ -179,6 +210,9 @@
                             Passwords do not match
                         </div>
                     </div>
+                    <div class="error-message" *ngIf="userForm.get('password')?.errors?.['passwordRequirements']">
+                        {{ userForm.get('password')?.errors?.['passwordRequirements'] }}
+                    </div>
                 </div>
             </div>
 
@@ -190,3 +224,4 @@
         </form>
     </div>
 </app-layout>
+

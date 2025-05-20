@@ -18,16 +18,27 @@
             </div>
 
             <!-- Profile picture or initials -->
+<!--            <div class="profile-picture-container">-->
+<!--                <div class="profile-picture">-->
+<!--                    <ng-container *ngIf="user.profileImg; else initials">-->
+<!--                        <img [src]="user.profileImg" alt="Profile Image" />-->
+<!--                    </ng-container>-->
+<!--                    <ng-template #initials>-->
+<!--                        {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}-->
+<!--                    </ng-template>-->
+<!--                </div>-->
+<!--            </div>-->
             <div class="profile-picture-container">
                 <div class="profile-picture">
-                    <ng-container *ngIf="user.profileImg; else initials">
-                        <img [src]="user.profileImg" alt="Profile Image" />
+                    <ng-container *ngIf="hasProfileImage(); else initialsBlock">
+                        <img [src]="user.profileImageUrl" alt="Profile Image" />
                     </ng-container>
-                    <ng-template #initials>
-                        {{ user.firstName?.charAt(0) }}{{ user.lastName?.charAt(0) }}
+                    <ng-template #initialsBlock>
+                        {{ getInitials() }}
                     </ng-template>
                 </div>
             </div>
+
 
             <!-- Main Profile Info -->
             <div class="profile-info">

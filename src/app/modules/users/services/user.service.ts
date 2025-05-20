@@ -8,16 +8,19 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 })
 
 export class UserService {
-	// private apiUrl = '/users';
 	private apiUrl = '/api/users';
 	private selectedUsersSubject = new BehaviorSubject<string[]>([]);
 	selectedUsers$ = this.selectedUsersSubject.asObservable();
 
 	constructor(private http: HttpClient) { }
 
-	createUser(request: UserRegistrationRequest): Observable<UserResponse> {
-		return this.http.post<UserResponse>(this.apiUrl, request);
-		// return this.http.post<UserResponse>(this.apiUrl, userData);
+	// createUser(request: UserRegistrationRequest): Observable<UserResponse> {
+	// 	return this.http.post<UserResponse>(this.apiUrl, request);
+	// 	// return this.http.post<UserResponse>(this.apiUrl, userData);
+	// }
+
+	createUser(formData: FormData): Observable<UserResponse> {
+		return this.http.post<UserResponse>(this.apiUrl, formData);
 	}
 
 	getUsersByRoleAndEstablishment(page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
@@ -124,8 +127,8 @@ export class UserService {
 			);
 	}
 
-	updateUser(userId: string, request: UserUpdateRequest): Observable<UserResponse> {
-		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}`, request)
+	updateUser(userId: string, userData: FormData): Observable<UserResponse> {
+		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}`, userData)
 			.pipe(
 				catchError(error => {
 					console.error('Error try later', error);
@@ -195,6 +198,19 @@ export class UserService {
 
 	clearSelection(): void {
 		this.selectedUsersSubject.next([]);
+	}
+
+	updateProfileImage(userId: string, profileImage: File): Observable<UserResponse> {
+		const formData = new FormData();
+		formData.append('profileImage', profileImage);
+
+		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}/profile-image`, formData)
+			.pipe(
+				catchError(error => {
+					console.error('Error updating profile image', error);
+					return throwError(() => new Error('Failed to update profile image'));
+				})
+			);
 	}
 
 	private sortUsers(users: UserResponse[], sortBy: SortOption): UserResponse[] {

@@ -78,7 +78,7 @@ export interface UserResponse {
     createdAt: string;
     updatedAt: string;
     lastAccess?: string;
-    profileImg: string;
+    profileImageUrl: string;
     dateOfBirth: string;
     placeOfBirth: string;
 

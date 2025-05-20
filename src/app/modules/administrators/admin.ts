@@ -8,7 +8,7 @@ export interface Admin {
     phoneNumber: string;
     dateOfBirth: Date;
     placeOfBirth: string;
-    profileImg: string;
+    profileImageUrl: string;
 
     role: string;
     permissions: UserPermission[];
