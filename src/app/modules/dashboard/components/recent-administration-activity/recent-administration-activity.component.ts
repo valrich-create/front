@@ -1,13 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {CommonModule} from "@angular/common";
-
-interface ActivityItem {
-  id: string;
-  user: string;
-  class: string;
-  amount: string;
-  avatar: string;
-}
+import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import {ClassRankingResponse} from "../../../organizations/organization";
+import {OrganizationService} from "../../../organizations/organization.service";
 
 @Component({
   selector: 'app-recent-administration-activity',
@@ -17,23 +11,71 @@ interface ActivityItem {
   styleUrls: ['./recent-administration-activity.component.scss']
 })
 export class RecentAdministrationActivityComponent implements OnInit {
-  activities: ActivityItem[] = [
-    { id: '123456789', user: 'Samantha William', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar1.jpg' },
-    { id: '123456789', user: 'Tony Soap', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar2.jpg' },
-    { id: '123456789', user: 'Jordan Nico', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar3.jpg' },
-    { id: '123456789', user: 'Karen Hope', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar4.jpg' },
-    { id: '123456789', user: 'Nadia Adja', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar5.jpg' }
-  ];
+  @Input() establishmentId!: string;
+  classes: ClassRankingResponse[] = [];
 
-  pagination = {
-    currentPage: 1,
-    totalPages: 3,
-    showingFrom: 1,
-    showingTo: 5,
-    total: 100
-  };
+  constructor(private organizationService: OrganizationService) { }
 
-  constructor() { }
+  ngOnInit(): void {
+    if (this.establishmentId) {
+      this.loadClassesRanking();
+    }
+  }
 
-  ngOnInit(): void { }
+  loadClassesRanking(): void {
+    this.organizationService.getClassesRanking(this.establishmentId)
+        .subscribe({
+          next: (classes) => {
+            this.classes = classes;
+          },
+          error: (err) => {
+            console.error('Failed to load classes ranking:', err);
+            // Vous pourriez ajouter ici un message d'erreur à l'utilisateur
+          }
+        });
+  }
+
+  getPresenceRatePercentage(rate: number): string {
+    return `${Math.round(rate * 100)}%`;
+  }
 }
+
+// import {Component, OnInit} from '@angular/core';
+// import {CommonModule} from "@angular/common";
+//
+// interface ActivityItem {
+//   id: string;
+//   user: string;
+//   class: string;
+//   amount: string;
+//   avatar: string;
+// }
+//
+// @Component({
+//   selector: 'app-recent-administration-activity',
+//   standalone: true,
+//   imports: [CommonModule],
+//   templateUrl: './recent-administration-activity.component.html',
+//   styleUrls: ['./recent-administration-activity.component.scss']
+// })
+// export class RecentAdministrationActivityComponent implements OnInit {
+//   activities: ActivityItem[] = [
+//     { id: '123456789', user: 'Samantha William', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar1.jpg' },
+//     { id: '123456789', user: 'Tony Soap', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar2.jpg' },
+//     { id: '123456789', user: 'Jordan Nico', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar3.jpg' },
+//     { id: '123456789', user: 'Karen Hope', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar4.jpg' },
+//     { id: '123456789', user: 'Nadia Adja', class: 'VII A', amount: '$50,036', avatar: 'assets/avatars/avatar5.jpg' }
+//   ];
+//
+//   pagination = {
+//     currentPage: 1,
+//     totalPages: 3,
+//     showingFrom: 1,
+//     showingTo: 5,
+//     total: 100
+//   };
+//
+//   constructor() { }
+//
+//   ngOnInit(): void { }
+// }

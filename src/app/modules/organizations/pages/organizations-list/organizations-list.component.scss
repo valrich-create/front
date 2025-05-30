@@ -82,3 +82,41 @@
   color: #666;
   font-size: 0.875rem;
 }
+
+.add-establishment-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #5c4ed9; /* Couleur primaire, ajustez selon votre thème */
+  color: white;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.add-establishment-fab:hover {
+  background-color: #303f9f; /* Couleur plus foncée au survol */
+  transform: scale(1.05);
+}
+
+.add-establishment-fab .material-icons {
+  font-size: 24px;
+}
+
+/* Version responsive */
+@media (max-width: 768px) {
+  .add-establishment-fab {
+    bottom: 1rem;
+    right: 1rem;
+    width: 48px;
+    height: 48px;
+  }
+}

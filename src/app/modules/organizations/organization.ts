@@ -41,3 +41,55 @@ export interface EstablishmentUpdateRequest {
     logoUrl?: string;
     nombreMaxUtilisateurs?: number;
 }
+
+
+export interface UserMetricsResponse {
+    currentUsers: number;
+    maxUsers: number;
+    adminsCount: number;
+    supervisorsCount: number;
+    managersCount: number;
+}
+
+export interface YearlyPresenceStatsResponse {
+    year: number;
+    monthlyStats: {
+        month: number;
+        presenceCount: number;
+        absenceCount: number;
+    }[];
+}
+
+export interface WeeklyPresenceStatsResponse {
+    currentWeek: {
+        day: string;
+        presenceCount: number;
+    }[];
+    previousWeek: {
+        day: string;
+        presenceCount: number;
+    }[];
+    comparisonPercentage: number;
+}
+
+export interface TopUserPresenceResponse {
+    userId: string;
+    userName: string;
+    presenceRate: number;
+    avatarUrl?: string;
+}
+
+export  interface ClassRankingResponse {
+    classId: string;
+    className: string;
+    presenceRate: number;
+    studentCount: number;
+}
+
+export interface DailyGlobalStatsResponse {
+    date: string;
+    expectedUsers: number;
+    presentUsers: number;
+    absenceCount: number;
+    presenceRate: number;
+}

@@ -18,3 +18,13 @@ export interface Attendee {
     avatar?: string;
 }
 
+export interface EventResponse {
+    id: string;
+    title: string;
+    description: string;
+    createdBy: string;
+    createdByName: string;
+    establishmentId: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

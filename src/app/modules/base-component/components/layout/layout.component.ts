@@ -9,7 +9,6 @@ import {SidebarComponent} from "../sidebar/sidebar.component";
   imports: [CommonModule, RouterModule, SidebarComponent],
   template: `
     <div class="d-flex">
-      <!-- Sidebar (composant existant) -->
       <app-sidebar class="sidebar"></app-sidebar>
       
       <!-- Main content area -->

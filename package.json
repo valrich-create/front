@@ -25,6 +25,7 @@
     "@ng-bootstrap/ng-bootstrap": "^18.0.0",
     "chart.js": "^4.4.9",
     "express": "^4.18.2",
+    "feather-icons": "^4.29.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

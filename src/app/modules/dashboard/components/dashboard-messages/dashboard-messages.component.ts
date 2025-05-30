@@ -1,49 +1,52 @@
-import {Component, OnInit} from '@angular/core';
-import {CommonModule} from "@angular/common";
-
-interface Message {
-  sender: string;
-  avatar: string;
-  content: string;
-  time: string;
-}
+import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import {EventService} from "../../../events/events.service";
+import {EventResponse} from "../../../events/events";
 
 @Component({
-  selector: 'app-dashboard-messages',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './dashboard-messages.component.html',
-  styleUrls: ['./dashboard-messages.component.scss']
+	selector: 'app-dashboard-messages',
+	standalone: true,
+	imports: [CommonModule],
+	templateUrl: './dashboard-messages.component.html',
+	styleUrls: ['./dashboard-messages.component.scss']
 })
 export class DashboardMessagesComponent implements OnInit {
-  messages: Message[] = [
-    {
-      sender: 'Samantha William',
-      avatar: 'assets/avatars/avatar1.jpg',
-      content: 'Lorem ipsum dolor sit amet...',
-      time: '12:45 PM'
-    },
-    {
-      sender: 'Tony Soap',
-      avatar: 'assets/avatars/avatar2.jpg',
-      content: 'Lorem ipsum dolor sit amet...',
-      time: '12:45 PM'
-    },
-    {
-      sender: 'Jordan Nico',
-      avatar: 'assets/avatars/avatar3.jpg',
-      content: 'Lorem ipsum dolor sit amet...',
-      time: '12:45 PM'
-    },
-    {
-      sender: 'Nadia Adja',
-      avatar: 'assets/avatars/avatar5.jpg',
-      content: 'Lorem ipsum dolor sit amet...',
-      time: '12:45 PM'
-    }
-  ];
+	@Input() establishmentId?: string;
+	informations: EventResponse[] = [];
 
-  constructor() { }
+	constructor(private eventService: EventService) { }
 
-  ngOnInit(): void { }
+	ngOnInit(): void {
+		this.loadLatestInformations();
+	}
+
+	loadLatestInformations(): void {
+		this.eventService.getLatestInformations(5).subscribe({
+			next: (infos) => {
+				this.informations = infos;
+			},
+			error: (err) => {
+				console.error('Failed to load latest informations:', err);
+			}
+		});
+	}
+
+	truncateContent(content: string, maxLength: number = 50): string {
+		return content.length > maxLength ?
+			content.substring(0, maxLength) + '...' :
+			content;
+	}
+
+	formatDate(date: Date | string): string {
+		const d = new Date(date);
+		return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+	}
+
+	getRandomColor(): string {
+		const colors = [
+			'#FF6347', '#4169E1', '#32CD32', '#FFD700',
+			'#9370DB', '#20B2AA', '#FF69B4', '#FF4500'
+		];
+		return colors[Math.floor(Math.random() * colors.length)];
+	}
 }

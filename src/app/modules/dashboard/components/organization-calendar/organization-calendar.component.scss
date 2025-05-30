@@ -28,6 +28,43 @@
     }
   }
 
+  .day {
+    &.today {
+      background-color: #5e4dcd;
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+    }
+
+    &.weekend {
+      color: #ff7a59;
+    }
+
+    &.not-current-month {
+      opacity: 0.5;
+    }
+
+    &.has-event {
+      position: relative;
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #ffb84d;
+      }
+    }
+
+    &.highlighted {
+      background-color: rgba(255, 184, 77, 0.2);
+      border-radius: 4px;
+    }
+  }
+
   .calendar {
     .weekdays {
       display: grid;

@@ -29,19 +29,7 @@ $xl: 1200px;
   }
 }
 
-.page-title {
-  color: $primary-color;
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-
-  @media (max-width: 576px) {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-}
-
-.event-form-container {
+.establishment-form-container {
   width: 100%;
 }
 
@@ -82,13 +70,12 @@ $xl: 1200px;
 
 .form-group {
   margin-bottom: 1.5rem;
-  position: relative;
 
   label {
     display: block;
     font-weight: 500;
     margin-bottom: 0.5rem;
-    color: #333;
+    color: $text-color;
   }
 
   .required {
@@ -111,27 +98,6 @@ $xl: 1200px;
 
     &.invalid-input {
       border-color: $error-color;
-    }
-  }
-
-  .text-area {
-    min-height: 150px;
-    resize: vertical;
-  }
-
-  .character-count {
-    position: absolute;
-    right: 0;
-    bottom: -1.5rem;
-    font-size: 0.75rem;
-    color: #666;
-
-    &.warning {
-      color: $warning-color;
-    }
-
-    &.danger {
-      color: $error-color;
     }
   }
 
@@ -193,68 +159,24 @@ $xl: 1200px;
   }
 }
 
-/* Ajoutez ces styles à votre fichier SCSS existant */
+/* Styles spécifiques pour les champs number */
+input[type="number"] {
+  -moz-appearance: textfield;
 
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding-left: 30px;
-  cursor: pointer;
-  user-select: none;
-
-  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-
-  .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: #eee;
-    border-radius: 4px;
-    transition: all 0.2s;
-
-    &:after {
-      content: "";
-      position: absolute;
-      display: none;
-      left: 7px;
-      top: 3px;
-      width: 5px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-  }
-
-  &:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-
-  input:checked ~ .checkmark {
-    background-color: $primary-color;
-  }
-
-  input:checked ~ .checkmark:after {
-    display: block;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 }
 
-.date-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* Adaptation responsive pour les petits écrans */
+@media (max-width: $sm) {
+  .form-group {
+    margin-bottom: 1rem;
+  }
 
-  @media (max-width: 576px) {
-    grid-template-columns: 1fr;
+  .card-content {
+    padding: 1rem;
   }
 }

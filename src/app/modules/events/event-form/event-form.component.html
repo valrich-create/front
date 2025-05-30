@@ -1,25 +1,22 @@
 <app-layout>
-
-    <app-navbar
-            [pageTitle]="'Information'">
-    </app-navbar>
+    <app-navbar [pageTitle]="'Information'"></app-navbar>
 
     <div class="content-container">
         <div class="event-form-container">
             <div class="form-card">
                 <div class="card-header">
-                    <h2>New</h2>
+                    <h2>New Information</h2>
                 </div>
 
                 <div class="card-content">
-                    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+                    <form [formGroup]="informationForm" (ngSubmit)="onSubmit()">
                         <div class="form-group">
                             <label for="title">Title <span class="required">*</span></label>
                             <input
                                     type="text"
                                     id="title"
                                     formControlName="title"
-                                    placeholder="Enter event title"
+                                    placeholder="Enter information title"
                                     class="form-control"
                                     [ngClass]="{'invalid-input': isFieldInvalid('title')}"
                             >
@@ -29,25 +26,55 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="details">Details <span class="required">*</span></label>
+                            <label for="description">Description <span class="required">*</span></label>
                             <textarea
-                                    id="details"
-                                    formControlName="details"
-                                    placeholder="Enter event details"
+                                    id="description"
+                                    formControlName="description"
+                                    placeholder="Enter information description"
                                     class="form-control text-area"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('details')}"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('description')}"
                             ></textarea>
-                            <div class="character-count" [ngClass]="{'warning': detailsLength > 2700, 'danger': detailsLength > 2900}">
-                                {{ detailsLength }}/3000
+                            <div class="character-count" [ngClass]="{'warning': descriptionLength > 2700, 'danger': descriptionLength > 2900}">
+                                {{ descriptionLength }}/3000
                             </div>
-                            <div class="error-message" *ngIf="isFieldInvalid('details')">
-                                Details are required
+                            <div class="error-message" *ngIf="isFieldInvalid('description')">
+                                Description is required
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-container">
+                                <input type="checkbox" formControlName="isImportant">
+                                <span class="checkmark"></span>
+                                Mark as important information
+                            </label>
+                        </div>
+
+                        <div class="date-group" *ngIf="informationForm.get('isImportant')?.value">
+                            <div class="form-group">
+                                <label for="importanceDisplayStartDate">Start Date</label>
+                                <input
+                                        type="datetime-local"
+                                        id="importanceDisplayStartDate"
+                                        formControlName="importanceDisplayStartDate"
+                                        class="form-control"
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="importanceDisplayEndDate">End Date</label>
+                                <input
+                                        type="datetime-local"
+                                        id="importanceDisplayEndDate"
+                                        formControlName="importanceDisplayEndDate"
+                                        class="form-control"
+                                >
                             </div>
                         </div>
 
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
-                            <button type="submit" class="btn-submit" [disabled]="eventForm.invalid">Submit</button>
+                            <button type="submit" class="btn-submit" [disabled]="informationForm.invalid">Submit</button>
                         </div>
                     </form>
                 </div>

@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import {Establishment, EstablishmentRequest, EstablishmentUpdateRequest} from "./organization";
+import {
+	ClassRankingResponse, DailyGlobalStatsResponse,
+	Establishment,
+	EstablishmentRequest,
+	EstablishmentUpdateRequest, TopUserPresenceResponse,
+	UserMetricsResponse, WeeklyPresenceStatsResponse,
+	YearlyPresenceStatsResponse
+} from "./organization";
 import {Page} from "../users/users.models";
+
 
 @Injectable({
 	providedIn: 'root'
@@ -46,5 +54,30 @@ export class OrganizationService {
 				size: size.toString()
 			}
 		});
+	}
+
+
+	getUserMetrics(establishmentId: string): Observable<UserMetricsResponse> {
+		return this.http.get<UserMetricsResponse>(`${this.apiUrl}/${establishmentId}/metrics/users`);
+	}
+
+	getYearlyPresenceStats(establishmentId: string, year: number): Observable<YearlyPresenceStatsResponse> {
+		return this.http.get<YearlyPresenceStatsResponse>(`${this.apiUrl}/${establishmentId}/stats-by-year`);
+	}
+
+	getWeeklyPresenceStats(establishmentId: string): Observable<WeeklyPresenceStatsResponse> {
+		return this.http.get<WeeklyPresenceStatsResponse>(`${this.apiUrl}/${establishmentId}/stats-by-week`);
+	}
+
+	getTopPresentUsers(establishmentId: string): Observable<TopUserPresenceResponse[]> {
+		return this.http.get<TopUserPresenceResponse[]>(`${this.apiUrl}/${establishmentId}/ranking-users`);
+	}
+
+	getClassesRanking(establishmentId: string): Observable<ClassRankingResponse[]> {
+		return this.http.get<ClassRankingResponse[]>(`${this.apiUrl}/${establishmentId}/ranking-classes`);
+	}
+
+	getDailyGlobalStats(establishmentId: string): Observable<DailyGlobalStatsResponse> {
+		return this.http.get<DailyGlobalStatsResponse>(`${this.apiUrl}/${establishmentId}/stats-by-day`);
 	}
 }

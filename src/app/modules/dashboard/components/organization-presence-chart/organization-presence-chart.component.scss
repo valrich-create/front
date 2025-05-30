@@ -1,8 +1,8 @@
 .presence-container {
-  background-color: white;
-  border-radius: 12px;
+  background: white;
+  border-radius: 10px;
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 
   .presence-header {
     display: flex;
@@ -11,37 +11,36 @@
     margin-bottom: 20px;
 
     h2 {
-      font-size: 18px;
       margin: 0;
-      color: #333;
+      font-size: 1.2rem;
     }
 
     .legend {
       display: flex;
-      gap: 20px;
+      gap: 15px;
 
       .legend-item {
         display: flex;
         align-items: center;
+        gap: 5px;
 
         .dot {
+          display: inline-block;
           width: 10px;
           height: 10px;
           border-radius: 50%;
-          margin-right: 5px;
 
           &.this-week {
             background-color: #ffb84d;
           }
 
           &.last-week {
-            background-color: #ff7a59;
+            background-color: #5e4dcd;
           }
         }
 
         .value {
           font-weight: bold;
-          margin-left: 5px;
         }
       }
     }
@@ -49,40 +48,127 @@
 
   .presence-body {
     display: flex;
-    height: 200px;
+    gap: 20px;
 
     .chart-area {
-      flex: 3;
+      flex: 1;
+      height: 250px;
     }
 
     .income-percentage {
-      flex: 1;
       display: flex;
-      justify-content: center;
       align-items: center;
 
       .percentage-circle {
         width: 100px;
         height: 100px;
         border-radius: 50%;
-        background-color: #5e4dcd;
-        color: white;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        color: white;
+        font-weight: bold;
 
         span {
-          font-size: 24px;
-          font-weight: bold;
+          font-size: 1.5rem;
         }
 
         p {
           margin: 5px 0 0;
-          font-size: 12px;
-          opacity: 0.8;
+          font-size: 0.8rem;
         }
       }
     }
   }
 }
+
+
+//.presence-container {
+//  background-color: white;
+//  border-radius: 12px;
+//  padding: 20px;
+//  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+//
+//  .presence-header {
+//    display: flex;
+//    justify-content: space-between;
+//    align-items: center;
+//    margin-bottom: 20px;
+//
+//    h2 {
+//      font-size: 18px;
+//      margin: 0;
+//      color: #333;
+//    }
+//
+//    .legend {
+//      display: flex;
+//      gap: 20px;
+//
+//      .legend-item {
+//        display: flex;
+//        align-items: center;
+//
+//        .dot {
+//          width: 10px;
+//          height: 10px;
+//          border-radius: 50%;
+//          margin-right: 5px;
+//
+//          &.this-week {
+//            background-color: #ffb84d;
+//          }
+//
+//          &.last-week {
+//            background-color: #ff7a59;
+//          }
+//        }
+//
+//        .value {
+//          font-weight: bold;
+//          margin-left: 5px;
+//        }
+//      }
+//    }
+//  }
+//
+//  .presence-body {
+//    display: flex;
+//    height: 200px;
+//
+//    .chart-area {
+//      flex: 3;
+//    }
+//
+//    .income-percentage {
+//      flex: 1;
+//      display: flex;
+//      justify-content: center;
+//      align-items: center;
+//
+//      .percentage-circle {
+//        width: 100px;
+//        height: 100px;
+//        border-radius: 50%;
+//        background-color: #5e4dcd;
+//        color: white;
+//        display: flex;
+//        flex-direction: column;
+//        justify-content: center;
+//        align-items: center;
+//
+//        span {
+//          font-size: 24px;
+//          font-weight: bold;
+//        }
+//
+//        p {
+//          margin: 5px 0 0;
+//          font-size: 12px;
+//          opacity: 0.8;
+//        }
+//      }
+//    }
+//  }
+//}

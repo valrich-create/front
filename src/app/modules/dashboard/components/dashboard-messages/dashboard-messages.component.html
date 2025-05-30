@@ -1,23 +1,25 @@
 <div class="messages-container">
     <div class="messages-header">
-        <h2>Messages</h2>
+        <h2>Latest Informations</h2>
     </div>
 
     <div class="messages-list">
-        <div class="message-item" *ngFor="let message of messages">
+        <div class="message-item" *ngFor="let info of informations">
             <div class="sender-info">
-                <img [src]="message.avatar" alt="{{ message.sender }}" class="avatar">
+                <div class="avatar-placeholder" [style.background-color]="getRandomColor()">
+                    {{ info.createdByName.charAt(0) }}
+                </div>
                 <div class="details">
-                    <div class="name">{{ message.sender }}</div>
-                    <div class="content">{{ message.content }}</div>
+                    <div class="name">{{ info.createdByName }}</div>
+                    <div class="content">{{ truncateContent(info.description) }}</div>
                 </div>
             </div>
 
-            <div class="time">{{ message.time }}</div>
+            <div class="time">{{ formatDate(info.createdAt) }}</div>
         </div>
     </div>
 
     <div class="view-more">
-        <button class="btn-view-more">View More</button>
+        <button class="btn-view-more">View All Informations</button>
     </div>
 </div>

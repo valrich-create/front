@@ -6,6 +6,14 @@
         </app-navbar>
 
         <div class="filter-container">
+
+            <app-search-bar
+                    newButtonText="New Establishment"
+                    newItemRoute="/organizations/new"
+                    [currentSort]="currentSort"
+                    (sortChange)="onSortChange($event)"
+                    (searchChange)="onSearchChange($event)">
+            </app-search-bar>
             <app-filter-tabs
                     [tabs]="timePeriods"
                     [activeTab]="selectedTimePeriod"

@@ -7,6 +7,8 @@ import { OrganizationCardComponent } from "../../components/organization-card/or
 import { NavbarComponent } from "../../../base-component/components/navbar/navbar.component";
 import { LayoutComponent } from "../../../base-component/components/layout/layout.component";
 import { Establishment } from "../../organization";
+import {SearchBarComponent} from "../../../base-component/components/search-bar/search-bar.component";
+import {SortOption} from "../../../users/users.models";
 
 @Component({
   selector: 'app-organizations-list',
@@ -17,7 +19,8 @@ import { Establishment } from "../../organization";
     OrganizationCardComponent,
     NavbarComponent,
     LayoutComponent,
-    NavbarComponent
+    NavbarComponent,
+    SearchBarComponent,
   ],
   templateUrl: './organizations-list.component.html',
   styleUrls: ['./organizations-list.component.scss']
@@ -32,6 +35,8 @@ export class OrganizationsListComponent implements OnInit {
   totalItems = 0;
   totalPages = 0;
 
+  currentSort: SortOption = 'createdAt';
+  currentSearchTerm: string = '';
   sortField = 'nom,asc'; // Tri par défaut
 
   Math = Math; // Pour utiliser Math dans le template
@@ -102,8 +107,7 @@ export class OrganizationsListComponent implements OnInit {
     this.loadOrganizations();
   }
 
-  changeSort(field: string): void {
-    // Basculer entre asc et desc si on clique sur le même champ
+  onSortChange(field: string): void {
     if (this.sortField.startsWith(field)) {
       const direction = this.sortField.endsWith('asc') ? 'desc' : 'asc';
       this.sortField = `${field},${direction}`;
@@ -112,98 +116,14 @@ export class OrganizationsListComponent implements OnInit {
     }
     this.loadOrganizations();
   }
-}
 
-// import {Component, OnInit} from '@angular/core';
-// import {Router} from "@angular/router";
-// import {Organization} from "../../organization";
-// import {OrganizationService} from "../../organization.service";
-// import {CommonModule} from "@angular/common";
-// import {FilterTabsComponent} from "../../components/filter-tabs/filter-tabs.component";
-// import {OrganizationCardComponent} from "../../components/organization-card/organization-card.component";
-// import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
-// import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
-//
-// @Component({
-//   selector: 'app-organizations-list',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     FilterTabsComponent,
-//     OrganizationCardComponent,
-//     NavbarComponent,
-//     LayoutComponent,
-//     NavbarComponent
-//   ],
-//   templateUrl: './organizations-list.component.html',
-//   styleUrls: ['./organizations-list.component.scss']
-// })
-//
-// export class OrganizationsListComponent implements OnInit {
-//   organizations: Organization[] = [];
-//   timePeriods = ['Today', 'Yesterday', 'Last Week', 'Last Month'];
-//   selectedTimePeriod = 'Today';
-//
-//   currentPage = 1;
-//   itemsPerPage = 5;
-//   totalItems = 100;
-//   totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-//
-//   Math = Math; // Pour utiliser Math dans le template
-//
-//   constructor(
-//       private organizationService: OrganizationService,
-//       private router: Router
-//   ) {}
-//
-//   ngOnInit(): void {
-//     this.loadOrganizations();
-//   }
-//
-//   loadOrganizations(): void {
-//     this.organizationService.getOrganizations(
-//         this.selectedTimePeriod,
-//         this.currentPage,
-//         this.itemsPerPage
-//     ).subscribe(data => {
-//       this.organizations = data.items;
-//       this.totalItems = data.total;
-//       this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-//     });
-//   }
-//
-//   handleTimePeriodChange(period: string): void {
-//     this.selectedTimePeriod = period;
-//     this.currentPage = 1; // Reset to first event-form on filter change
-//     this.loadOrganizations();
-//   }
-//
-//   navigateToDetail(id: number): void {
-//     this.router.navigate(['/organizations', id]);
-//   }
-//
-//   goToPage(page: number): void {
-//     if (page < 1 || page > this.totalPages) return;
-//     this.currentPage = page;
-//     this.loadOrganizations();
-//   }
-//
-//   getPageNumbers(): number[] {
-//     // Afficher 5 numéros de event-form au maximum
-//     const pageNumbers: number[] = [];
-//
-//     let startPage = Math.max(1, this.currentPage - 2);
-//     let endPage = Math.min(this.totalPages, startPage + 4);
-//
-//     // Ajuster si on est près de la fin
-//     if (endPage - startPage < 4) {
-//       startPage = Math.max(1, endPage - 4);
-//     }
-//
-//     for (let i = startPage; i <= endPage; i++) {
-//       pageNumbers.push(i);
-//     }
-//
-//     return pageNumbers;
-//   }
-// }
+  // onSortChange(sortOption: SortOption): void {
+  //   this.currentSort = sortOption;
+  //   this.loadAdmins();
+  // }
+
+  onSearchChange(searchTerm: string): void {
+    this.currentSearchTerm = searchTerm;
+    this.loadOrganizations();
+  }
+}
