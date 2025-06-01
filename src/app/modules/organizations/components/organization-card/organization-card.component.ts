@@ -11,7 +11,6 @@ import {Establishment} from "../../organization";
   standalone: true,
   imports: [
     CommonModule,
-    BarChartComponent,
     PercentageCircleComponent,
     UsersCountIndicatorComponent
   ],

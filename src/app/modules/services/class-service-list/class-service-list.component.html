@@ -1,0 +1,62 @@
+<app-layout>
+    <div class="organizations-container">
+
+        <app-navbar
+                pageTitle="Classes/Services">
+        </app-navbar>
+
+        <div class="filter-container">
+            <app-search-bar
+                    newButtonText="New Class/Service"
+                    newItemRoute="/class-services/new"
+                    [currentSort]="currentSort"
+                    (sortChange)="onSortChange($event)"
+                    (searchChange)="onSearchChange($event)">
+            </app-search-bar>
+            <app-filter-tabs
+                    [tabs]="timePeriods"
+                    [activeTab]="selectedTimePeriod"
+                    (tabChange)="handleTimePeriodChange($event)">
+            </app-filter-tabs>
+        </div>
+
+        <div class="organizations-list">
+            <app-class-service-card
+                    *ngFor="let classService of classServices | slice: (currentPage * itemsPerPage) : (currentPage + 1) * itemsPerPage"
+                    [classService]="classService"
+                    [timePeriod]="selectedTimePeriod"
+                    (click)="navigateToDetail(classService.id)">
+            </app-class-service-card>
+        </div>
+
+        <div class="pagination">
+            <button
+                    class="pagination-button prev"
+                    [disabled]="currentPage === 0"
+                    (click)="goToPage(currentPage - 1)">
+                <span class="material-icons">chevron_left</span>
+            </button>
+
+            <div class="page-numbers">
+                <button
+                        *ngFor="let page of getPageNumbers()"
+                        class="page-number"
+                        [class.active]="page === currentPage"
+                        (click)="goToPage(page)">
+                    {{ page + 1 }}
+                </button>
+            </div>
+
+            <button
+                    class="pagination-button next"
+                    [disabled]="currentPage === totalPages - 1"
+                    (click)="goToPage(currentPage + 1)">
+                <span class="material-icons">chevron_right</span>
+            </button>
+        </div>
+
+        <div class="pagination-info">
+            Showing {{ (currentPage * itemsPerPage) + 1 }}-{{ Math.min((currentPage + 1) * itemsPerPage, totalItems) }} of {{ totalItems }} items
+        </div>
+    </div>
+</app-layout>

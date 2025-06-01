@@ -17,6 +17,8 @@ import {EventsPageComponent} from "./modules/events/events-page/events-page.comp
 import {ClassComponent} from "./modules/organizations/components/class/class.component";
 import {EventFormComponent} from "./modules/events/event-form/event-form.component";
 import {AdminDetailsComponent} from "./modules/administrators/pages/admin-details/admin-details.component";
+import {ClassServiceListComponent} from "./modules/services/class-service-list/class-service-list.component";
+import {ClassServiceFormComponent} from "./modules/services/class-service-form/class-service-form.component";
 
 export const routes: Routes = [
     {
@@ -48,19 +50,28 @@ export const routes: Routes = [
     {
         path: 'administrators',
         children: [
-            { path: '', component: AdminListComponent }, // administrators
-            { path: 'new', component: AdminFormComponent }, // /administrators/new
-            { path: ':id', component: AdminDetailsComponent }, // /administrators/123
-            { path: 'edit/:id', component: AdminFormComponent } // /administrators/edit/123
+            { path: '', component: AdminListComponent },
+            { path: 'new', component: AdminFormComponent },
+            { path: ':id', component: AdminDetailsComponent },
+            { path: 'edit/:id', component: AdminFormComponent }
         ]
     },
     {
         path: 'organizations',
         children: [
-            { path: '', component: OrganizationsListComponent }, // organizations
-            { path: 'new', component: OrganizationFormComponent }, // /organizations/new
-            { path: ':id', component: OrganizationDetailsComponent }, // /organizations/123
-            { path: 'edit/:id', component: OrganizationFormComponent } // /organizations/edit/123
+            { path: '', component: OrganizationsListComponent },
+            { path: 'new', component: OrganizationFormComponent },
+            { path: ':id', component: OrganizationDetailsComponent },
+            { path: 'edit/:id', component: OrganizationFormComponent }
+        ]
+    },
+    {
+        path: 'class-services',
+        children: [
+            { path: '', component: ClassServiceListComponent },
+            { path: 'new', component: ClassServiceFormComponent },
+            // { path: ':id', component: ClassServiceDetailsComponent },
+            { path: 'edit/:id', component: ClassServiceFormComponent }
         ]
     },
     {

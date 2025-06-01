@@ -8,33 +8,13 @@ export interface AttendanceRecord {
     }[];
 }
 
-export interface Education {
-    degree: string;
-    institution: string;
-    yearFrom: number;
-    yearTo: number;
-}
-
 export interface CheckInLocation {
     name: string;
     lastCheckIn: Date;
     status: 'active' | 'inactive';
 }
 
-export enum ServiceType {
-    CUSTOMER_SUPPORT = 'Customer Support',
-    TECHNICAL_SUPPORT = 'Technical Support',
-    SALES = 'Sales',
-    MARKETING = 'Marketing',
-    DEVELOPMENT = 'Development',
-    HUMAN_RESOURCES = 'Human Resources',
-    FINANCE = 'Finance',
-    OPERATIONS = 'Operations'
-}
-
 export type SortOption = 'createdAt' | 'oldest' | 'age' | 'class';
-
-// users.models.ts
 
 // Enums
 export enum UserRole {

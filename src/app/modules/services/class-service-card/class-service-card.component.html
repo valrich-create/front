@@ -1,17 +1,16 @@
 <div class="org-row">
     <div class="org-thumbnail"></div>
 
-    <!-- Informations de l'organisation -->
+    <!-- Informations de la classe/service -->
     <div class="org-info">
-        <div class="category-badge">{{ establishment.ville }}, {{ establishment.pays }}</div>
-        <h3 class="org-name">{{ establishment.nom }}</h3>
+        <div class="category-badge">{{ classService.establishment?.nom }}</div>
+        <h3 class="org-name">{{ classService.nom }}</h3>
     </div>
 
-    <!-- Statistiques utilisateurs (graphique en barres) -->
+    <!-- Statistiques utilisateurs -->
     <div class="stat-item">
-<!--        <app-bar-chart [userStats]="[establishment.nombreMaxUtilisateurs, establishment.nombreUtilisateursActuels ]"></app-bar-chart>-->
         <div class="stat-details">
-            <div class="stat-value">{{ establishment.nombreUtilisateursActuels }}</div>
+            <div class="stat-value">{{ classService.utilisateursCount }}</div>
             <div class="stat-label">Utilisateurs</div>
         </div>
     </div>
@@ -19,14 +18,17 @@
     <!-- Indicateur de croissance -->
     <div class="stat-item">
         <app-growth-indicator
-                [currentUsers]="establishment.nombreUtilisateursActuels"
-                [maxUsers]="establishment.nombreMaxUtilisateurs">
+                [currentUsers]="classService.utilisateursCount"
+                [maxUsers]="classService.establishment?.nombreMaxUtilisateurs || 0">
         </app-growth-indicator>
     </div>
 
     <!-- Cercle de pourcentage -->
     <div class="stat-item">
-        <app-percentage-circle [establishment]="establishment"></app-percentage-circle>
+        <app-percentage-circle
+                [current]="classService.utilisateursCount"
+                [max]="classService.establishment?.nombreMaxUtilisateurs || 0">
+        </app-percentage-circle>
     </div>
 
     <!-- Actions -->
@@ -36,9 +38,7 @@
             <div class="actions-menu" *ngIf="showActions">
                 <div class="action-item" (click)="onEdit($event)">Edit</div>
                 <div class="action-item" (click)="onViewDetail($event)">View Detail</div>
-                <div class="action-item action-delete" (click)="onDelete($event)">Delete</div>
             </div>
         </button>
     </div>
 </div>
-

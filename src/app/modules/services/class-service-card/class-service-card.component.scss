@@ -1,0 +1,148 @@
+.org-row {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.org-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.org-thumbnail {
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #e2e8f0;
+  border-radius: 0.5rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.org-info {
+  flex: 1;
+  margin-right: 1rem;
+  min-width: 0; /* Pour permettre la troncature */
+}
+
+.category-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.75rem;
+  background-color: #4338ca;
+  color: white;
+  border-radius: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.org-name {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 1rem;
+  min-width: 5rem;
+}
+
+.stat-details {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1e293b;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.actions {
+  position: relative;
+}
+
+.action-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #64748b;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.action-button:hover {
+  background-color: #f1f5f9;
+}
+
+.actions-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  min-width: 10rem;
+  z-index: 10;
+}
+
+.action-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.action-item:hover {
+  background-color: #f1f5f9;
+}
+
+.action-delete {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .org-row {
+    flex-wrap: wrap;
+  }
+
+  .org-info {
+    width: calc(100% - 4.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .stat-item {
+    flex: 1 0 33%;
+    margin: 0.5rem 0;
+  }
+
+  .actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stat-item {
+    flex: 1 0 50%;
+  }
+}

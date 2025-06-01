@@ -1,0 +1,65 @@
+<app-layout>
+    <app-navbar [pageTitle]="isEditMode ? 'Edit Class/Service' : 'New Class/Service'"></app-navbar>
+
+    <div class="content-container">
+        <div class="event-form-container">
+            <div class="form-card">
+                <div class="card-header">
+                    <h2>{{ isEditMode ? 'Edit Class/Service' : 'Create New Class/Service' }}</h2>
+                </div>
+
+                <div class="card-content">
+                    <form [formGroup]="classServiceForm" (ngSubmit)="onSubmit()">
+                        <!-- Name -->
+                        <div class="form-group">
+                            <label for="nom">Name <span class="required">*</span></label>
+                            <input
+                                    type="text"
+                                    id="nom"
+                                    formControlName="nom"
+                                    placeholder="Enter class/service name"
+                                    class="form-control"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('nom')}"
+                            >
+                            <div class="error-message" *ngIf="isFieldInvalid('nom')">
+                                Name is required
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea
+                                    id="description"
+                                    formControlName="description"
+                                    placeholder="Enter description (optional)"
+                                    class="form-control"
+                                    rows="3"
+                            ></textarea>
+                        </div>
+
+                        <!-- Hidden establishment ID -->
+                        <input type="hidden" formControlName="establishmentId">
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                            <button type="submit" class="btn-submit" [disabled]="classServiceForm.invalid">
+                                {{ isEditMode ? 'Update' : 'Create' }}
+                            </button>
+                        </div>
+
+                        <!-- Information notes -->
+                        <div class="form-notes">
+                            <p><strong>After creating this class/service, don't forget to:</strong></p>
+                            <ul>
+                                <li>Set up the attendance schedules for this class</li>
+                                <li>Assign users to this class</li>
+                                <li>Configure the attendance zone for this class</li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>
