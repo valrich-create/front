@@ -6,6 +6,8 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
 import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
 import {UserPermission, UserResponse, UserRole} from "../../users.models";
 import {ActivatedRoute, Router} from "@angular/router";
+import {ClassServiceService} from "../../../services/class-service.service";
+import {OrganizationService} from "../../../organizations/organization.service";
 
 @Component({
 	selector: 'app-user-form',
@@ -32,17 +34,19 @@ export class UserFormComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private userService: UserService,
+		private classServiceService: ClassServiceService,
+		private organizationService: OrganizationService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {
 		this.createForm();
 	}
 
-	ngOnInit() {
+	async ngOnInit() {
 		this.checkEditMode();
 		this.getCurrentUserRole();
+		await this.getEstablishmentIdFromStorage(); // Attendre la résolution
 		this.loadOptions();
-		this.getEstablishmentIdFromStorage();
 		this.setupRoleChangeListener();
 		this.permissionsList = Object.values(UserPermission);
 	}
@@ -85,7 +89,8 @@ export class UserFormComponent implements OnInit {
 			role: user.role,
 			email: user.email,
 			phoneNumber: user.phoneNumber,
-			establishmentId: user.establishmentId
+			establishmentId: user.establishmentId,
+			classServiceId: user.classeServiceId
 		});
 
 		if (user.profileImageUrl) {
@@ -122,25 +127,53 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
-	getEstablishmentIdFromStorage() {
-		const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
+	// getEstablishmentIdFromStorage() {
+	// 	const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
+	//
+	// 	if (userData) {
+	// 		try {
+	// 			const user = JSON.parse(userData);
+	// 			this.establishmentId = user.establishment?.id || null;
+	//
+	// 			if (this.establishmentId) {
+	// 				this.userForm.patchValue({
+	// 					establishmentId: this.establishmentId
+	// 				});
+	// 			} else {
+	// 				console.warn('No establishment ID found in user data');
+	// 			}
+	// 		} catch (e) {
+	// 			console.error('Error parsing user data from storage', e);
+	// 		}
+	// 	}
+	// }
 
-		if (userData) {
-			try {
-				const user = JSON.parse(userData);
-				this.establishmentId = user.establishment?.id || null;
+	getEstablishmentIdFromStorage(): Promise<string | null> {
+		return new Promise((resolve) => {
+			const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
 
-				if (this.establishmentId) {
-					this.userForm.patchValue({
-						establishmentId: this.establishmentId
-					});
-				} else {
-					console.warn('No establishment ID found in user data');
+			if (userData) {
+				try {
+					const user = JSON.parse(userData);
+					this.establishmentId = user.establishment?.id || null;
+
+					if (this.establishmentId) {
+						this.userForm.patchValue({
+							establishmentId: this.establishmentId
+						});
+						resolve(this.establishmentId);
+					} else {
+						console.warn('No establishment ID found in user data');
+						resolve(null);
+					}
+				} catch (e) {
+					console.error('Error parsing user data from storage', e);
+					resolve(null);
 				}
-			} catch (e) {
-				console.error('Error parsing user data from storage', e);
+			} else {
+				resolve(null);
 			}
-		}
+		});
 	}
 
 	createForm(): void {
@@ -155,6 +188,7 @@ export class UserFormComponent implements OnInit {
 			phoneNumber: ['', Validators.required],
 			address: ['', [Validators.maxLength(1000)]],
 			establishmentId: [''],
+			classServiceId: [''],
 			password: ['', [
 				Validators.required,
 				Validators.minLength(8),
@@ -180,7 +214,8 @@ export class UserFormComponent implements OnInit {
 			const formData = new FormData();
 			const formValue = {
 				...this.userForm.value,
-				permissions: this.getSelectedPermissions()
+				permissions: this.getSelectedPermissions(),
+				classServiceId: this.userForm.value.classServiceId
 			};
 
 			if (formValue.profileImage instanceof File) {
@@ -314,13 +349,69 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
-	loadOptions() {
+	async loadOptions() {
 		if (this.userRole === UserRole.SUPER_ADMIN) {
 			this.fieldLabel = 'Établissement';
-			// this.loadEstablishments(); // À implémenter avec le service
+			this.loadEstablishments();
 		} else {
 			this.fieldLabel = 'Classe';
-			// this.loadClasses(); // À implémenter avec le service
+			this.loadClassesForEstablishment();
+		}
+	}
+
+	private loadEstablishments(): void {
+		this.organizationService.getAllEstablishments().subscribe({
+			next: (page) => {
+				this.options = page.content.map(est => ({
+					id: est.id,
+					nom: est.nom
+				}));
+			},
+			error: (err) => {
+				console.error('Failed to load establishments', err);
+			}
+		});
+	}
+
+	// private loadClassesForEstablishment(): void {
+	// 	if (!this.establishmentId) {
+	// 		establishmentId = this.getEstablishmentIdFromStorage();
+	// 		console.warn('No establishment ID available');
+	// 		return;
+	// 	}
+	//
+	// 	this.classServiceService.getClassServicesByEstablishment(this.establishmentId).subscribe({
+	// 		next: (classes) => {
+	// 			this.options = classes.map(cls => ({
+	// 				id: cls.id,
+	// 				nom: cls.nom // Utilisez le nom de la classe/service
+	// 			}));
+	// 		},
+	// 		error: (err) => {
+	// 			console.error('Failed to load classes/services', err);
+	// 		}
+	// 	});
+	// }
+
+	private async loadClassesForEstablishment(): Promise<void> {
+		if (!this.establishmentId) {
+			console.warn('No establishment ID available');
+			this.options = [];
+			return;
+		}
+
+		try {
+			const classes = await this.classServiceService.getClassServicesByEstablishment(this.establishmentId)
+				.toPromise()
+				.then(response => response || []);
+
+			this.options = classes.map(cls => ({
+				id: cls.id,
+				name: cls.nom
+			}));
+		} catch (err) {
+			console.error('Failed to load classes/services', err);
+			this.options = [];
 		}
 	}
 

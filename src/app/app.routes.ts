@@ -43,8 +43,8 @@ export const routes: Routes = [
         children: [
             { path: '', component: UserListComponent }, // /users
             { path: 'new', component: UserFormComponent }, // /users/new
-            { path: ':id', component: UserDetailsComponent }, // /users/123
-            { path: 'edit/:id', component: UserFormComponent } // /users/edit/123
+            { path: ':id', component: UserDetailsComponent, data: { renderMode: 'client-only' } }, // /users/123
+            { path: 'edit/:id', component: UserFormComponent, data: { renderMode: 'client-only' } } // /users/edit/123
         ]
     },
     {
@@ -52,8 +52,8 @@ export const routes: Routes = [
         children: [
             { path: '', component: AdminListComponent },
             { path: 'new', component: AdminFormComponent },
-            { path: ':id', component: AdminDetailsComponent },
-            { path: 'edit/:id', component: AdminFormComponent }
+            { path: ':id', component: AdminDetailsComponent, data: { renderMode: 'client-only' } },
+            { path: 'edit/:id', component: AdminFormComponent, data: { renderMode: 'client-only' } }
         ]
     },
     {
@@ -61,8 +61,8 @@ export const routes: Routes = [
         children: [
             { path: '', component: OrganizationsListComponent },
             { path: 'new', component: OrganizationFormComponent },
-            { path: ':id', component: OrganizationDetailsComponent },
-            { path: 'edit/:id', component: OrganizationFormComponent }
+            { path: ':id', component: OrganizationDetailsComponent, data: { renderMode: 'client-only' } },
+            { path: 'edit/:id', component: OrganizationFormComponent, data: { renderMode: 'client-only' } }
         ]
     },
     {
@@ -70,8 +70,8 @@ export const routes: Routes = [
         children: [
             { path: '', component: ClassServiceListComponent },
             { path: 'new', component: ClassServiceFormComponent },
-            // { path: ':id', component: ClassServiceDetailsComponent },
-            { path: 'edit/:id', component: ClassServiceFormComponent }
+            // { path: ':id', component: ClassServiceDetailsComponent, data: { renderMode: 'client-only' } },
+            { path: 'edit/:id', component: ClassServiceFormComponent, data: { renderMode: 'client-only' } }
         ]
     },
     {
@@ -79,7 +79,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: EventsPageComponent }, // events
             { path: 'new', component: EventFormComponent }, // /events/new
-            { path: 'edit/:id', component: EventFormComponent } // /events/edit/123
+            { path: 'edit/:id', component: EventFormComponent, data: { renderMode: 'client-only' } } // /events/edit/123
         ]
     },
     {

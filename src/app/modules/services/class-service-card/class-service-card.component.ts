@@ -1,0 +1,45 @@
+import {Component, Input, OnChanges} from '@angular/core';
+import {ClassServiceResponse} from "../class-service";
+import {UsersCountIndicatorComponent} from "../../organizations/components/growth-indicator/growth-indicator.component";
+import {PercentageCircleComponent} from "../../organizations/components/percentage-circle/percentage-circle.component";
+
+@Component({
+	selector: 'app-class-service-card',
+	standalone: true,
+	imports: [
+		UsersCountIndicatorComponent,
+		PercentageCircleComponent
+	],
+	templateUrl: 'class-service-card.component.html',
+	styleUrls: ['class-service-card.component.scss']
+})
+
+export class ClassServiceCardComponent implements OnChanges{
+	@Input() classService!: ClassServiceResponse;
+	@Input() timePeriod: string = 'Today';
+
+	showActions = false;
+
+	ngOnChanges(): void {
+		this.updateData();
+	}
+
+	updateData(): void {
+		// Logique de mise à jour si nécessaire
+	}
+
+	toggleActions(event: MouseEvent): void {
+		event.stopPropagation();
+		this.showActions = !this.showActions;
+	}
+
+	onEdit(event: MouseEvent): void {
+		event.stopPropagation();
+		// Logique pour éditer la classe/service
+	}
+
+	onViewDetail(event: MouseEvent): void {
+		event.stopPropagation();
+		// Logique pour voir les détails de la classe/service
+	}
+}
