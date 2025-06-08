@@ -10,7 +10,7 @@ import {CommonModule} from "@angular/common";
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
 import {
-  DailyGlobalStatsResponse,
+  DailyGlobalStatsResponse, GlobalStatsResponse, TopEstablishmentByUsersResponse,
   UserMetricsResponse,
   YearlyPresenceStatsResponse
 } from "../../organizations/organization";
@@ -52,6 +52,10 @@ export class DashboardComponent implements OnInit {
   dailyStats?: DailyGlobalStatsResponse;
   yearlyStats?: YearlyPresenceStatsResponse;
 
+  isAdmin: boolean = false;
+  globalStats?: GlobalStatsResponse;
+  topByExistingUsers: TopEstablishmentByUsersResponse[] = [];
+  topByTotalUsers: TopEstablishmentByUsersResponse[] = [];
 
   constructor(
       private organizationService: OrganizationService,
@@ -71,6 +75,7 @@ export class DashboardComponent implements OnInit {
 
     try {
       const userData = JSON.parse(storage);
+      this.isAdmin = ['SUPER_ADMIN'].includes(userData.role);
 
       // Données utilisateur
       this.userFullName = `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim();
@@ -86,7 +91,11 @@ export class DashboardComponent implements OnInit {
 
         // Charger les données spécifiques du tableau de bord
         if (this.currentEstablishmentId) {
-          this.loadDashboardData();
+          if (this.isAdmin) {
+            this.loadSuperAdminDashboardData();
+          } else {
+            this.loadDashboardData();
+          }
         }
       } else {
         console.warn('Aucun établissement trouvé dans les données utilisateur.');
@@ -124,5 +133,25 @@ export class DashboardComponent implements OnInit {
     // Chargement des stats annuelles
     this.organizationService.getYearlyPresenceStats(this.currentEstablishmentId, this.currentYear)
         .subscribe(stats => this.yearlyStats = stats);
+  }
+
+  private loadSuperAdminDashboardData(): void {
+    // Chargement des statistiques globales
+    this.organizationService.getGlobalStatistics().subscribe({
+      next: stats => this.globalStats = stats,
+      error: err => console.error('Failed to load global stats', err)
+    });
+
+    // Chargement du top 10 par utilisateurs existants
+    this.organizationService.getTop10EstablishmentsByExistingUsers().subscribe({
+      next: data => this.topByExistingUsers = data,
+      error: err => console.error('Failed to load top by existing users', err)
+    });
+
+    // Chargement du top 10 par capacité totale
+    this.organizationService.getTop10EstablishmentsByTotalUsers().subscribe({
+      next: data => this.topByTotalUsers = data,
+      error: err => console.error('Failed to load top by total users', err)
+    });
   }
 }

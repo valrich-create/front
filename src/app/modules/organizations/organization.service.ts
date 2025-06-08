@@ -5,7 +5,7 @@ import {
 	ClassRankingResponse, DailyGlobalStatsResponse,
 	Establishment,
 	EstablishmentRequest,
-	EstablishmentUpdateRequest, TopUserPresenceResponse,
+	EstablishmentUpdateRequest, GlobalStatsResponse, TopEstablishmentByUsersResponse, TopUserPresenceResponse,
 	UserMetricsResponse, WeeklyPresenceStatsResponse,
 	YearlyPresenceStatsResponse
 } from "./organization";
@@ -79,5 +79,17 @@ export class OrganizationService {
 
 	getDailyGlobalStats(establishmentId: string): Observable<DailyGlobalStatsResponse> {
 		return this.http.get<DailyGlobalStatsResponse>(`${this.apiUrl}/${establishmentId}/stats-by-day`);
+	}
+
+	getGlobalStatistics(): Observable<GlobalStatsResponse> {
+		return this.http.get<GlobalStatsResponse>(`${this.apiUrl}/global-stats`);
+	}
+
+	getTop10EstablishmentsByExistingUsers(): Observable<TopEstablishmentByUsersResponse[]> {
+		return this.http.get<TopEstablishmentByUsersResponse[]>(`${this.apiUrl}/top-by-existing-users`);
+	}
+
+	getTop10EstablishmentsByTotalUsers(): Observable<TopEstablishmentByUsersResponse[]> {
+		return this.http.get<TopEstablishmentByUsersResponse[]>(`${this.apiUrl}/top-by-total-users`);
 	}
 }

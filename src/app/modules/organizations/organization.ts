@@ -93,3 +93,15 @@ export interface DailyGlobalStatsResponse {
     absenceCount: number;
     presenceRate: number;
 }
+
+export interface GlobalStatsResponse {
+    totalEstablishments: number;
+    totalUsers: number;
+    maxCapacity: number;
+}
+
+export interface TopEstablishmentByUsersResponse {
+    id: string;
+    nom: string;
+    nombreUtilisateursActuels: number;
+}

@@ -14,6 +14,20 @@
     }
   }
 
+  .loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: #666;
+  }
+
+  .no-data {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+  }
+
   .activity-table {
     .activity-item {
       display: flex;
