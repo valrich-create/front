@@ -9,7 +9,7 @@ export const apiPrefixInterceptor: HttpInterceptorFn = (req, next) => {
 
 	// En production : ajouter le préfixe complet
 	if (environment.production) {
-		const newUrl = environment.apiUrl + req.url.replace('/api', '');
+		const newUrl = environment.apiUrl + req.url.replace('/api', '/v1');
 		req = req.clone({ url: newUrl });
 	}
 
