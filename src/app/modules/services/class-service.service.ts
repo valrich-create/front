@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import {Observable} from "rxjs";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {ClassServiceRequest, ClassServiceResponse, ClassServiceUpdateRequest} from "./class-service";
-import {environment} from "../../../environments/environment";
 import {Page, UserResponse} from "../users/users.models";
 
 @Injectable({
@@ -50,7 +49,6 @@ export class ClassServiceService {
 		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/${classId}/users`, { params });
 	}
 
-	// Récupérer le nombre d'utilisateurs d'une classe/service
 	getTotalUsersCount(classId: string): Observable<number> {
 		return this.http.get<number>(`${this.apiUrl}/${classId}/users/count`);
 	}

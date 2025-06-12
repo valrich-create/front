@@ -1,0 +1,69 @@
+<app-layout>
+    <app-navbar [pageTitle]="'Create Pointing Hour'"></app-navbar>
+
+    <div class="content-container">
+        <div class="pointing-hour-form-container">
+            <div class="form-card">
+                <div class="card-header">
+                    <h2>New Pointing Hour</h2>
+                </div>
+
+                <div class="card-content">
+                    <form [formGroup]="pointingHourForm" (ngSubmit)="onSubmit()">
+                        <div class="form-group">
+                            <label for="time">Pointing Time <span class="required">*</span></label>
+                            <input
+                                    type="datetime-local"
+                                    id="time"
+                                    formControlName="time"
+                                    class="form-control"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('time')}"
+                                    [min]="minDateTime"
+                            >
+                            <div class="error-message" *ngIf="isFieldInvalid('time')">
+                                <span *ngIf="pointingHourForm.get('time')?.errors?.['required']">
+                                    Pointing time is required
+                                </span>
+                                <span *ngIf="pointingHourForm.get('time')?.errors?.['futureDate']">
+                                    Pointing time must be in the future
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="marge">Margin (minutes) <span class="required">*</span></label>
+                            <input
+                                    type="number"
+                                    id="marge"
+                                    formControlName="marge"
+                                    placeholder="Enter margin in minutes"
+                                    class="form-control"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('marge')}"
+                                    min="0"
+                            >
+                            <div class="error-message" *ngIf="isFieldInvalid('marge')">
+                                <span *ngIf="pointingHourForm.get('marge')?.errors?.['required']">
+                                    Margin is required
+                                </span>
+                                <span *ngIf="pointingHourForm.get('marge')?.errors?.['min']">
+                                    Margin must be positive
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                            <button
+                                    type="submit"
+                                    class="btn-submit"
+                                    [disabled]="pointingHourForm.invalid || !isFutureDate()"
+                            >
+                                Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

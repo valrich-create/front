@@ -38,7 +38,6 @@ export class AdministratorServiceService {
     );
   }
 
-
   getAllAdministrators(): Observable<Admin[]> {
     return this.http.get<Admin[]>(`${this.apiUrl}`);
   }
