@@ -8,6 +8,10 @@ import { PointingZoneFormComponent } from '../pointing-zone-form/pointing-zone-f
 import {ZonePointageResponse} from "../../../base-component/pointage";
 import {PointingZoneService} from "../../pointing-zone.service";
 import {ConfirmDialogComponent} from "../../../base-component/components/confirm-dialog/confirm-dialog.component";
+import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
+import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
+import {ActivatedRoute} from "@angular/router";
+import {ClassServiceService} from "../../../services/class-service.service";
 
 declare var L: any;
 
@@ -18,7 +22,9 @@ declare var L: any;
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    LayoutComponent,
+    NavbarComponent
   ],
   templateUrl: './pointing-zone-list.component.html',
   styleUrls: ['./pointing-zone-list.component.scss']
@@ -31,13 +37,20 @@ export class PointingZoneListComponent implements OnInit, AfterViewInit {
   private markers: any[] = [];
   private defaultCenter = [51.505, -0.09];
   private defaultZoom = 13;
+  private classId = '';
+  className: string = '';
 
   constructor(
+      private route: ActivatedRoute,
       private zoneService: PointingZoneService,
+      private classService: ClassServiceService,
       private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+    this.classId = this.route.snapshot.parent?.paramMap.get('classId')! ||
+        this.route.snapshot.paramMap.get('classId')!;
+    this.loadClassDetails();
     this.loadZones();
   }
 
@@ -53,8 +66,17 @@ export class PointingZoneListComponent implements OnInit, AfterViewInit {
     }).addTo(this.map);
   }
 
+  private loadClassDetails(): void {
+    this.classService.getClassServiceById(this.classId).subscribe({
+      next: (classDetails) => {
+        this.className = classDetails.nom;
+      },
+      error: (err) => console.error('Failed to load class details', err)
+    });
+  }
+
   loadZones(): void {
-    this.zoneService.getAllZones().subscribe({
+    this.zoneService.getZonesByClass(this.classId).subscribe({
       next: (zones) => {
         this.zones = zones;
         this.updateMapMarkers();
@@ -106,7 +128,8 @@ export class PointingZoneListComponent implements OnInit, AfterViewInit {
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(PointingZoneFormComponent, {
       width: '800px',
-      maxHeight: '90vh'
+      maxHeight: '90vh',
+      data: { classId: this.classId }
     });
 
     dialogRef.afterClosed().subscribe(result => {

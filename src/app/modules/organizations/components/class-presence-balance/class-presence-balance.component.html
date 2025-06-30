@@ -16,8 +16,13 @@
                 </div>
             </div>
             <div class="filter-dropdown">
-                <select [(ngModel)]="selectedFilter" (change)="updateChartFilter(selectedFilter)" class="filter-select">
-                    <option *ngFor="let filter of filters" [value]="filter">{{ filter }}</option>
+                <select [(ngModel)]="selectedFilter"
+                        (change)="updateChartFilter(selectedFilter)"
+                        class="filter-select">
+                    <option *ngFor="let option of filterOptions"
+                            [value]="option.value">
+                        {{ option.label }}
+                    </option>
                 </select>
             </div>
         </div>
@@ -25,12 +30,6 @@
     <div class="card-body">
         <div class="chart-container">
             <canvas id="presenceBalanceChart"></canvas>
-        </div>
-        <div class="chart-highlight" *ngIf="selectedFilter === 'Month'">
-            <div class="highlight-marker">
-                <div class="marker-label">$1,345</div>
-                <div class="marker-date">July 2020</div>
-            </div>
         </div>
     </div>
 </div>

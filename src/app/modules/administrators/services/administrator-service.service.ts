@@ -17,7 +17,7 @@ export class AdministratorServiceService {
       private userService: UserService
   ) {}
 
-  getAllAdministratorsOrAdvancedUsers(
+  getAllAdministratorByEstablishment(
       page: number,
       pageSize: number,
       sort: string,

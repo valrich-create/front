@@ -1,22 +1,24 @@
 <app-layout>
 
     <div class="classe-a-container">
-
-        <app-navbar
-                pageTitle="{{ className }}">
-        </app-navbar>
+        <app-navbar [pageTitle]="className"></app-navbar>
 
         <!-- Stats Cards -->
         <app-class-stats-cards
                 [totalUsers]="totalUsers"
                 [totalChiefs]="totalChiefs"
-                [presenceRate]="presenceRate">
+                [presenceRate]="presenceRate"
+                [classId]="classId">
         </app-class-stats-cards>
 
         <!-- Presence Balance -->
         <app-class-presence-balance
-                [presencesCount]="presencesCount"
-                [absencesCount]="absencesCount">
+                [selectedFilter]="currentFilter"
+                [filterOptions]="filterOptions"
+                [hourlyData]="hourlyStats"
+                [dailyData]="dailyStats"
+                [monthlyData]="monthlyStats"
+                (selectedFilterChange)="onFilterChange($event)">
         </app-class-presence-balance>
 
         <!-- Two column layout for lists -->
@@ -27,7 +29,8 @@
                     [users]="users"
                     [currentPage]="currentPage"
                     [totalItems]="totalItems"
-                    [itemsPerPage]="itemsPerPage">
+                    [itemsPerPage]="itemsPerPage"
+                    (pageChange)="onPageChange($event)">
             </app-class-users-list>
 
             <!-- Presence Classement -->

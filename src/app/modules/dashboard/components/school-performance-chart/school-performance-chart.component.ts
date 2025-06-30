@@ -112,6 +112,7 @@ export class SchoolPerformanceChartComponent implements OnInit, OnChanges {
 	private getMonthlyPresenceRates(monthlyStats: { month: number, presenceCount: number, absenceCount: number }[]): number[] {
 		const rates = Array(12).fill(0);
 
+		if (!Array.isArray(monthlyStats)) return [];
 		monthlyStats.forEach(stat => {
 			const total = stat.presenceCount + stat.absenceCount;
 			const rate = total > 0 ? Math.round((stat.presenceCount / total) * 100) : 0;

@@ -33,6 +33,7 @@ export class SidebarComponent implements OnInit {
     private buildMenuItemsForRole(role: string | null): MenuItem[] {
         const commonItems: MenuItem[] = [
             {icon: 'bi-house', label: 'Dashboard', route: '/dashboard'},
+            {icon: 'bi-shield', label: 'Super Admins', route: '/super-admin'},
             {icon: 'bi-shield', label: 'Administrators', route: '/administrators'},
             {icon: 'bi-people', label: 'Users', route: '/users'},
             {icon: 'bi-calendar', label: 'Event', route: '/events'},
@@ -41,16 +42,6 @@ export class SidebarComponent implements OnInit {
             {icon: 'bi-building', label: 'Organizations', route: '/organizations'},
             {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
             {icon: 'bi-activity', label: 'Latest Activity', route: '/activity'}
-
-            // {icon: 'home', label: 'Dashboard', route: '/dashboard'},
-            // {icon: 'shield', label: 'Administrators', route: '/administrators'},
-            // {icon: 'users', label: 'Users', route: '/users'},
-            // {icon: 'calendar', label: 'Event', route: '/events'},
-            // {icon: 'message-circle', label: 'Chat', route: '/chat'},
-            // {icon: 'user', label: 'Profile', route: '/profile'},
-            // {icon: 'building', label: 'Organizations', route: '/organizations'},
-            // {icon: 'building', label: 'Classes/Services', route: '/class-services'},
-            // {icon: 'activity', label: 'Latest Activity', route: '/activity'}
         ];
 
         const adminItems: MenuItem[] = [
@@ -59,18 +50,19 @@ export class SidebarComponent implements OnInit {
             {icon: 'bi-people', label: 'Users', route: '/users'},
             {icon: 'bi-chat', label: 'Chat', route: '/chat'},
             {icon: 'bi-person', label: 'Profile', route: '/profile'},
-            {icon: 'bi-building', label: 'Organizations', route: '/organizations'}
+            {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
+            {icon: 'bi-calendar', label: 'Event', route: '/events'}
         ];
 
         switch (role) {
             case 'SUPER_ADMIN':
-                return [...adminItems];
+                return [...commonItems];
             // case 'ADMIN':
             //     return [...commonItems]; // e.g. Users + Events
             // case 'USER':
             //     return commonItems;
             default:
-                return commonItems;
+                return adminItems;
         }
     }
 

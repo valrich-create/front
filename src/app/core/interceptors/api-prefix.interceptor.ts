@@ -12,6 +12,10 @@ export const apiPrefixInterceptor: HttpInterceptorFn = (req, next) => {
 		const newUrl = environment.apiUrl + req.url.replace('/api', '/v1');
 		req = req.clone({ url: newUrl });
 	}
+	if (!environment.production) {
+		const newUrl = environment.apiUrl + req.url.replace('/api', '/v1');
+		req = req.clone({ url: newUrl });
+	}
 
 	return next(req);
 };

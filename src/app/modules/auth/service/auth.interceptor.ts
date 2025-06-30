@@ -11,26 +11,55 @@ export const authInterceptor: HttpInterceptorFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Skip interceptor for login/register requests
   if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
     return next(req);
   }
 
   const token = authService.getToken();
 
+  // if (token) {
+  //   const authReq = req.clone({
+  //     setHeaders: {
+  //       Authorization: `Bearer ${token}`
+  //     }
+  //   });
+  //
+  //   return next(authReq).pipe(
+  //       catchError((error: HttpErrorResponse) => {
+  //         if (error.status === 401) {
+  //           const noLogoutEndpoints = [
+  //             '/change-password',
+  //             '/new',
+  //             '/edit'
+  //           ];
+  //
+  //           const shouldLogout = !noLogoutEndpoints.some(endpoint =>
+  //               req.url.includes(endpoint)
+  //           );
+  //
+  //           if (shouldLogout) {
+  //             authService.logout().subscribe(() => {
+  //               router.navigate(['/login']);
+  //             });
+  //           }
+  //         }
+  //
+  //         return throwError(() => error);
+  //       })
+  //   );
+  // }
+
   if (token) {
-    // Clone the request and add the authorization header
     const authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
 
-    // Return the new request with token
     return next(authReq).pipe(
         catchError((error: HttpErrorResponse) => {
-          // Handle 401 Unauthorized errors by logging out and redirecting to login
-          if (error.status === 401) {
+          // Vérifie si c'est une erreur 401 ET que c'est dû à un token invalide/expiré
+          if (error.status === 401 && isTokenInvalidError(error)) {
             authService.logout().subscribe(() => {
               router.navigate(['/login']);
             });
@@ -41,6 +70,14 @@ export const authInterceptor: HttpInterceptorFn = (
     );
   }
 
-  // Pass request through without modifications if no token
   return next(req);
 };
+
+function isTokenInvalidError(error: HttpErrorResponse): boolean {
+  // Vérifie si l'erreur contient un message spécifique (ex: "Token expired")
+  return (
+      error.error?.message?.includes('Token') ||
+      error.error?.error === 'Unauthorized' ||
+      error.headers.get('WWW-Authenticate')?.includes('Bearer')
+  );
+}

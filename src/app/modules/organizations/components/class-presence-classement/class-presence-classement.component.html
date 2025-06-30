@@ -7,6 +7,17 @@
         <div class="table-responsive">
             <table class="presence-table">
                 <tbody>
+                <!-- Message when we don't have data -->
+                <tr *ngIf="topPresenceUsers.length === 0" class="no-data-row">
+                    <td colspan="3">
+                        <div class="no-data-message">
+                            <fa-icon [icon]="faChartLine" class="no-data-icon"></fa-icon>
+                            <p>No ranking data available</p>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- message when we get data -->
                 <tr *ngFor="let user of topPresenceUsers">
                     <td>
                         <div class="presence-id">
@@ -15,7 +26,7 @@
                             </div>
                             <div class="id-details">
                                 <div class="id-number">#{{ user.id }}</div>
-                                <div class="id-timestamp">{{ user.timestamp }}</div>
+                                <div class="id-timestamp">{{ user.timestamp || 'N/A' }}</div>
                             </div>
                         </div>
                     </td>
@@ -29,14 +40,15 @@
                 </tbody>
             </table>
         </div>
-        <div class="table-footer">
+        <div class="table-footer" *ngIf="topPresenceUsers.length > 0">
             <div class="showing-info">
-                Showing 1-5 from {{ totalItems }} data
+                Showing 1-{{ topPresenceUsers.length }} from {{ totalItems }} data
             </div>
             <app-pagination
                     [currentPage]="currentPage"
                     [totalItems]="totalItems"
-                    [itemsPerPage]="itemsPerPage">
+                    [itemsPerPage]="itemsPerPage"
+                    (pageChange)="onPageChange($event)">
             </app-pagination>
         </div>
     </div>

@@ -69,6 +69,7 @@ export class OrganizationsListComponent implements OnInit {
 	}
 
 	navigateToDetail(id: string): void { // UUID est un string
+		console.log('Navigating to organization ID:', id);
 		this.router.navigate(['/organizations', id]);
 	}
 

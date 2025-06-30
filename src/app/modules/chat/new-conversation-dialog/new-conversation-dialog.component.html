@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>New Conversation</h2>
+<div mat-dialog-content>
+    <h3 class="section-title">Classes</h3>
+    <mat-selection-list [(ngModel)]="selectedClass" class="selection-list">
+        <mat-list-option *ngFor="let classService of data.classes" [value]="classService.id">
+            <span class="list-item-text">{{ classService.name }}</span>
+        </mat-list-option>
+    </mat-selection-list>
+
+    <h3 class="section-title">Users (Selected: {{selectedUsers.length}})</h3>
+    <mat-selection-list [(ngModel)]="selectedUsers" multiple class="selection-list">
+        <mat-list-option *ngFor="let user of data.users" [value]="user.id">
+            <span class="list-item-text">{{ user.firstName }} {{ user.lastName }}</span>
+        </mat-list-option>
+    </mat-selection-list>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button color="primary" (click)="onCreate()" [disabled]="!isValid()">Create</button>
+</div>

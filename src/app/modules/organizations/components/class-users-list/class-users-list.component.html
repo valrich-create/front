@@ -16,6 +16,16 @@
                 </tr>
                 </thead>
                 <tbody>
+
+                <tr *ngIf="users.length === 0" class="no-data-row">
+                    <td colspan="5">
+                        <div class="no-data-message">
+                            <fa-icon [icon]="faDatabase" class="no-data-icon"></fa-icon>
+                            <p>No data available</p>
+                        </div>
+                    </td>
+                </tr>
+
                 <tr *ngFor="let user of users">
                     <td>
                         <div class="user-info">
@@ -29,7 +39,7 @@
                             <span>{{ user.class }}</span>
                         </div>
                     </td>
-                    <td>$ {{ user.presenceRate }},036</td>
+                    <td>{{ user.presenceRate }}%</td>
                     <td class="actions-cell">
                         <button class="action-button">
                             <fa-icon [icon]="faEllipsisV"></fa-icon>
@@ -39,14 +49,15 @@
                 </tbody>
             </table>
         </div>
-        <div class="table-footer">
+        <div class="table-footer" *ngIf="users.length > 0">
             <div class="showing-info">
-                Showing 1-5 from {{ totalItems }} data
+                Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, totalItems) }} from {{ totalItems }} data
             </div>
             <app-pagination
                     [currentPage]="currentPage"
                     [totalItems]="totalItems"
-                    [itemsPerPage]="itemsPerPage">
+                    [itemsPerPage]="itemsPerPage"
+                    (pageChange)="onPageChange($event)">
             </app-pagination>
         </div>
     </div>

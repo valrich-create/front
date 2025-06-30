@@ -1,5 +1,23 @@
 <!-- stats-cards.component.html -->
 <div class="stats-cards">
+    <div class="options-menu">
+        <button class="options-button" (click)="toggleOptionsMenu($event)">
+            <i class="material-icons">more_vert</i>
+        </button>
+
+        <div class="dropdown-menu" [class.show]="showOptionsMenu" (click)="$event.stopPropagation()">
+            <button class="dropdown-item" (click)="openEditClass()">
+                <i class="material-icons">edit</i> Edit Class
+            </button>
+            <button class="dropdown-item" (click)="openAddUserModal()">
+                <i class="material-icons">person_add</i> Add User to Class
+            </button>
+            <button class="dropdown-item" (click)="openPointingHours()">
+                <i class="material-icons">schedule</i> Pointing Hours
+            </button>
+        </div>
+    </div>
+
     <div class="stat-card">
         <div class="stat-icon user-icon">
             <i class="material-icons">group</i>
@@ -30,12 +48,57 @@
         </div>
     </div>
 
+    <!-- Modale pour ajouter un utilisateur -->
+    <div class="modal-backdrop" *ngIf="showAddUserModal" (click)="closeAddUserModal()"></div>
+    <div class="add-user-modal" *ngIf="showAddUserModal">
+        <div class="modal-header">
+            <h3>Add User to Class</h3>
+            <button class="close-button" (click)="closeAddUserModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="search-box">
+                <input type="text" placeholder="Search users..." [(ngModel)]="searchQuery"
+                       (input)="searchUsers()">
+            </div>
+            <div class="users-list">
+                <div *ngIf="allUsers.length === 0 && !searchQuery" class="loading-message">
+                    Loading users...
+                </div>
+                <div *ngFor="let user of filteredUsers" class="user-item"
+                     (click)="selectUser(user)">
+                    <div class="user-info">
+                        <div class="user-avatar"></div>
+                        <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                    </div>
+                    <div class="user-id">ID: {{ user.id }}</div>
+                </div>
+                <div *ngIf="filteredUsers.length === 0" class="no-users">
+                    No users found
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="cancel-button" (click)="closeAddUserModal()">Cancel</button>
+            <button class="confirm-button" (click)="confirmAddUser()"
+                    [disabled]="!selectedUser">Add Selected User</button>
+        </div>
+    </div>
+
     <div class="stat-actions">
-        <button class="action-button pointing-zone" (click)="openPointingZone()">
+        <button class="action-button pointing-zone" [routerLink]="pointingZonesRoute">
             View Pointing Zone
         </button>
-        <button class="action-button edit-service" (click)="openEditService()">
-            Edit Service
-        </button>
+    </div>
+
+    <!-- Modale pour les heures de pointage -->
+    <div class="modal-backdrop" *ngIf="showPointingHoursModal" (click)="closePointingHours()"></div>
+    <div class="pointing-hours-modal" *ngIf="showPointingHoursModal">
+        <div class="modal-header">
+            <h3>Class Pointing Hours</h3>
+            <button class="close-button" (click)="closePointingHours()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <app-pointing-hour-list [classId]="classId"></app-pointing-hour-list>
+        </div>
     </div>
 </div>

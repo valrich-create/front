@@ -13,6 +13,7 @@ import {EventResponse} from "../../../events/events";
 export class DashboardMessagesComponent implements OnInit {
 	@Input() establishmentId?: string;
 	informations: EventResponse[] = [];
+	colors: string[] = [];
 
 	constructor(private eventService: EventService) { }
 
@@ -24,6 +25,7 @@ export class DashboardMessagesComponent implements OnInit {
 		this.eventService.getLatestInformations(5).subscribe({
 			next: (infos) => {
 				this.informations = infos;
+				this.colors = infos.map(() => this.getRandomColor());
 			},
 			error: (err) => {
 				console.error('Failed to load latest informations:', err);
@@ -42,11 +44,23 @@ export class DashboardMessagesComponent implements OnInit {
 		return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	}
 
-	getRandomColor(): string {
+	getColor(index: number): string {
+		return this.colors[index] || '#FFFFFF'; // Couleur par défaut si hors limite
+	}
+
+	private getRandomColor(): string {
 		const colors = [
 			'#FF6347', '#4169E1', '#32CD32', '#FFD700',
 			'#9370DB', '#20B2AA', '#FF69B4', '#FF4500'
 		];
 		return colors[Math.floor(Math.random() * colors.length)];
 	}
+	//
+	// getRandomColor(): string {
+	// 	const colors = [
+	// 		'#FF6347', '#4169E1', '#32CD32', '#FFD700',
+	// 		'#9370DB', '#20B2AA', '#FF69B4', '#FF4500'
+	// 	];
+	// 	return colors[Math.floor(Math.random() * colors.length)];
+	// }
 }

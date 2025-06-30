@@ -1,0 +1,55 @@
+<app-layout>
+    <app-navbar
+            [pageTitle]="'Administrators'">
+    </app-navbar>
+
+    <div class="users-container">
+        <app-search-bar
+                newButtonText="New Admin"
+                newItemRoute="/administrators/new"
+                [currentSort]="currentSort"
+                (sortChange)="onSortChange($event)"
+                (searchChange)="onSearchChange($event)">
+        </app-search-bar>
+
+        <div *ngIf="loading" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+        </div>
+
+        <div *ngIf="admins !== null && admins.length === 0">
+            <div class="no-data-icon">
+                <i class="fas fa-user-shield fa-4x"></i>
+            </div>
+            <h3>No administrators found</h3>
+            <p>There are currently no administrators registered in the system.</p>
+            <button class="btn btn-primary" routerLink="/administrators/new">
+                <i class="fas fa-plus-circle"></i> Create New Admin
+            </button>
+        </div>
+
+        <div class="users-grid" *ngIf="admins !== null && admins.length > 0">
+            <app-admin-card
+                    *ngFor="let admin of admins"
+                    [admin]="admin"
+                    (action)="handleAction($event)">
+            </app-admin-card>
+        </div>
+
+        <div class="pagination-container" *ngIf="admins && admins.length > 0 && totalAdmins > pageSize">
+            <ngb-pagination
+                    [collectionSize]="totalAdmins"
+                    [(page)]="currentPage"
+                    [pageSize]="pageSize"
+                    (pageChange)="loadAdmins()">
+            </ngb-pagination>
+            <div class="pagination-info">
+                Showing {{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, totalAdmins) }}
+                from {{ totalAdmins }} data
+            </div>
+        </div>
+    </div>
+</app-layout>

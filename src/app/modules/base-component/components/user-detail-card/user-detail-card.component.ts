@@ -38,4 +38,15 @@ export class UserDetailCardComponent {
 		return !!this.user?.profileImageUrl;
 	}
 
+	getAssignButtonLabel(): string {
+		return this.onAssignToClass?.name === 'changePassword'
+			? 'Change Password'
+			: 'Assign to Class';
+	}
+
+	getAssignButtonIcon(): string {
+		return this.onAssignToClass?.name === 'changePassword'
+			? 'bi bi-key-fill'
+			: 'bi bi-arrow-right-square-fill';
+	}
 }

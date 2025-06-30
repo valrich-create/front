@@ -81,4 +81,43 @@
       color: #888;
     }
   }
+
+  .no-data-row {
+    height: 200px;
+    text-align: center;
+
+    .no-data-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #6c757d;
+      padding: 2rem;
+
+      .no-data-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      p {
+        margin: 0;
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .presence-rate {
+    .complete { color: #28a745; }
+    .pending { color: #ffc107; }
+    .canceled { color: #dc3545; }
+  }
+
+  /* Icône de trending up */
+  .id-icon {
+    fa-icon {
+      color: #49ff07;
+      font-size: 1.5rem;
+    }
+  }
 }

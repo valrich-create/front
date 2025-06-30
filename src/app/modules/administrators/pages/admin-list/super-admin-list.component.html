@@ -6,11 +6,22 @@
     <div class="users-container">
         <app-search-bar
                 newButtonText="New Admin"
-                newItemRoute="/administrators/new"
+                newItemRoute="/super-admin/new"
                 [currentSort]="currentSort"
                 (sortChange)="onSortChange($event)"
                 (searchChange)="onSearchChange($event)">
         </app-search-bar>
+
+        <div *ngIf="admins?.length === 0" class="no-data-message">
+            <div class="no-data-icon">
+                <i class="fas fa-user-shield fa-4x"></i> <!-- Icône Font Awesome pour super admin -->
+            </div>
+            <h3>No administrators found</h3>
+            <p>There are currently no super administrators registered in the system.</p>
+            <button class="btn btn-primary" routerLink="/super-admin/new">
+                <i class="fas fa-plus-circle"></i> Create New Super Admin
+            </button>
+        </div>
 
         <div class="users-grid">
             <app-admin-card

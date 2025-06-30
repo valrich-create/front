@@ -10,7 +10,7 @@ import {SearchBarComponent} from "../../../base-component/components/search-bar/
 import {SortOption} from "../../../users/users.models";
 
 @Component({
-    selector: 'app-admin-list',
+    selector: 'app-super-admin-list',
     standalone: true,
     imports: [
         CommonModule,
@@ -20,11 +20,11 @@ import {SortOption} from "../../../users/users.models";
         NgbPaginationModule,
         SearchBarComponent
     ],
-    templateUrl: "./admin-list.component.html",
-    styleUrls: ["./admin-list.component.scss"]
+    templateUrl: "./super-admin-list.component.html",
+    styleUrls: ["./super-admin-list.component.scss"]
 })
 
-export class AdminListComponent implements OnInit {
+export class SuperAdminListComponent implements OnInit {
     admins: any[] = [];
     totalAdmins = 100;
     currentPage = 1;
@@ -40,8 +40,7 @@ export class AdminListComponent implements OnInit {
     }
 
     loadAdmins(): void {
-        this.administratorServiceService
-            .getAllAdministratorsOrAdvancedUsers(this.currentPage, this.pageSize, this.currentSort, this.currentSearchTerm)
+        this.administratorServiceService.getAllAdministrators()
             .subscribe({
                 next: (admins) => {
                     this.admins = admins;
@@ -49,16 +48,26 @@ export class AdminListComponent implements OnInit {
                 },
                 error: (err) => console.error('Erreur chargement', err)
             });
+
+        // this.administratorServiceService
+        //     .getAllAdministratorByEstablishment(this.currentPage, this.pageSize, this.currentSort, this.currentSearchTerm)
+        //     .subscribe({
+        //         next: (admins) => {
+        //             this.admins = admins;
+        //             this.totalAdmins = admins.length;
+        //         },
+        //         error: (err) => console.error('Erreur chargement', err)
+        //     });
     }
 
     handleAction(event: {type: string, admin: any}): void {
         switch(event.type) {
             case 'edit':
-                console.log('Edit admins', event.admin);
+                console.log('Edit Super admins', event.admin);
                 this.router.navigate(['administrators', 'edit', event.admin.id]);
                 break;
             case 'delete':
-                if(confirm('Are you sure you want to delete this admins?')) {
+                if(confirm('Are you sure you want to delete this Super admin?')) {
                     this.administratorServiceService.deleteAdministrator(event.admin.id).subscribe({
                         next: () => this.loadAdmins(),
                         error: err => console.error('An error occurred when deleting Super admin', err)

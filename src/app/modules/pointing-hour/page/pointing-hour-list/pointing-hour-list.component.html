@@ -1,0 +1,56 @@
+<div class="pointing-hours-container">
+    <div class="header">
+        <h2>Class Pointing Hours</h2>
+        <button class="add-button" (click)="openAddPointingHour()">
+            <i class="material-icons">add</i> Add Pointing Hour
+        </button>
+    </div>
+
+    <div class="filter-section">
+        <div class="date-range">
+            <label>From:</label>
+            <input type="date" [(ngModel)]="dateRange.start" (change)="applyFilter()">
+
+            <label>To:</label>
+            <input type="date" [(ngModel)]="dateRange.end" (change)="applyFilter()">
+
+            <button class="reset-button" (click)="resetFilter()">Reset</button>
+        </div>
+    </div>
+
+    <div class="calendar-container">
+        <div class="calendar-view">
+            <mwl-calendar-month-view
+                    [viewDate]="viewDate"
+                    [events]="events"
+                    (dayClicked)="onDateSelect($event.day.date)"
+                    [activeDayIsOpen]="true">
+            </mwl-calendar-month-view>
+        </div>
+
+        <div class="hours-list">
+            <h3>Hours for {{ selectedDate | date:'fullDate' }}</h3>
+
+            <div *ngIf="selectedDateHours.length > 0; else noHours">
+                <div class="hour-item" *ngFor="let hour of selectedDateHours">
+                    <div class="hour-details">
+                        <span class="time">{{ hour.startTime | date:'shortTime' }} - {{ hour.endTime | date:'shortTime' }}</span>
+                        <span class="description">{{ hour.description || 'No description' }}</span>
+                    </div>
+
+                    <div class="hour-actions">
+                        <button class="action-button" (click)="openEditPointingHour(hour)">
+                            <i class="material-icons">more_vert</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <ng-template #noHours>
+                <div class="no-hours-message">
+                    No pointing hours for this day
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</div>

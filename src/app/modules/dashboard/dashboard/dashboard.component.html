@@ -1,11 +1,17 @@
 <app-layout>
     <div class="main-content">
-        <app-navbar>
-            pageTitle="{{ establishmentName }}"
-        </app-navbar>
+        <app-navbar [pageTitle]="establishmentName"></app-navbar>
+
+<!--        <app-navbar>-->
+<!--            <ng-container *ngIf="currentEstablishment">-->
+<!--                pageTitle="{{ establishmentName }}"-->
+<!--                &lt;!&ndash; reste du contenu &ndash;&gt;-->
+<!--            </ng-container>-->
+<!--&lt;!&ndash;            pageTitle="{{ establishmentName }}"&ndash;&gt;-->
+<!--        </app-navbar>-->
     </div>
 
-    <div class="dashboard-content">
+    <div class="dashboard-content" *ngIf="currentEstablishment; else loading">
         <div class="main-section">
             <!-- Statistiques en haut -->
             <ng-container *ngIf="isAdmin; else adminStats">
@@ -42,14 +48,14 @@
                 <!-- Graphique de présence (caché pour SuperAdmin) -->
                 <div class="column" *ngIf="!isAdmin">
                     <app-organization-presence-chart
-                            [establishmentId]="currentEstablishmentId">
+                            [establishmentId]="establishmentId">
                     </app-organization-presence-chart>
                 </div>
             </div>
 
             <!-- Activités récentes (adapté pour les deux rôles) -->
             <app-recent-administration-activity
-                    [establishmentId]="currentEstablishmentId"
+                    [establishmentId]="establishmentId"
                     [isSuperAdmin]="isAdmin">
             </app-recent-administration-activity>
         </div>
@@ -57,14 +63,14 @@
         <div class="side-section">
             <!-- Top ranking (adapté pour les deux rôles) -->
             <app-recent-students
-                    [establishmentId]="currentEstablishmentId"
+                    [establishmentId]="establishmentId"
                     [isSuperAdmin]="isAdmin">
             </app-recent-students>
 
             <!-- Messages (caché pour SuperAdmin) -->
             <app-dashboard-messages
                     *ngIf="!isAdmin"
-                    [establishmentId]="currentEstablishmentId">
+                    [establishmentId]="establishmentId">
             </app-dashboard-messages>
 
             <!-- Services (remplacé par top établissements capacité max pour SuperAdmin) -->
@@ -77,6 +83,13 @@
 <!--            </ng-container>-->
         </div>
     </div>
+
+    <ng-template #loading>
+        <div class="loading-container">
+            <p>Chargement des données en cours...</p>
+            <!-- Vous pouvez aussi ajouter un spinner ici -->
+        </div>
+    </ng-template>
 </app-layout>
 
 

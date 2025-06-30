@@ -19,8 +19,8 @@ export interface ZonePointageRequest {
 	longitude: number;
 	rayonMetres: number;
 	description: string;
-	establishmentId: string;
-	classServiceId: string;
+	etablissementId: string;
+	classeServiceId: string;
 }
 
 export interface ZonePointageUpdateRequest {

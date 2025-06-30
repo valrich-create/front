@@ -72,6 +72,7 @@ export class PointingZoneService {
     );
   }
 
-  deleteZone(zoneId: string): Observable<any> {}
-
+  deleteZone(zoneId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${zoneId}`);
+  }
 }

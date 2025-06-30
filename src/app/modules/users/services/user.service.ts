@@ -84,7 +84,7 @@ export class UserService {
 			);
 	}
 
-	getAdvancedUsersByEstablishment(establishmentId: string | undefined, page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
+	getAdvancedUsersByEstablishment(establishmentId?: string | null, page: number = 0, size: number = 20, sort: string = 'lastName'): Observable<Page<UserResponse>> {
 		const params = new HttpParams()
 			.set('page', page.toString())
 			.set('size', size.toString())

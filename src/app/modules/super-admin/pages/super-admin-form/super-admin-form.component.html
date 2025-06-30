@@ -1,0 +1,216 @@
+<app-layout>
+    <div class="admin-form-container">
+        <app-navbar [pageTitle]="isEditMode ? 'Edit Super Admin' : 'Create Super Admin'"></app-navbar>
+
+        <form [formGroup]="adminForm" (ngSubmit)="onSubmit()">
+            <div class="form-section">
+                <h2>Super Admin Details</h2>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name <span class="required">*</span></label>
+                        <input
+                                type="text"
+                                id="firstName"
+                                formControlName="firstName"
+                                placeholder="John"
+                                [ngClass]="{'invalid': adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('firstName')?.errors?.['required'] && adminForm.get('firstName')?.touched">
+                            First name is required
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('firstName')?.errors?.['minlength'] || adminForm.get('firstName')?.errors?.['maxlength']">
+                            Must be between 2-50 characters
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name <span class="required">*</span></label>
+                        <input
+                                type="text"
+                                id="lastName"
+                                formControlName="lastName"
+                                placeholder="Doe"
+                                [ngClass]="{'invalid': adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('lastName')?.errors?.['required'] && adminForm.get('lastName')?.touched">
+                            Last name is required
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('lastName')?.errors?.['minlength'] || adminForm.get('lastName')?.errors?.['maxlength']">
+                            Must be between 2-50 characters
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input
+                                type="email"
+                                id="email"
+                                formControlName="email"
+                                placeholder="john.doe@example.com"
+                                [ngClass]="{'invalid': adminForm.get('email')?.invalid && adminForm.get('email')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('email')?.errors?.['required'] && adminForm.get('email')?.touched">
+                            Email is required
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('email')?.errors?.['email']">
+                            Please enter a valid email
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+                        <input
+                                type="tel"
+                                id="phoneNumber"
+                                formControlName="phoneNumber"
+                                placeholder="+1234567890"
+                                [ngClass]="{'invalid': adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched}"
+                        >
+                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.errors?.['required'] && adminForm.get('phoneNumber')?.touched">
+                            Phone number is required
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.errors?.['invalidPhone']">
+                            Must be 10-15 digits, can start with +
+                        </div>
+                    </div>
+                </div>
+
+<!--                <div class="form-row">-->
+<!--                    <div class="form-group">-->
+<!--                        <label for="password">Password <span class="required">*</span></label>-->
+<!--                        <div class="password-input-container">-->
+<!--                            <input-->
+<!--                                    [type]="showPassword ? 'text' : 'password'"-->
+<!--                                    id="password"-->
+<!--                                    formControlName="password"-->
+<!--                                    placeholder="••••••••"-->
+<!--                                    [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"-->
+<!--                            >-->
+<!--                            <span class="toggle-password" (click)="togglePasswordVisibility('password')">-->
+<!--                                <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">-->
+<!--                            Password is required-->
+<!--                        </div>-->
+<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">-->
+<!--                            Must be at least 8 characters-->
+<!--                        </div>-->
+<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">-->
+<!--                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--&lt;!&ndash;                    <div class="form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <label for="password">Password <span class="required">*</span></label>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <input&ndash;&gt;-->
+<!--&lt;!&ndash;                                type="password"&ndash;&gt;-->
+<!--&lt;!&ndash;                                id="password"&ndash;&gt;-->
+<!--&lt;!&ndash;                                formControlName="password"&ndash;&gt;-->
+<!--&lt;!&ndash;                                placeholder="••••••••"&ndash;&gt;-->
+<!--&lt;!&ndash;                                [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"&ndash;&gt;-->
+<!--&lt;!&ndash;                        >&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Password is required&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Must be at least 8 characters&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+
+<!--&lt;!&ndash;                    <div class="form-group">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <input&ndash;&gt;-->
+<!--&lt;!&ndash;                                type="password"&ndash;&gt;-->
+<!--&lt;!&ndash;                                id="confirmPassword"&ndash;&gt;-->
+<!--&lt;!&ndash;                                formControlName="confirmPassword"&ndash;&gt;-->
+<!--&lt;!&ndash;                                placeholder="••••••••"&ndash;&gt;-->
+<!--&lt;!&ndash;                                [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"&ndash;&gt;-->
+<!--&lt;!&ndash;                        >&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">&ndash;&gt;-->
+<!--&lt;!&ndash;                            Passwords do not match&ndash;&gt;-->
+<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+
+<!--                    <div class="form-group">-->
+<!--                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>-->
+<!--                        <div class="password-input-container">-->
+<!--                            <input-->
+<!--                                    [type]="showConfirmPassword ? 'text' : 'password'"-->
+<!--                                    id="confirmPassword"-->
+<!--                                    formControlName="confirmPassword"-->
+<!--                                    placeholder="••••••••"-->
+<!--                                    [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"-->
+<!--                            >-->
+<!--                            <span class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')">-->
+<!--                                <i [class]="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">-->
+<!--                            Passwords do not match-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+                <!-- Section mot de passe - Afficher uniquement en mode création -->
+                <div *ngIf="!isEditMode" class="form-row">
+                    <div class="form-group">
+                        <label for="password">Password <span class="required">*</span></label>
+                        <div class="password-input-container">
+                            <input
+                                    [type]="showPassword ? 'text' : 'password'"
+                                    id="password"
+                                    formControlName="password"
+                                    placeholder="••••••••"
+                                    [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"
+                            >
+                            <span class="toggle-password" (click)="togglePasswordVisibility('password')">
+                                <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                            </span>
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">
+                            Password is required
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">
+                            Must be at least 8 characters
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">
+                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                        <div class="password-input-container">
+                            <input
+                                    [type]="showConfirmPassword ? 'text' : 'password'"
+                                    id="confirmPassword"
+                                    formControlName="confirmPassword"
+                                    placeholder="••••••••"
+                                    [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"
+                            >
+                            <span class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')">
+                                <i [class]="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+                            </span>
+                        </div>
+                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">
+                            Passwords do not match
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" (click)="cancel()">Cancel</button>
+                <button type="submit" class="btn-submit" [disabled]="adminForm.invalid">
+                    {{ isEditMode ? 'Update' : 'Create' }} Super Admin
+                </button>
+            </div>
+        </form>
+    </div>
+</app-layout>

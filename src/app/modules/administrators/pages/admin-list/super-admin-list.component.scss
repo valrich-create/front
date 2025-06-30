@@ -55,3 +55,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+.no-data-message {
+  text-align: center;
+  padding: 40px 20px;
+  margin: 40px 0;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+.no-data-icon {
+  color: #6c757d;
+  margin-bottom: 20px;
+}
+
+.no-data-message h3 {
+  color: #495057;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.no-data-message p {
+  color: #6c757d;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  margin-top: 15px;
+  padding: 8px 20px;
+  font-size: 0.9rem;
+}

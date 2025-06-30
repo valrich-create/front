@@ -16,6 +16,12 @@ interface AuthResponse {
 	};
 }
 
+interface ChangePasswordRequest {
+	currentPassword: string;
+	newPassword: string;
+	confirmNewPassword: string;
+}
+
 @Injectable({
 	providedIn: 'root'
 })
@@ -72,6 +78,49 @@ export class AuthService {
 				localStorage.removeItem(this.USER_KEY);
 				sessionStorage.removeItem(this.TOKEN_KEY);
 				sessionStorage.removeItem(this.USER_KEY);
+			})
+		);
+	}
+
+	changePassword(currentPassword: string, newPassword: string, confirmNewPassword: string): Observable<any> {
+		// Vérification côté client que les nouveaux mots de passe correspondent
+		if (newPassword !== confirmNewPassword) {
+			return throwError(() => new Error('Les nouveaux mots de passe ne correspondent pas'));
+		}
+
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			'Accept': 'application/json',
+			'Authorization': `Bearer ${this.getToken()}`
+		});
+
+		const payload: ChangePasswordRequest = {
+			currentPassword,
+			newPassword,
+			confirmNewPassword
+		};
+
+		return this.http.post(
+			`${this.API_URL}/change-password`,
+			payload,
+			{ headers }
+		).pipe(
+			tap(() => {
+				console.log('Password changed successfully');
+				// Optionnel : Déconnecter l'utilisateur après changement de mot de passe
+				// this.logout().subscribe();
+			}),
+			catchError(error => {
+				console.error('Password change error:', error);
+				let errorMessage = 'Une erreur est survenue lors du changement de mot de passe';
+
+				if (error.status === 401) {
+					errorMessage = 'Mot de passe actuel incorrect';
+				} else if (error.status === 400) {
+					errorMessage = error.error?.message || 'Requête invalide';
+				}
+
+				return throwError(() => new Error(errorMessage));
 			})
 		);
 	}

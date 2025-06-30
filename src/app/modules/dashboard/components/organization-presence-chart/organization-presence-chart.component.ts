@@ -44,6 +44,13 @@ export class OrganizationPresenceChartComponent implements OnInit, OnDestroy {
 	}
 
 	processWeeklyData(data: WeeklyPresenceStatsResponse) {
+		if (!data) {
+			// Option 1 : Retourner early avec des valeurs par défaut
+			this.weekStats = { thisWeek: '0', lastWeek: '0' };
+			this.incomePercentage = 0;
+			this.createChart({ labels: [], values: [] }); // Envoyer un tableau vide au graphique
+			return;
+		}
 		// Calculate total presence for current and last week
 		const currentWeekTotal = data.currentWeek.reduce((sum, day) => sum + day.presenceCount, 0);
 		const lastWeekTotal = data.previousWeek.reduce((sum, day) => sum + day.presenceCount, 0);
@@ -53,11 +60,11 @@ export class OrganizationPresenceChartComponent implements OnInit, OnDestroy {
 			lastWeek: lastWeekTotal.toString()
 		};
 
-		this.incomePercentage = data.comparisonPercentage;
+		this.incomePercentage = data.comparisonPercentage || 0;
 
 		// Prepare chart data
 		const chartData = this.prepareChartData(data);
-		this.createChart(chartData);
+		this.createChart(chartData  || []);
 	}
 
 	prepareChartData(data: WeeklyPresenceStatsResponse): { labels: string[], values: number[] } {

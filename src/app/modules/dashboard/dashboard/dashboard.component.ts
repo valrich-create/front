@@ -10,12 +10,13 @@ import {CommonModule} from "@angular/common";
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
 import {
-  DailyGlobalStatsResponse, GlobalStatsResponse, TopEstablishmentByUsersResponse,
+  DailyGlobalStatsResponse, Establishment, GlobalStatsResponse, TopEstablishmentByUsersResponse,
   UserMetricsResponse,
   YearlyPresenceStatsResponse
 } from "../../organizations/organization";
 import {OrganizationService} from "../../organizations/organization.service";
 import {EventService} from "../../events/events.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-dashboard',
@@ -40,9 +41,9 @@ export class DashboardComponent implements OnInit {
   userEmail: string = '';
   userPhone: string = '';
   userRole: string = '';
-  currentEstablishmentId: string = '';
-  establishmentName: string = 'Dashboard';
-
+  // currentEstablishmentId: string = '';
+  // establishmentName: string = '';
+  currentEstablishment?: Establishment;
 
   currentYear: number = new Date().getFullYear();
   previousYear = this.currentYear - 1;
@@ -58,12 +59,71 @@ export class DashboardComponent implements OnInit {
   topByTotalUsers: TopEstablishmentByUsersResponse[] = [];
 
   constructor(
+      private route: ActivatedRoute,
       private organizationService: OrganizationService,
       private eventService: EventService
   ) { }
 
-  ngOnInit(): void {
-    this.loadUserAndEstablishmentData();
+  async ngOnInit(): Promise<void>  {
+    this.loadUserData();
+    await this.loadEstablishmentData();
+
+    if (this.currentEstablishment) {
+      this.loadDashboardData();
+    }
+  }
+
+  get establishmentId(): string {
+    return this.currentEstablishment?.id || '';
+  }
+
+  get establishmentName(): string {
+    return this.currentEstablishment?.nom || '';
+  }
+
+  private async loadEstablishmentData(): Promise<void> {
+    // 1. Essayer de récupérer depuis l'URL
+    const routeId = this.route.snapshot.paramMap.get('id');
+
+    if (routeId) {
+      try {
+        this.currentEstablishment = await this.organizationService
+            .getEstablishmentById(routeId).toPromise();
+        return;
+      } catch (error) {
+        console.warn('Établissement non trouvé via URL, tentative via storage');
+      }
+    }
+
+    // 2. Récupérer depuis le storage
+    const storage = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+    if (!storage) return;
+
+    try {
+      const userData = JSON.parse(storage);
+      if (userData.establishment?.id) {
+        this.currentEstablishment = await this.organizationService
+            .getEstablishmentById(userData.establishment.id).toPromise();
+      }
+    } catch (error) {
+      console.error('Erreur lecture données établissement', error);
+    }
+  }
+
+  private loadUserData(): void {
+    const storage = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+    if (!storage) return;
+
+    try {
+      const userData = JSON.parse(storage);
+      this.isAdmin = ['SUPER_ADMIN', 'ADMIN'].includes(userData.role);
+      this.userFullName = `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim();
+      this.userEmail = userData.email ?? '';
+      this.userPhone = userData.phoneNumber ?? '';
+      this.userRole = userData.role ?? '';
+    } catch (error) {
+      console.error('Erreur lecture données utilisateur', error);
+    }
   }
 
   private loadUserAndEstablishmentData(): void {
@@ -86,11 +146,9 @@ export class DashboardComponent implements OnInit {
       // Données établissement (imbriquées dans userData)
       const establishment = userData.establishment;
       if (establishment) {
-        this.currentEstablishmentId = establishment.id ?? '';
-        this.establishmentName = establishment.nom ?? 'Dashboard';
 
         // Charger les données spécifiques du tableau de bord
-        if (this.currentEstablishmentId) {
+        if (this.establishmentId) {
           if (this.isAdmin) {
             this.loadSuperAdminDashboardData();
           } else {
@@ -106,33 +164,29 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // private loadUserAndEstablishmentData(): void {
-  //   const userData = JSON.parse(localStorage.getItem('user_data') || "");
-  //   const establishmentData = JSON.parse(localStorage.getItem('currentEstablishment') || "");
-  //
-  //   this.currentEstablishmentId = establishmentData.id || '';
-  //   this.establishmentName = establishmentData.name || 'Dashboard';
-  //
-  //   if (this.currentEstablishmentId) {
-  //     this.loadDashboardData();
-  //   }
-  // }
-
   private loadDashboardData(): void {
-    // Chargement des métriques utilisateurs
-    this.organizationService.getUserMetrics(this.currentEstablishmentId)
-        .subscribe({
-          next: metrics => this.userMetrics = metrics,
-          error: err => console.error('Failed to load user metrics', err)
-        });
+    if (!this.currentEstablishment) return;
 
-    // Chargement des stats quotidiennes
-    this.organizationService.getDailyGlobalStats(this.currentEstablishmentId)
-        .subscribe(stats => this.dailyStats = stats);
+    console.log(`Chargement dashboard pour ${this.establishmentName} (${this.establishmentId})`);
 
-    // Chargement des stats annuelles
-    this.organizationService.getYearlyPresenceStats(this.currentEstablishmentId, this.currentYear)
-        .subscribe(stats => this.yearlyStats = stats);
+    if (this.isAdmin) {
+      this.loadSuperAdminDashboardData();
+    } else {
+      // Chargement des métriques utilisateurs
+      this.organizationService.getUserMetrics(this.establishmentId)
+          .subscribe({
+            next: metrics => this.userMetrics = metrics,
+            error: err => console.error('Failed to load user metrics', err)
+          });
+
+      // Chargement des stats quotidiennes
+      this.organizationService.getDailyGlobalStats(this.establishmentId)
+          .subscribe(stats => this.dailyStats = stats);
+
+      // Chargement des stats annuelles
+      this.organizationService.getYearlyPresenceStats(this.establishmentId, this.currentYear)
+          .subscribe(stats => this.yearlyStats = stats);
+    }
   }
 
   private loadSuperAdminDashboardData(): void {

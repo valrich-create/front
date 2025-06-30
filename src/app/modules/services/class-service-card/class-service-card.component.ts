@@ -2,13 +2,15 @@ import {Component, Input, OnChanges} from '@angular/core';
 import {ClassServiceResponse} from "../class-service";
 import {UsersCountIndicatorComponent} from "../../organizations/components/growth-indicator/growth-indicator.component";
 import {PercentageCircleComponent} from "../../organizations/components/percentage-circle/percentage-circle.component";
+import {CommonModule} from "@angular/common";
 
 @Component({
 	selector: 'app-class-service-card',
 	standalone: true,
 	imports: [
 		UsersCountIndicatorComponent,
-		PercentageCircleComponent
+		PercentageCircleComponent,
+		CommonModule
 	],
 	templateUrl: 'class-service-card.component.html',
 	styleUrls: ['class-service-card.component.scss']

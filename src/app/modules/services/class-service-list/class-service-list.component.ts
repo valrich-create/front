@@ -51,7 +51,6 @@ export class ClassServiceListComponent implements OnInit {
 
 	loadClassServices(): void {
 		this.classServiceService.getAllClassServices().subscribe(classes => {
-			// Note: Adaptez selon votre API si vous avez une pagination côté backend
 			this.classServices = classes;
 			this.totalItems = classes.length;
 			this.totalPages = Math.ceil(classes.length / this.itemsPerPage);

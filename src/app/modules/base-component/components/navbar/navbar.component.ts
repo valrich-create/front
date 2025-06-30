@@ -50,10 +50,10 @@ import {AuthService} from "../../../auth/service/auth.service";
 })
 
 export class NavbarComponent implements OnInit {
-  @Input() pageTitle: string = 'Dashboard';
-  userName: string = 'User Name';
-  userRole: string = 'Role';
-  userInitials: string = 'UN';
+  @Input() pageTitle: string = '';
+  userName: string = '';
+  userRole: string = '';
+  userInitials: string = '';
 
   constructor(private authService: AuthService) {}
 

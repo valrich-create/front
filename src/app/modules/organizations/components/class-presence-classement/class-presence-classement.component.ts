@@ -1,17 +1,18 @@
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {PaginationComponent} from "../pagination/pagination.component";
 import {CommonModule} from "@angular/common";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {faChartLine} from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-class-presence-classement',
   standalone: true,
-  templateUrl: './class-presence-classement.component.html',
   imports: [
       PaginationComponent,
       CommonModule,
       FontAwesomeModule,
   ],
+  templateUrl: './class-presence-classement.component.html',
   styleUrls: ['./class-presence-classement.component.scss']
 })
 export class ClassPresenceClassementComponent {
@@ -19,6 +20,9 @@ export class ClassPresenceClassementComponent {
   @Input() currentPage: number = 1;
   @Input() totalItems: number = 100;
   @Input() itemsPerPage: number = 5;
+  @Output() pageChange = new EventEmitter<number>();
+
+  faChartLine = faChartLine;
 
   getStatusClass(status: string): string {
     switch (status) {
@@ -31,5 +35,9 @@ export class ClassPresenceClassementComponent {
       default:
         return '';
     }
+  }
+
+  onPageChange(newPage: number): void {
+    this.pageChange.emit(newPage);
   }
 }

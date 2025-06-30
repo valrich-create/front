@@ -1,6 +1,8 @@
 /* classe-a.component.scss */
 .classe-a-container {
   padding: 1.5rem;
+  position: relative; // Ajoutez cette ligne
+  z-index: 1;
 
   .page-title {
     font-size: 1.5rem;
@@ -14,6 +16,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: 1.5rem;
+    position: relative;
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr;

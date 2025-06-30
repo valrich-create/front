@@ -21,14 +21,14 @@ import {SidebarComponent} from "../sidebar/sidebar.component";
     .sidebar {
       width: 250px;
       min-height: 100vh;
-      background-color: #563D7C;
+      background-color: #f5f5f5;
     }
-    
+
     .main-content {
       min-height: 100vh;
       overflow-x: hidden;
     }
-    
+
     @media (max-width: 768px) {
       .sidebar {
         width: 80px;

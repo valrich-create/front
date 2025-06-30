@@ -178,8 +178,14 @@
                         <i class="fa-solid fa-trash"></i> Delete
                     </button>
 
-                    <button *ngIf="onAssignToClass" class="action-button assign-button" (click)="onAssignToClass(user)">
-                        <i class="bi bi-arrow-right-square-fill"></i> Assign to Class
+<!--                    <button *ngIf="onAssignToClass" class="action-button assign-button" (click)="onAssignToClass(user)">-->
+<!--                        <i class="bi bi-arrow-right-square-fill"></i> Assign to Class-->
+<!--                    </button>-->
+                    <button *ngIf="onAssignToClass"
+                            class="action-button assign-button"
+                            (click)="onAssignToClass(user)">
+                        <i [class]="getAssignButtonIcon()"></i>
+                        {{ getAssignButtonLabel() }}
                     </button>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import {DashboardComponent} from "./modules/dashboard/dashboard/dashboard.compon
 import {UserListComponent} from "./modules/users/pages/user-list/user-list.component";
 import {UserFormComponent} from "./modules/users/pages/user-form/user-form.component";
 import {UserDetailsComponent} from "./modules/users/pages/user-details/user-details.component";
-import {AdminListComponent} from "./modules/administrators/pages/admin-list/admin-list.component";
+import {SuperAdminListComponent} from "./modules/administrators/pages/admin-list/super-admin-list.component";
 import {AdminFormComponent} from "./modules/administrators/pages/admin-form/admin-form.component";
 import {
     OrganizationsListComponent
@@ -12,13 +12,18 @@ import {OrganizationFormComponent} from "./modules/organizations/pages/organizat
 import {
     OrganizationDetailsComponent
 } from "./modules/organizations/pages/organization-details/organization-details.component";
-import {EventsListComponent} from "./modules/events/event-list/events-list.component";
 import {EventsPageComponent} from "./modules/events/events-page/events-page.component";
-import {ClassComponent} from "./modules/organizations/components/class/class.component";
 import {EventFormComponent} from "./modules/events/event-form/event-form.component";
 import {AdminDetailsComponent} from "./modules/administrators/pages/admin-details/admin-details.component";
 import {ClassServiceListComponent} from "./modules/services/class-service-list/class-service-list.component";
 import {ClassServiceFormComponent} from "./modules/services/class-service-form/class-service-form.component";
+import {PointingHourFormComponent} from "./modules/pointing-hour/page/pointing-hour-form/pointing-hour-form.component";
+import {PointingZoneFormComponent} from "./modules/pointing-zone/page/pointing-zone-form/pointing-zone-form.component";
+import {PointingZoneListComponent} from "./modules/pointing-zone/page/pointing-zone-list/pointing-zone-list.component";
+import {AdminListComponent} from "./modules/super-admin/pages/super-admin-list/admin-list.component";
+import {SuperAdminFormComponent} from "./modules/super-admin/pages/super-admin-form/super-admin-form.component";
+import {ChatComponent} from "./modules/chat/chat/chat.component";
+import {ProfileComponent} from "./modules/profile/profile/profile.component";
 
 export const routes: Routes = [
     {
@@ -36,6 +41,14 @@ export const routes: Routes = [
         children: [
             // { path: 'sub-route', component: SubComponent }
         ]
+    },
+    {
+        path: 'chat',
+        component: ChatComponent,
+    },
+    {
+        path: 'profile',
+        component: ProfileComponent,
     },
     {
         path: 'users',
@@ -56,11 +69,20 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'super-admin',
+        children: [
+            { path: '', component: SuperAdminListComponent },
+            { path: 'new', component: SuperAdminFormComponent },
+            { path: ':id', component: AdminDetailsComponent },
+            { path: 'edit/:id', component: SuperAdminFormComponent }
+        ]
+    },
+    {
         path: 'organizations',
         children: [
             { path: '', component: OrganizationsListComponent },
             { path: 'new', component: OrganizationFormComponent },
-            { path: ':id', component: OrganizationDetailsComponent },
+            { path: ':id', component: DashboardComponent },
             { path: 'edit/:id', component: OrganizationFormComponent }
         ]
     },
@@ -69,7 +91,7 @@ export const routes: Routes = [
         children: [
             { path: '', component: ClassServiceListComponent },
             { path: 'new', component: ClassServiceFormComponent },
-            // { path: ':id', component: ClassServiceDetailsComponent },
+            { path: ':id', component: OrganizationDetailsComponent },
             { path: 'edit/:id', component: ClassServiceFormComponent }
         ]
     },
@@ -79,6 +101,21 @@ export const routes: Routes = [
             { path: '', component: EventsPageComponent }, // events
             { path: 'new', component: EventFormComponent }, // /events/new
             { path: 'edit/:id', component: EventFormComponent } // /events/edit/123
+        ]
+    },
+    {
+        path: 'classes/:classId/pointing-hours',
+        children: [
+            { path: 'new', component: PointingHourFormComponent },
+            { path: 'edit/:id', component: PointingHourFormComponent },
+        ]
+    },
+    {
+        path: 'classes/:classId/pointing-zones',
+        children: [
+            { path: '', component: PointingZoneListComponent },
+            { path: 'new', component: PointingZoneFormComponent },
+            { path: 'edit/:id', component: PointingZoneFormComponent },
         ]
     },
     {

@@ -6,7 +6,8 @@
     <div class="messages-list">
         <div class="message-item" *ngFor="let info of informations">
             <div class="sender-info">
-                <div class="avatar-placeholder" [style.background-color]="getRandomColor()">
+                <div class="avatar-placeholder" *ngFor="let info of informations; let i = index"
+                     [style.background-color]="getColor(i)">
                     {{ info.createdByName.charAt(0) }}
                 </div>
                 <div class="details">
