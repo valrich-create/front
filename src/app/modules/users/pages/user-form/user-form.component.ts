@@ -8,6 +8,7 @@ import {UserPermission, UserResponse, UserRole} from "../../users.models";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ClassServiceService} from "../../../services/class-service.service";
 import {OrganizationService} from "../../../organizations/organization.service";
+import {ToastService} from "../../../base-component/services/toast/toast.service";
 
 @Component({
 	selector: 'app-user-form',
@@ -36,6 +37,7 @@ export class UserFormComponent implements OnInit {
 		private userService: UserService,
 		private classServiceService: ClassServiceService,
 		private organizationService: OrganizationService,
+		private toastService: ToastService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {
@@ -250,10 +252,11 @@ export class UserFormComponent implements OnInit {
 				// Mode édition
 				this.userService.updateUser(this.currentUserId, formData).subscribe({
 					next: (response) => {
-						console.log('User updated successfully', response);
+						this.toastService.show('Update successfully done!', 'success');
 						this.router.navigate(['/users']);
 					},
 					error: (error) => {
+						this.toastService.show('Error occurred, Try again later', 'danger');
 						console.error('Error updating user', error);
 					}
 				});
@@ -261,10 +264,12 @@ export class UserFormComponent implements OnInit {
 				// Mode création
 				this.userService.createUser(formData).subscribe({
 					next: (response) => {
+						this.toastService.show('Creation successfully done!', 'success');
 						console.log('User created successfully', response);
 						this.router.navigate(['/users']);
 					},
 					error: (error) => {
+						this.toastService.show('Error occurred, Try again later', 'danger');
 						console.error('Error creating user', error);
 					}
 				});

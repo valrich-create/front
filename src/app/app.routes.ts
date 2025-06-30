@@ -24,6 +24,7 @@ import {AdminListComponent} from "./modules/super-admin/pages/super-admin-list/a
 import {SuperAdminFormComponent} from "./modules/super-admin/pages/super-admin-form/super-admin-form.component";
 import {ChatComponent} from "./modules/chat/chat/chat.component";
 import {ProfileComponent} from "./modules/profile/profile/profile.component";
+import {PointingHourListComponent} from "./modules/pointing-hour/page/pointing-hour-list/pointing-hour-list.component";
 
 export const routes: Routes = [
     {
@@ -63,9 +64,9 @@ export const routes: Routes = [
         path: 'administrators',
         children: [
             { path: '', component: AdminListComponent },
-            { path: 'new', component: AdminFormComponent },
+            { path: 'new', component: UserFormComponent },
             { path: ':id', component: AdminDetailsComponent },
-            { path: 'edit/:id', component: AdminFormComponent }
+            { path: 'edit/:id', component: UserFormComponent }
         ]
     },
     {
@@ -106,6 +107,7 @@ export const routes: Routes = [
     {
         path: 'classes/:classId/pointing-hours',
         children: [
+            { path: '', component: PointingHourListComponent },
             { path: 'new', component: PointingHourFormComponent },
             { path: 'edit/:id', component: PointingHourFormComponent },
         ]

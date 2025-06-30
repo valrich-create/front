@@ -6,7 +6,7 @@ export interface Admin {
     firstName: string;
     email: string;
     phoneNumber: string;
-    dateOfBirth: Date;
+    dateOfBirth: string;
     placeOfBirth: string;
     profileImageUrl: string;
 

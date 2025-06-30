@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Admin} from "../admin";
-import {Observable, of, switchMap} from "rxjs";
+import {catchError, Observable, of, switchMap, throwError} from "rxjs";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserService} from "../../users/services/user.service";
 import {UserResponse, UserRole} from "../../users/users.models";
@@ -68,4 +68,13 @@ export class AdministratorServiceService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  getCurrentAdmin(): Observable<Admin> {
+    return this.http.get<Admin>(`${this.apiUrl}/current-user`)
+        .pipe(
+            catchError(error => {
+              console.error('Error fetching user', error);
+              return throwError(() => new Error('Failed to fetch user'));
+            })
+        );
+  }
 }

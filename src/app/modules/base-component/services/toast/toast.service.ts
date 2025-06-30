@@ -27,10 +27,10 @@ export class ToastService {
     this.toasts.push(toast);
     this.toastSubject.next([...this.toasts]);
 
-    // Auto-remove toast after 3 seconds
+    // Auto-remove toast after 10 seconds
     setTimeout(() => {
       this.remove(toast.id);
-    }, 3000);
+    }, 10000);
   }
 
   remove(id: number): void {

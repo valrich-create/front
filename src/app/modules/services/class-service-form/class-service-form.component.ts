@@ -6,6 +6,7 @@ import { ClassServiceService } from "../class-service.service";
 import { ClassServiceRequest, ClassServiceResponse, ClassServiceUpdateRequest } from "../class-service";
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
+import {ToastService} from "../../base-component/services/toast/toast.service";
 
 @Component({
   selector: 'app-class-service-form',
@@ -30,6 +31,7 @@ export class ClassServiceFormComponent implements OnInit {
   constructor(
       private fb: FormBuilder,
       private classServiceService: ClassServiceService,
+      private toastService: ToastService,
       private router: Router,
       private route: ActivatedRoute
   ) {
@@ -97,9 +99,11 @@ export class ClassServiceFormComponent implements OnInit {
         const updateRequest: ClassServiceUpdateRequest = this.classServiceForm.value;
         this.classServiceService.updateClassService(this.classServiceId, updateRequest).subscribe({
           next: () => {
+            this.toastService.show('Operation successfully done!', 'success');
             this.router.navigate(['/class-services']);
           },
           error: (error) => {
+            this.toastService.show('Error occurred, Try again later', 'danger');
             console.error('Error updating class/service:', error);
           }
         });
@@ -107,9 +111,11 @@ export class ClassServiceFormComponent implements OnInit {
         const createRequest: ClassServiceRequest = this.classServiceForm.value;
         this.classServiceService.createClassService(createRequest).subscribe({
           next: () => {
+            this.toastService.show('Operation successfully done', 'danger');
             this.router.navigate(['/class-services']);
           },
           error: (error) => {
+            this.toastService.show('Error occurred, Try again later', 'danger');
             console.error('Error creating class/service:', error);
           }
         });

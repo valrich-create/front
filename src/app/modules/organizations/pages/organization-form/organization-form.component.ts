@@ -6,6 +6,7 @@ import {NgClass, NgIf} from "@angular/common";
 import {Establishment, EstablishmentRequest, EstablishmentUpdateRequest} from "../../organization";
 import {ActivatedRoute, Router} from "@angular/router";
 import {OrganizationService} from "../../organization.service";
+import {ToastService} from "../../../base-component/services/toast/toast.service";
 
 @Component({
 	selector: 'app-organization-form',
@@ -31,6 +32,7 @@ export class OrganizationFormComponent implements OnInit {
 	constructor(
 		private fb: FormBuilder,
 		private organizationService: OrganizationService,
+		private toastService: ToastService,
 		private router: Router,
 		private route: ActivatedRoute
 	) {
@@ -96,10 +98,12 @@ export class OrganizationFormComponent implements OnInit {
 				const updateRequest: EstablishmentUpdateRequest = this.establishmentForm.value;
 				this.organizationService.updateEstablishment(this.establishmentId, updateRequest).subscribe({
 					next: () => {
+						this.toastService.show('Update successfully done!', 'success');
 						this.router.navigate(['/establishments']);
 					},
 					error: (error) => {
 						console.error('Error updating establishment:', error);
+						this.toastService.show('Error occurred, Try again later', 'danger');
 						// Handle error
 					}
 				});
@@ -107,9 +111,11 @@ export class OrganizationFormComponent implements OnInit {
 				const createRequest: EstablishmentRequest = this.establishmentForm.value;
 				this.organizationService.createEstablishment(createRequest).subscribe({
 					next: () => {
+						this.toastService.show('Success', 'danger');
 						this.router.navigate(['/establishments']);
 					},
 					error: (error) => {
+						this.toastService.show('Error occurred, Try again later', 'danger');
 						console.error('Error creating establishment:', error);
 						// Handle error
 					}
