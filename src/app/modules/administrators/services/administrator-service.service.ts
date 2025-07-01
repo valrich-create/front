@@ -10,7 +10,8 @@ import {UserResponse, UserRole} from "../../users/users.models";
 })
 
 export class AdministratorServiceService {
-  private apiUrl = '/api/super-admin';
+  // private apiUrl = '/api/super-admin';
+  private apiUrl = '/api/users/super-admin';
 
   constructor(
       private http: HttpClient,

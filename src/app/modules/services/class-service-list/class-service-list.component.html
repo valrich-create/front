@@ -20,43 +20,75 @@
             </app-filter-tabs>
         </div>
 
-        <div class="organizations-list">
-            <app-class-service-card
-                    *ngFor="let classService of classServices | slice: (currentPage * itemsPerPage) : (currentPage + 1) * itemsPerPage"
-                    [classService]="classService"
-                    [timePeriod]="selectedTimePeriod"
-                    (click)="navigateToDetail(classService.id)">
-            </app-class-service-card>
+        <div *ngIf="loading; else content" class="loading-state">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading class services...</p>
         </div>
 
-        <div class="pagination">
-            <button
-                    class="pagination-button prev"
-                    [disabled]="currentPage === 0"
-                    (click)="goToPage(currentPage - 1)">
-                <span class="material-icons">chevron_left</span>
-            </button>
-
-            <div class="page-numbers">
-                <button
-                        *ngFor="let page of getPageNumbers()"
-                        class="page-number"
-                        [class.active]="page === currentPage"
-                        (click)="goToPage(page)">
-                    {{ page + 1 }}
+        <ng-template #content>
+            <!-- État d'erreur -->
+            <div *ngIf="errorMessage" class="error-state alert alert-danger">
+                <span class="material-icons">error_outline</span>
+                {{ errorMessage }}
+                <button class="btn btn-sm btn-outline-danger ms-2" (click)="loadClassServices()">
+                    Retry
                 </button>
             </div>
 
-            <button
-                    class="pagination-button next"
-                    [disabled]="currentPage === totalPages - 1"
-                    (click)="goToPage(currentPage + 1)">
-                <span class="material-icons">chevron_right</span>
-            </button>
-        </div>
+            <!-- État vide -->
+            <div *ngIf="classServices.length === 0" class="empty-state">
+                <div class="empty-content">
+                    <span class="material-icons">info</span>
+                    <h4>No class services found</h4>
+                    <p *ngIf="currentSearchTerm">
+                        No results for "{{ currentSearchTerm }}". Try a different search term.
+                    </p>
+                    <p *ngIf="!currentSearchTerm">
+                        There are currently no class services available for your establishment.
+                    </p>
+                </div>
+            </div>
 
-        <div class="pagination-info">
-            Showing {{ (currentPage * itemsPerPage) + 1 }}-{{ Math.min((currentPage + 1) * itemsPerPage, totalItems) }} of {{ totalItems }} items
-        </div>
+            <div *ngIf="classServices.length > 0" class="organizations-list">
+                <app-class-service-card
+                        *ngFor="let classService of classServices | slice: (currentPage * itemsPerPage) : (currentPage + 1) * itemsPerPage"
+                        [classService]="classService"
+                        [timePeriod]="selectedTimePeriod"
+                        (click)="navigateToDetail(classService.id)">
+                </app-class-service-card>
+            </div>
+
+            <div *ngIf="classServices.length > 0" class="pagination">
+                <button
+                        class="pagination-button prev"
+                        [disabled]="currentPage === 0"
+                        (click)="goToPage(currentPage - 1)">
+                    <span class="material-icons">chevron_left</span>
+                </button>
+
+                <div class="page-numbers">
+                    <button
+                            *ngFor="let page of getPageNumbers()"
+                            class="page-number"
+                            [class.active]="page === currentPage"
+                            (click)="goToPage(page)">
+                        {{ page + 1 }}
+                    </button>
+                </div>
+
+                <button
+                        class="pagination-button next"
+                        [disabled]="currentPage === totalPages - 1"
+                        (click)="goToPage(currentPage + 1)">
+                    <span class="material-icons">chevron_right</span>
+                </button>
+            </div>
+
+            <div *ngIf="classServices.length > 0" class="pagination-info">
+                Showing {{ (currentPage * itemsPerPage) + 1 }}-{{ Math.min((currentPage + 1) * itemsPerPage, totalItems) }} of {{ totalItems }} items
+            </div>
+        </ng-template>
     </div>
 </app-layout>
