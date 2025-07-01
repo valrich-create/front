@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdministratorServiceService } from '../../services/administrator-service.service';
-import { Admin } from '../../admin';
 import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
 import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
+import {UserResponse} from "../../../users/users.models";
+import {AdministratorServiceService} from "../../services/administrator-service.service";
 
 @Component({
   selector: 'app-administrator-detail',
@@ -16,11 +16,12 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
     NavbarComponent,
     LayoutComponent
   ],
-  templateUrl: 'admin-details.component.html',
-  styleUrls: ['admin-details.component.scss']
+  templateUrl: 'org-admin-details.component.html',
+  styleUrls: ['org-admin-details.component.scss']
 })
-export class AdminDetailsComponent implements OnInit {
-  administrator!: Admin;
+
+export class OrgAdminDetailsComponent implements OnInit {
+  administrator!: UserResponse;
   isLoading: boolean = true;
 
   constructor(

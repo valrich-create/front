@@ -9,9 +9,10 @@ import {UserService} from "../../../users/services/user.service";
 import {CommonModule, NgIf} from "@angular/common";
 import {debounceTime, distinctUntilChanged, finalize, Subject} from "rxjs";
 import {AdminCardComponent} from "../../../administrators/components/admin-card/admin-card.component";
+import {Admin} from "../../../administrators/admin";
 
 @Component({
-  selector: 'app-admin-list',
+  selector: 'app-all-advance-users-list',
   standalone: true,
   imports: [
     CommonModule,
@@ -23,105 +24,73 @@ import {AdminCardComponent} from "../../../administrators/components/admin-card/
     NgIf,
     RouterLink
   ],
-  templateUrl: "admin-list.component.html",
-  styleUrls: ["admin-list.component.scss"]
+  templateUrl: "./advance-users-list.component.html",
+  styleUrls: ["./advance-users-list.component.scss"],
 })
-
-export class AdminListComponent implements OnInit {
-  totalAdmins = 100;
-  currentPage = 1;
+export class AdvanceUsersListComponent implements OnInit {
+  totalUsers = 0;
+  currentPage = 0;
   pageSize = 15;
-  establishmentId?: string;
 
   currentSort: SortOption = 'createdAt';
   currentSearchTerm: string = '';
-  admins: UserResponse[] | null = null;
+  users: UserResponse[] | null = null;
   loading = false;
   error: string | null = null;
   private searchTerms = new Subject<string>();
 
-  constructor(private adminService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {
-    this.getEstablishmentIdFromStorage();
-    this.loadAdmins();
+    this.loadUsers();
 
     this.searchTerms.pipe(
         debounceTime(300),
         distinctUntilChanged()
     ).subscribe(term => {
       this.currentSearchTerm = term;
-      this.loadAdmins();
+      this.loadUsers();
     });
   }
 
-  loadAdmins(): void {
-    console.log('Starting loadAdmins'); // Debug
+  loadUsers(): void {
     this.loading = true;
     this.error = null;
 
-    const establishmentId = this.getEstablishmentIdFromStorage();
-    if (!establishmentId) {
-      this.error = "No establishment selected";
-      this.loading = false;
-      return;
-    }
-
-    this.adminService.getAdvancedUsersByEstablishment(
-        establishmentId,
+    this.userService.getAllAdvancedUsers(
         this.currentPage,
         this.pageSize,
         this.currentSort
     ).pipe(
         finalize(() => {
-          console.log('Data loaded:', this.admins); // Debug
           this.loading = false;
         })
     ).subscribe({
-      next: (admins) => {
-        this.admins = admins.content;
-        this.totalAdmins = admins.totalElements;
-        console.log('Data received:', admins); // Debug
+      next: (users) => {
+        this.users = users.content;
+        this.totalUsers = users.totalElements;
       },
       error: (err) => {
-        console.error('Error loading data:', err); // Debug
-        this.error = "Failed to load administrators";
+        this.error = "Failed to load users";
+        console.error('Error loading users:', err);
       }
     });
   }
 
-  getEstablishmentIdFromStorage(): string | null {
-    const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
-
-    if (userData) {
-      try {
-        const user = JSON.parse(userData);
-        return user.establishment?.id || null;
-      } catch (e) {
-        console.error('Error parsing user data from storage', e);
-        return null;
-      }
-    }
-
-    return null;
-  }
-
-  handleAction(event: {type: string, admin: any}): void {
+  handleAction(event: {type: string, admin: Admin}): void {
     switch(event.type) {
       case 'edit':
-        console.log('Edit Super admins', event.admin);
         this.router.navigate(['administrators', 'edit', event.admin.id]);
         break;
       case 'delete':
-        if(confirm('Are you sure you want to delete this Super admin?')) {
-          this.adminService.deleteUser(event.admin.id).subscribe({
-            next: () => this.loadAdmins(),
-            error: err => console.error('An error occurred when deleting Super admin', err)
+        if(confirm('Are you sure you want to delete this user?')) {
+          this.userService.deleteUser(event.admin.id).subscribe({
+            next: () => this.loadUsers(),
+            error: err => console.error('Error deleting user:', err)
           });
         }
         break;
       case 'details':
-        console.log('View details', event.admin);
         this.router.navigate(['administrators', event.admin.id]);
         break;
     }
@@ -129,12 +98,11 @@ export class AdminListComponent implements OnInit {
 
   onSortChange(sortOption: SortOption): void {
     this.currentSort = sortOption;
-    this.loadAdmins();
+    this.loadUsers();
   }
 
   onSearchChange(searchTerm: string): void {
-    this.currentSearchTerm = searchTerm;
-    this.loadAdmins();
+    this.searchTerms.next(searchTerm);
   }
 
   protected readonly Math = Math;

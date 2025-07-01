@@ -26,7 +26,7 @@ import { RouterModule } from "@angular/router";
         <small class="text-muted">{{ user.email }}</small>
       </div>
       
-      <div class="user-id text-muted d-none d-md-block text-center" style="width: 120px;">{{ user.id?.substring(0, 8) }}</div>
+      <div class="user-id text-muted d-none d-md-block text-center" style="width: 120px;">{{ user.id.substring(0, 8) }}</div>
       
       <div class="user-date text-muted d-none d-md-block text-center" style="width: 120px;">
 <!--        {{ user.createdAt | date:'MMM dd, yyyy' || '-' }}-->

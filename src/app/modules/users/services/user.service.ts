@@ -99,6 +99,21 @@ export class UserService {
 			);
 	}
 
+	getAllAdvancedUsers(page: number = 0, size: number = 20, sort: string = 'createdAt'): Observable<Page<UserResponse>> {
+		const params = new HttpParams()
+			.set('page', page.toString())
+			.set('size', size.toString())
+			.set('sort', sort);
+
+		return this.http.get<Page<UserResponse>>(`${this.apiUrl}/advanced`, { params })
+			.pipe(
+				catchError(error => {
+					console.error('Error getting all system advanced users', error);
+					return throwError(() => new Error('Failed to get advanced users'));
+				})
+			);
+	}
+
 	getUsersByClassId(classId: string, page: number = 0, size: number = 20): Observable<Page<UserResponse>> {
 		const params = new HttpParams()
 			.set('page', page.toString())

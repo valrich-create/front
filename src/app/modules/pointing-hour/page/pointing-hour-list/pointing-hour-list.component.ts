@@ -8,12 +8,13 @@ import {Subject} from "rxjs";
 import { startOfDay, endOfDay, isSameMonth } from 'date-fns';
 import {isSameDay} from "date-fns";
 import {FormsModule} from "@angular/forms";
-import {DatePipe} from "@angular/common";
+import {CommonModule, DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-pointing-hour-list',
   standalone: true,
   imports: [
+      CommonModule,
     FormsModule,
     CalendarModule,
     DatePipe

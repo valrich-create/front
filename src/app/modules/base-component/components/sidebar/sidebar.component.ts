@@ -35,13 +35,13 @@ export class SidebarComponent implements OnInit {
             {icon: 'bi-house', label: 'Dashboard', route: '/dashboard'},
             {icon: 'bi-shield', label: 'Super Admins', route: '/super-admin'},
             {icon: 'bi-shield', label: 'Administrators', route: '/administrators'},
+            {icon: 'bi-shield', label: 'Org Admins', route: '/organization-admin'},
+            {icon: 'bi-building', label: 'Organizations', route: '/organizations'},
+            {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
             {icon: 'bi-people', label: 'Users', route: '/users'},
             {icon: 'bi-calendar', label: 'Event', route: '/events'},
             {icon: 'bi-chat', label: 'Chat', route: '/chat'},
             {icon: 'bi-person', label: 'Profile', route: '/profile'},
-            {icon: 'bi-building', label: 'Organizations', route: '/organizations'},
-            {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
-            {icon: 'bi-activity', label: 'Latest Activity', route: '/activity'}
         ];
 
         const adminItems: MenuItem[] = [

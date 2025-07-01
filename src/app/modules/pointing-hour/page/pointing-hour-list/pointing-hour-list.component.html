@@ -35,7 +35,6 @@
                 <div class="hour-item" *ngFor="let hour of selectedDateHours">
                     <div class="hour-details">
                         <span class="time">{{ hour.startTime | date:'shortTime' }} - {{ hour.endTime | date:'shortTime' }}</span>
-                        <span class="description">{{ hour.description || 'No description' }}</span>
                     </div>
 
                     <div class="hour-actions">

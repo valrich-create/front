@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Admin} from "../admin";
 import {catchError, Observable, of, switchMap, throwError} from "rxjs";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserService} from "../../users/services/user.service";
@@ -23,11 +22,11 @@ export class AdministratorServiceService {
       pageSize: number,
       sort: string,
       search: string
-  ): Observable<Admin[] | UserResponse[]> {
+  ): Observable<UserResponse[]> {
     return this.userService.getCurrentUser().pipe(
         switchMap(user => {
           if (user.role === UserRole.SUPER_ADMIN) {
-            return this.getAdministrators(page, pageSize, sort, search);
+            return this.getUserResponseistrators(page, pageSize, sort, search);
           } else {
             const establishmentId = user.establishmentId;
 
@@ -39,38 +38,64 @@ export class AdministratorServiceService {
     );
   }
 
-  getAllAdministrators(): Observable<Admin[]> {
-    return this.http.get<Admin[]>(`${this.apiUrl}`);
+  getAllAdministrators(): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(`${this.apiUrl}`);
   }
 
-  getAdministrators(page: number, pageSize: number, sort: string, search: string): Observable<Admin[]> {
+  getUserResponseistrators(page: number, pageSize: number, sort: string, search: string): Observable<UserResponse[]> {
     const params = new HttpParams()
         .set('page', page)
         .set('pageSize', pageSize)
         .set('sort', sort)
         .set('search', search);
 
-    return this.http.get<Admin[]>(this.apiUrl, { params });
+    return this.http.get<UserResponse[]>(this.apiUrl, { params });
   }
 
-  getAdministratorById(id: string): Observable<Admin> {
-    return this.http.get<Admin>(`${this.apiUrl}/${id}`);
+  getAdministratorById(id: string): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.apiUrl}/${id}`);
   }
 
-  createAdministrator(admin: Partial<Admin>): Observable<Admin> {
-    return this.http.post<Admin>(`${this.apiUrl}`, admin);
+  // createAdministrator(UserResponse: Partial<UserResponse>): Observable<UserResponse> {
+  //   return this.http.post<UserResponse>(`${this.apiUrl}`, UserResponse);
+  // }
+  //
+  // updateAdministrator(id: string, UserResponse: Partial<UserResponse>): Observable<UserResponse> {
+  //   return this.http.put<UserResponse>(`${this.apiUrl}/${id}`, UserResponse);
+  // }
+
+  createAdministrator(user: Partial<UserResponse>): Observable<UserResponse> {
+    const formData = this.buildFormData(user);
+    return this.http.post<UserResponse>(this.apiUrl, formData);
   }
 
-  updateAdministrator(id: string, admin: Partial<Admin>): Observable<Admin> {
-    return this.http.put<Admin>(`${this.apiUrl}/${id}`, admin);
+  updateAdministrator(id: string, user: Partial<UserResponse>): Observable<UserResponse> {
+    const formData = this.buildFormData(user);
+    return this.http.put<UserResponse>(`${this.apiUrl}/${id}`, formData);
+  }
+
+  private buildFormData(user: Partial<UserResponse>): FormData {
+    const formData = new FormData();
+
+    for (const [key, value] of Object.entries(user)) {
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          value.forEach(v => formData.append(`${key}[]`, v));
+        } else {
+          formData.append(key, value as any);
+        }
+      }
+    }
+
+    return formData;
   }
 
   deleteAdministrator(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getCurrentAdmin(): Observable<Admin> {
-    return this.http.get<Admin>(`${this.apiUrl}/current-user`)
+  getCurrentAdmin(): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.apiUrl}/current-user`)
         .pipe(
             catchError(error => {
               console.error('Error fetching user', error);

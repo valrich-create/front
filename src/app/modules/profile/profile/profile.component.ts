@@ -129,7 +129,7 @@ export class ProfileComponent implements OnInit {
     this.toastService.show(errorMessage, 'danger');
   }
 
-  private mapAdminToUserResponse(admin: Admin): UserResponse {
+  private mapAdminToUserResponse(admin: UserResponse): UserResponse {
     return {
       id: admin.id,
       firstName: admin.firstName,

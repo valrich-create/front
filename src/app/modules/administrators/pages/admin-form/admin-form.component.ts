@@ -8,16 +8,18 @@ import {
     FormsModule,
     AbstractControl,
     ValidationErrors,
-    FormArray
+    FormArray,
+    FormControl
 } from '@angular/forms';
 import { LayoutComponent } from "../../../base-component/components/layout/layout.component";
 import { NavbarComponent } from "../../../base-component/components/navbar/navbar.component";
-import { UserPermission, UserRole } from "../../../users/users.models";
+import {UserPermission, UserResponse, UserRole} from "../../../users/users.models";
 import { Establishment } from "../../../organizations/organization";
 import { OrganizationService } from "../../../organizations/organization.service";
 import { Admin } from "../../admin";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AdministratorServiceService } from "../../services/administrator-service.service";
+import { ToastService } from "../../../base-component/services/toast/toast.service";
 
 @Component({
     selector: 'app-admin-form',
@@ -27,38 +29,26 @@ import { AdministratorServiceService } from "../../services/administrator-servic
     styleUrls: ['admin-form.component.scss']
 })
 export class AdminFormComponent implements OnInit {
-    @Input() adminData: Admin | null = null;
+    @Input() adminData: UserResponse | null = null;
     isEditMode = false;
 
-    adminForm!: FormGroup;
+    adminForm: FormGroup;
     organizations: Establishment[] = [];
     maxBirthDate = new Date();
     roles = Object.values(UserRole);
     authorizations = Object.values(UserPermission);
     characterCount: number = 0;
     maxCharacters: number = 2000;
-    permissionsFormArray!: FormArray;
+    permissionsFormArray: FormArray<FormControl<boolean | null>>;
 
     constructor(
         private fb: FormBuilder,
         private organizationService: OrganizationService,
+        private toastService: ToastService,
         private route: ActivatedRoute,
         private adminService: AdministratorServiceService,
         private router: Router
-    ) {}
-
-    ngOnInit(): void {
-        this.initForm();
-        this.loadOrganizations();
-
-        const adminId = this.route.snapshot.paramMap.get('id');
-        if (adminId) {
-            this.isEditMode = true;
-            this.loadAdminData(adminId);
-        }
-    }
-
-    initForm(): void {
+    ) {
         this.adminForm = this.fb.group({
             id: [''],
             firstName: ['', Validators.required],
@@ -71,23 +61,44 @@ export class AdminFormComponent implements OnInit {
             organization: ['', Validators.required],
             password: ['', [Validators.minLength(8)]],
             confirmPassword: [''],
-            permissions: this.fb.array(this.createPermissionsControls())
+            permissions: this.fb.array<FormControl<boolean>>([])
         }, { validators: this.passwordMatchValidator });
 
-        this.permissionsFormArray = this.adminForm.get('permissions') as FormArray;
+        this.permissionsFormArray = this.adminForm.get('permissions') as FormArray<FormControl<boolean | null>>;
     }
 
-    createPermissionsControls(): AbstractControl[] {
-        return this.authorizations.map(() => this.fb.control(false));
+    ngOnInit(): void {
+        this.loadOrganizations();
+
+        const adminId = this.route.snapshot.paramMap.get('id');
+        if (adminId) {
+            this.isEditMode = true;
+            this.loadAdminData(adminId);
+        } else {
+            this.initializePermissions();
+        }
+    }
+
+    initializePermissions(): void {
+        this.permissionsFormArray.clear();
+        this.authorizations.forEach(() => {
+            const control = new FormControl<boolean>(false); // 👈 important
+            this.permissionsFormArray.push(control);
+        });
+
     }
 
     loadAdminData(id: string): void {
-        this.adminService.getAdministratorById(id).subscribe(admin => {
-            this.populateForm(admin);
+        this.adminService.getAdministratorById(id).subscribe({
+            next: (admin) => this.populateForm(admin),
+            error: (err) => {
+                this.toastService.show('Failed to load admin data', 'danger');
+                console.error('Error loading admin:', err);
+            }
         });
     }
 
-    populateForm(admin: Admin): void {
+    populateForm(admin: UserResponse): void {
         const birthDate = admin.dateOfBirth ?
             new Date(admin.dateOfBirth).toISOString().split('T')[0] : '';
 
@@ -99,13 +110,15 @@ export class AdminFormComponent implements OnInit {
             phoneNumber: admin.phoneNumber,
             dateOfBirth: birthDate,
             placeOfBirth: admin.placeOfBirth,
-            role: admin.role
+            role: admin.role,
+            organization: admin.establishmentId
         });
 
-        // Set permissions
-        this.authorizations.forEach((permission, index) => {
+        this.permissionsFormArray.clear();
+        this.authorizations.forEach(permission => {
             const hasPermission = admin.permissions?.includes(permission) ?? false;
-            this.permissionsFormArray.at(index).setValue(hasPermission);
+            const control = new FormControl<boolean>(hasPermission); // 👈 ici aussi
+            this.permissionsFormArray.push(control);
         });
 
         if (this.isEditMode) {
@@ -134,32 +147,48 @@ export class AdminFormComponent implements OnInit {
                 delete formData.password;
             }
 
-            if (this.isEditMode) {
-                formData.id = this.adminData?.id;
-                this.adminService.updateAdministrator(formData.id, formData)
-                    .subscribe({
-                        next: () => this.router.navigate(['/administrators']),
-                        error: (err) => console.error('Update failed:', err)
-                    });
-            } else {
-                this.adminService.createAdministrator(formData)
-                    .subscribe({
-                        next: () => this.router.navigate(['/administrators']),
-                        error: (err) => console.error('Creation failed:', err)
-                    });
-            }
+            const operation$ = this.isEditMode
+                ? this.adminService.updateAdministrator(formData.id, formData)
+                : this.adminService.createAdministrator(formData);
+
+            operation$.subscribe({
+                next: () => {
+                    const message = this.isEditMode
+                        ? 'Admin updated successfully'
+                        : 'Admin created successfully';
+                    this.toastService.show(message, 'success');
+                    this.router.navigate(['/administrators']);
+                },
+                error: (err) => {
+                    const message = this.isEditMode
+                        ? 'Failed to update admin'
+                        : 'Failed to create admin';
+                    this.toastService.show(message, 'danger');
+                    console.error('Operation failed:', err);
+                }
+            });
         } else {
             this.markFormGroupTouched(this.adminForm);
+            this.toastService.show('Please fill all required fields correctly', 'warning');
         }
     }
 
     loadOrganizations(): void {
-        this.organizationService.getAllEstablishmentList().subscribe(
-            orgs => this.organizations = orgs
-        );
+        this.organizationService.getAllEstablishmentList().subscribe({
+            next: (orgs) => {
+                this.organizations = orgs;
+                if (orgs.length === 0) {
+                    this.toastService.show('No organizations found', 'warning');
+                }
+            },
+            error: (err) => {
+                this.toastService.show('Failed to load organizations', 'danger');
+                console.error('Error loading organizations:', err);
+            }
+        });
     }
 
-    passwordMatchValidator(g: FormGroup) {
+    passwordMatchValidator(g: AbstractControl): ValidationErrors | null {
         const password = g.get('password')?.value;
         const confirmPassword = g.get('confirmPassword')?.value;
         return password === confirmPassword ? null : { 'mismatch': true };
@@ -169,11 +198,7 @@ export class AdminFormComponent implements OnInit {
         if (!control.value) return null;
         const selectedDate = new Date(control.value);
         const today = new Date();
-        return selectedDate > today ? { futureDate: true } : null;
-    }
-
-    updateCharCount(event: any): void {
-        this.characterCount = event.target.value.length;
+        return selectedDate > today ? { 'futureDate': true } : null;
     }
 
     markFormGroupTouched(formGroup: FormGroup) {
@@ -183,7 +208,11 @@ export class AdminFormComponent implements OnInit {
                 this.markFormGroupTouched(control);
             } else if (control instanceof FormArray) {
                 control.controls.forEach(arrayControl => {
-                    this.markFormGroupTouched(arrayControl as FormGroup);
+                    if (arrayControl instanceof FormGroup) {
+                        this.markFormGroupTouched(arrayControl);
+                    } else {
+                        arrayControl.markAsTouched();
+                    }
                 });
             }
         });

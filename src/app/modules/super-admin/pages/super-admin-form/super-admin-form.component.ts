@@ -9,7 +9,7 @@ import {
 } from "@angular/forms";
 import {AdministratorServiceService} from "../../../administrators/services/administrator-service.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {NgClass} from "@angular/common";
+import {CommonModule, NgClass} from "@angular/common";
 import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
 import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
 import {ToastService} from "../../../base-component/services/toast/toast.service";
@@ -17,6 +17,7 @@ import {ToastService} from "../../../base-component/services/toast/toast.service
 @Component({
   selector: 'app-super-admin-form',
   imports: [
+      CommonModule,
     NgClass,
     ReactiveFormsModule,
     NavbarComponent,

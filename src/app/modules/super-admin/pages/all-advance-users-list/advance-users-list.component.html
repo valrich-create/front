@@ -1,0 +1,53 @@
+<app-layout>
+    <app-navbar [pageTitle]="'Advanced Users'"></app-navbar>
+
+    <div class="users-container">
+        <app-search-bar
+                newButtonText="New User"
+                newItemRoute="/administrators/new"
+                [currentSort]="currentSort"
+                (sortChange)="onSortChange($event)"
+                (searchChange)="onSearchChange($event)">
+        </app-search-bar>
+
+        <div *ngIf="loading" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Loading...
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+        </div>
+
+        <div *ngIf="users !== null && users.length === 0">
+            <div class="no-data-icon">
+                <i class="fas fa-users fa-4x"></i>
+            </div>
+            <h3>No advanced users found</h3>
+            <p>There are currently no advanced users registered in the system.</p>
+            <button class="btn btn-primary" routerLink="/users/new">
+                <i class="fas fa-plus-circle"></i> Create New User
+            </button>
+        </div>
+
+        <div class="users-grid" *ngIf="users !== null && users.length > 0">
+            <app-admin-card
+                    *ngFor="let user of users"
+                    [admin]="user"
+                    (action)="handleAction($event)">
+            </app-admin-card>
+        </div>
+
+        <div class="pagination-container" *ngIf="users && users.length > 0 && totalUsers > pageSize">
+            <ngb-pagination
+                    [collectionSize]="totalUsers"
+                    [(page)]="currentPage"
+                    [pageSize]="pageSize"
+                    (pageChange)="loadUsers()">
+            </ngb-pagination>
+            <div class="pagination-info">
+                Showing {{ (currentPage - 1) * pageSize + 1 }}-{{ Math.min(currentPage * pageSize, totalUsers) }}
+                from {{ totalUsers }} users
+            </div>
+        </div>
+    </div>
+</app-layout>

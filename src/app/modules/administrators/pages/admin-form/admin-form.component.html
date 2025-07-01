@@ -139,14 +139,29 @@
                             <div class="auth-item">
                                 <input
                                         type="checkbox"
-                                        [id]="permission"
-                                        [formControlName]="i"
+                                        [id]="'permission-' + i"
+                                        [formControl]="permissionsFormArray.controls[i]"
                                 >
-                                <label [for]="permission">{{ permission }}</label>
+                                <label [for]="'permission-' + i">{{ permission }}</label>
                             </div>
                         </div>
                     </div>
                 </div>
+<!--                <div class="authorization-section">-->
+<!--                    <h3>Permissions</h3>-->
+<!--                    <div class="auth-grid">-->
+<!--                        <div class="auth-row" *ngFor="let permission of authorizations; let i = index">-->
+<!--                            <div class="auth-item">-->
+<!--                                <input-->
+<!--                                        type="checkbox"-->
+<!--                                        [id]="permission"-->
+<!--                                        [formControlName]="i"-->
+<!--                                >-->
+<!--                                <label [for]="permission">{{ permission }}</label>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
 
             <div *ngIf="isEditMode" class="password-note">
