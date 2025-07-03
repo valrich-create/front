@@ -6,6 +6,7 @@ import {NavbarComponent} from "../../../base-component/components/navbar/navbar.
 import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
 import {UserResponse} from "../../../users/users.models";
 import {AdministratorServiceService} from "../../services/administrator-service.service";
+import {UserService} from "../../../users/services/user.service";
 
 @Component({
   selector: 'app-administrator-detail',
@@ -27,7 +28,8 @@ export class OrgAdminDetailsComponent implements OnInit {
   constructor(
       private route: ActivatedRoute,
       private router: Router,
-      private adminService: AdministratorServiceService
+      private adminService: AdministratorServiceService,
+      private service: UserService
   ) {}
 
   ngOnInit(): void {
@@ -38,7 +40,7 @@ export class OrgAdminDetailsComponent implements OnInit {
   }
 
   loadAdministratorData(id: string): void {
-    this.adminService.getAdministratorById(id).subscribe({
+    this.service.getUserById(id).subscribe({
       next: (admin) => {
         this.administrator = admin;
         this.isLoading = false;
@@ -57,7 +59,7 @@ export class OrgAdminDetailsComponent implements OnInit {
 
   deleteAdministrator(): void {
     if (confirm('Are you sure you want to delete this administrator?')) {
-      this.adminService.deleteAdministrator(this.administrator.id).subscribe({
+      this.service.deleteUser(this.administrator.id).subscribe({
         next: () => {
           this.router.navigate(['/administrators']);
         },

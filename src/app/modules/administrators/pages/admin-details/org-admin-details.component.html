@@ -56,6 +56,10 @@
                     <ul class="education-list">
                         <li class="education-item">
                             <div class="bullet-point"></div>
+                            <div class="contact-item" *ngIf="administrator.placeOfBirth">
+                                <i class="fa-solid fa-location-dot location-icon"></i>
+                                <span>{{ administrator.placeOfBirth }}</span>
+                            </div>
                             <div class="education-details">
                                 <p class="degree">Date of Birth</p>
                                 <p class="years">{{ administrator.dateOfBirth | date }}</p>
