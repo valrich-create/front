@@ -2,8 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
-import { LayoutComponent } from "../../base-component/components/layout/layout.component";
-import { NavbarComponent } from "../../base-component/components/navbar/navbar.component";
 import { HttpClientModule } from "@angular/common/http";
 import {EventService} from "../events.service";
 
@@ -14,8 +12,6 @@ import {EventService} from "../events.service";
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    LayoutComponent,
-    NavbarComponent,
     HttpClientModule
   ],
   templateUrl: "event-form.component.html",
@@ -26,6 +22,18 @@ export class EventFormComponent implements OnInit {
   informationForm!: FormGroup;
   descriptionLength: number = 0;
   establishmentId: string | null = null;
+  selectedFiles: File[] = [];
+  maxFiles: number = 5;
+  maxFileSize: number = 10 * 1024 * 1024; // 10MB
+  allowedFileTypes: string[] = [
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+    'application/pdf',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+    'application/msword', // doc
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // xlsx
+    'application/vnd.ms-excel', // xls
+    'text/plain'
+  ];
 
   constructor(
       private fb: FormBuilder,
@@ -92,20 +100,91 @@ export class EventFormComponent implements OnInit {
     return field ? (field.invalid && (field.dirty || field.touched)) : false;
   }
 
+  onFileSelect(event: any): void {
+    const files: FileList = event.target.files;
+
+    if (files && files.length > 0) {
+      // Vérifier le nombre total de fichiers
+      if (this.selectedFiles.length + files.length > this.maxFiles) {
+        alert(`Vous ne pouvez sélectionner que ${this.maxFiles} fichiers maximum.`);
+        return;
+      }
+
+      // Ajouter les nouveaux fichiers
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Vérifier le type de fichier
+        if (!this.allowedFileTypes.includes(file.type)) {
+          alert(`Le type de fichier "${file.name}" n'est pas autorisé.`);
+          continue;
+        }
+
+        // Vérifier la taille du fichier
+        if (file.size > this.maxFileSize) {
+          alert(`Le fichier "${file.name}" dépasse la taille maximale autorisée (10MB).`);
+          continue;
+        }
+
+        this.selectedFiles.push(file);
+      }
+    }
+
+    // Réinitialiser l'input pour permettre la sélection du même fichier
+    event.target.value = '';
+  }
+
+  removeFile(index: number): void {
+    this.selectedFiles.splice(index, 1);
+  }
+
+  getFileIcon(file: File): string {
+    if (file.type.startsWith('image/')) {
+      return '🖼️';
+    } else if (file.type === 'application/pdf') {
+      return '📄';
+    } else if (file.type.includes('word') || file.type.includes('document')) {
+      return '📝';
+    } else if (file.type.includes('sheet') || file.type.includes('excel')) {
+      return '📊';
+    } else {
+      return '📎';
+    }
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
   onSubmit(): void {
     if (this.informationForm.valid) {
       const formValue = this.informationForm.value;
 
+      // Créer FormData pour envoyer les fichiers
+      const formData = new FormData();
+
+      // Ajouter les données du formulaire
+      formData.append('title', formValue.title);
+      formData.append('description', formValue.description);
+      formData.append('isImportant', formValue.isImportant.toString());
+      formData.append('establishmentId', formValue.establishmentId);
+
       // Format dates if isImportant is true
       if (formValue.isImportant) {
-        formValue.importanceDisplayStartDate = new Date(formValue.importanceDisplayStartDate).toISOString();
-        formValue.importanceDisplayEndDate = new Date(formValue.importanceDisplayEndDate).toISOString();
-      } else {
-        delete formValue.importanceDisplayStartDate;
-        delete formValue.importanceDisplayEndDate;
+        formData.append('importanceDisplayStartDate', new Date(formValue.importanceDisplayStartDate).toISOString());
+        formData.append('importanceDisplayEndDate', new Date(formValue.importanceDisplayEndDate).toISOString());
       }
 
-      this.eventService.createInformation(formValue).subscribe({
+      // Ajouter les fichiers
+      this.selectedFiles.forEach((file, index) => {
+        formData.append(`files`, file, file.name);
+      });
+
+      this.eventService.createInformation(formData).subscribe({
         next: (response) => {
           // Navigate back or show success message
           this.router.navigate(['/events']);

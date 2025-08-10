@@ -16,8 +16,13 @@
                                 formControlName="firstName"
                                 placeholder="Maria"
                                 [ngClass]="{'invalid': adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched}"
+                                aria-describedby="firstName-error"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched">
+                        <div
+                                id="firstName-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched"
+                        >
                             First name is required
                         </div>
                     </div>
@@ -30,8 +35,13 @@
                                 formControlName="lastName"
                                 placeholder="Historia"
                                 [ngClass]="{'invalid': adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched}"
+                                aria-describedby="lastName-error"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched">
+                        <div
+                                id="lastName-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched"
+                        >
                             Last name is required
                         </div>
                     </div>
@@ -46,8 +56,13 @@
                                 formControlName="email"
                                 placeholder="historia@email.com"
                                 [ngClass]="{'invalid': adminForm.get('email')?.invalid && adminForm.get('email')?.touched}"
+                                aria-describedby="email-error"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('email')?.invalid && adminForm.get('email')?.touched">
+                        <div
+                                id="email-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('email')?.invalid && adminForm.get('email')?.touched"
+                        >
                             Valid email is required
                         </div>
                     </div>
@@ -60,8 +75,13 @@
                                 formControlName="phoneNumber"
                                 placeholder="+1234567890"
                                 [ngClass]="{'invalid': adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched}"
+                                aria-describedby="phoneNumber-error"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched">
+                        <div
+                                id="phoneNumber-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched"
+                        >
                             Phone number is required
                         </div>
                     </div>
@@ -76,8 +96,13 @@
                                 formControlName="dateOfBirth"
                                 [max]="maxBirthDate | date:'yyyy-MM-dd'"
                                 [ngClass]="{'invalid': adminForm.get('dateOfBirth')?.invalid && adminForm.get('dateOfBirth')?.touched}"
+                                aria-describedby="dateOfBirth-error"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('dateOfBirth')?.errors?.['futureDate']">
+                        <div
+                                id="dateOfBirth-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('dateOfBirth')?.errors?.['futureDate']"
+                        >
                             Birth date cannot be in the future
                         </div>
                     </div>
@@ -101,11 +126,16 @@
                                     id="organization"
                                     formControlName="organization"
                                     [ngClass]="{'invalid': adminForm.get('organization')?.invalid && adminForm.get('organization')?.touched}"
+                                    aria-describedby="organization-error"
                             >
                                 <option value="" disabled selected>Select organization</option>
                                 <option *ngFor="let org of organizations" [value]="org.id">{{ org.nom }}</option>
                             </select>
-                            <div class="error-message" *ngIf="adminForm.get('organization')?.invalid && adminForm.get('organization')?.touched">
+                            <div
+                                    id="organization-error"
+                                    class="error-message"
+                                    *ngIf="adminForm.get('organization')?.invalid && adminForm.get('organization')?.touched"
+                            >
                                 Organization is required
                             </div>
                         </div>
@@ -120,11 +150,16 @@
                                     id="role"
                                     formControlName="role"
                                     [ngClass]="{'invalid': adminForm.get('role')?.invalid && adminForm.get('role')?.touched}"
+                                    aria-describedby="role-error"
                             >
                                 <option value="" disabled selected>Select role</option>
                                 <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
                             </select>
-                            <div class="error-message" *ngIf="adminForm.get('role')?.invalid && adminForm.get('role')?.touched">
+                            <div
+                                    id="role-error"
+                                    class="error-message"
+                                    *ngIf="adminForm.get('role')?.invalid && adminForm.get('role')?.touched"
+                            >
                                 Role is required
                             </div>
                         </div>
@@ -147,21 +182,58 @@
                         </div>
                     </div>
                 </div>
-<!--                <div class="authorization-section">-->
-<!--                    <h3>Permissions</h3>-->
-<!--                    <div class="auth-grid">-->
-<!--                        <div class="auth-row" *ngFor="let permission of authorizations; let i = index">-->
-<!--                            <div class="auth-item">-->
-<!--                                <input-->
-<!--                                        type="checkbox"-->
-<!--                                        [id]="permission"-->
-<!--                                        [formControlName]="i"-->
-<!--                                >-->
-<!--                                <label [for]="permission">{{ permission }}</label>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+            </div>
+
+            <!-- Photo Profile Section -->
+            <div class="form-section">
+                <h2>Profile Photo</h2>
+
+                <div class="photo-upload-container">
+                    <div class="photo-preview-wrapper">
+                        <div class="photo-preview"
+                             [class.has-photo]="photoPreview"
+                             (dragover)="onDragOver($event)"
+                             (dragleave)="onDragLeave($event)"
+                             (drop)="onDrop($event)">
+
+                            <div *ngIf="!photoPreview" class="photo-placeholder">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <p>Add Photo</p>
+                            </div>
+
+                            <img *ngIf="photoPreview" [src]="photoPreview" alt="Profile preview" />
+
+                            <div class="photo-overlay" *ngIf="photoPreview">
+                                <button type="button" class="btn-remove-photo" (click)="removePhoto()" aria-label="Remove photo">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <input
+                                type="file"
+                                id="profilePhoto"
+                                accept="image/*"
+                                (change)="onFileSelected($event)"
+                                style="display: none;"
+                        >
+
+                        <label for="profilePhoto" class="btn-upload">
+                            {{ photoPreview ? 'Change Photo' : 'Choose Photo' }}
+                        </label>
+                    </div>
+
+                    <div class="photo-upload-info">
+                        <p>Drag and drop or click to upload</p>
+                        <p class="file-requirements">JPG, PNG or GIF • Max 5MB</p>
+                    </div>
+                </div>
             </div>
 
             <div *ngIf="isEditMode" class="password-note">
@@ -170,33 +242,81 @@
 
             <!-- Account Credentials Section -->
             <div class="form-section">
-                <h2>Account credentials</h2>
+                <h2>Account Credentials</h2>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="password">Password {{ isEditMode ? '' : '*' }}</label>
-                        <input
-                                type="password"
-                                id="password"
-                                formControlName="password"
-                                placeholder="••••••••"
-                                [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"
+                        <div class="password-input-wrapper">
+                            <input
+                                    [type]="showPassword ? 'text' : 'password'"
+                                    id="password"
+                                    formControlName="password"
+                                    placeholder="••••••••"
+                                    [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"
+                                    aria-describedby="password-error"
+                            >
+                            <button
+                                    type="button"
+                                    class="btn-toggle-password"
+                                    (click)="togglePasswordVisibility()"
+                                    aria-label="Toggle password visibility"
+                            >
+                                <svg *ngIf="!showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <svg *ngIf="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 19.42 16.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M1 1L23 23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div
+                                id="password-error"
+                                class="error-message"
+                                *ngIf="adminForm.get('password')?.invalid && adminForm.get('password')?.touched"
                         >
-                        <div class="error-message" *ngIf="adminForm.get('password')?.invalid && adminForm.get('password')?.touched">
                             Password must be at least 8 characters
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password {{ isEditMode ? '' : '*' }}</label>
-                        <input
-                                type="password"
-                                id="confirmPassword"
-                                formControlName="confirmPassword"
-                                placeholder="••••••••"
-                                [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"
+                        <div class="password-input-wrapper">
+                            <input
+                                    [type]="showConfirmPassword ? 'text' : 'password'"
+                                    id="confirmPassword"
+                                    formControlName="confirmPassword"
+                                    placeholder="••••••••"
+                                    [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"
+                                    aria-describedby="confirmPassword-error"
+                            >
+                            <button
+                                    type="button"
+                                    class="btn-toggle-password"
+                                    (click)="toggleConfirmPasswordVisibility()"
+                                    aria-label="Toggle confirm password visibility"
+                            >
+                                <svg *ngIf="!showConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M1 12S5 4 12 4S23 12 23 12S19 20 12 20S1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <svg *ngIf="showConfirmPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12A18.45 18.45 0 0 1 5.06 5.06L17.94 17.94Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12A18.5 18.5 0 0 1 19.42 16.42" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M1 1L23 23" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M14.12 14.12A3 3 0 1 1 9.88 9.88" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div
+                                id="confirmPassword-error"
+                                class="error-message"
+                                *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched"
                         >
-                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">
                             Passwords do not match
                         </div>
                     </div>

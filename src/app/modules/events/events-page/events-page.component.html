@@ -1,17 +1,252 @@
-<!-- events-event-form.component.html -->
+<!-- events-page.component.html -->
 <app-layout>
-    <app-navbar
-            [pageTitle]="'Information'">
-    </app-navbar>
-    <div class="events-page">
+    <app-navbar [pageTitle]="'Gestion des Informations'"/>
 
-        <div class="content-container">
-            <div class="calendar-section">
-                <app-calendar [selectedDate]="selectedDate()" (daySelected)="onDaySelected($event)"></app-calendar>
+    <div class="info-management-container">
+        <!-- Header avec bouton d'ajout -->
+        <div class="header-section">
+            <div class="header-content">
+                <h1 class="page-title">
+                    Informations
+                </h1>
+                <button mat-raised-button
+                        color="primary"
+                        class="add-button"
+                        (click)="openCreateModal()">
+                    <mat-icon>add</mat-icon>
+                    Ajouter une nouvelle information
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteneur principal -->
+        <div class="main-content" [class.mobile]="isMobile()">
+
+            <!-- Bloc gauche - Liste des informations -->
+            <div class="info-list-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <mat-icon>list</mat-icon>
+                        Liste des informations
+                    </h2>
+                    <span class="info-count">{{ informations().length }} information(s)</span>
+                </div>
+
+                <div class="info-list-container">
+                    <div class="info-cards-wrapper">
+                        <mat-card
+                                *ngFor="let info of informations(); trackBy: trackByInfoId"
+                                class="info-card"
+                                [class.selected]="selectedInformation()?.id === info.id"
+                                (click)="selectInformation(info)">
+
+                            <div class="card-header">
+                                <div class="title-section">
+                                    <h3 class="info-title">{{ info.title }}</h3>
+                                    <mat-chip
+                                            *ngIf="info.isImportant"
+                                            class="important-chip">
+                                        <mat-icon>priority_high</mat-icon>
+                                        Important
+                                    </mat-chip>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button mat-icon-button
+                                            color="primary"
+                                            class="edit-btn"
+                                            matTooltip="Modifier"
+                                            (click)="openEditModal(info, $event)">
+                                        <mat-icon>edit</mat-icon>
+                                    </button>
+                                    <button mat-icon-button
+                                            color="warn"
+                                            class="delete-btn"
+                                            matTooltip="Supprimer"
+                                            (click)="deleteInformation(info, $event)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <mat-card-content>
+                                <p class="info-description">{{ truncateText(info.description, 120) }}</p>
+
+                                <div class="info-meta">
+                                    <div class="meta-item">
+                                        <mat-icon class="meta-icon">person</mat-icon>
+                                        <span>{{ info.createdByName }}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <mat-icon class="meta-icon">schedule</mat-icon>
+                                        <span>{{ formatDate(info.createdAt) }}</span>
+                                    </div>
+                                    <div class="meta-item" *ngIf="info.file">
+                                        <mat-icon class="meta-icon">attach_file</mat-icon>
+                                        <span>Fichier joint</span>
+                                    </div>
+                                </div>
+                            </mat-card-content>
+
+                            <div class="card-overlay" *ngIf="selectedInformation()?.id === info.id">
+                                <mat-icon>check_circle</mat-icon>
+                            </div>
+                        </mat-card>
+
+                        <!-- Message si pas d'informations -->
+                        <div class="empty-state" *ngIf="informations().length === 0">
+                            <mat-icon>info_outline</mat-icon>
+                            <h3>Aucune information trouvée</h3>
+                            <p>Commencez par ajouter votre première information</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="events-section">
-                <app-event-list [selectedDate]="selectedDate()"></app-event-list>
+            <!-- Bloc droit - Détails de l'information -->
+            <div class="info-detail-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <mat-icon>visibility</mat-icon>
+                        Détails
+                    </h2>
+                    <div class="detail-actions" *ngIf="selectedInformation()">
+                        <button mat-raised-button
+                                color="primary"
+                                class="action-button edit-button"
+                                (click)="openEditModal(selectedInformation()!)">
+                            <mat-icon>edit</mat-icon>
+                            Modifier
+                        </button>
+                        <button mat-raised-button
+                                color="warn"
+                                class="action-button delete-button"
+                                (click)="deleteInformation(selectedInformation()!)">
+                            <mat-icon>delete</mat-icon>
+                            Supprimer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="detail-container">
+                    <!-- Contenu détaillé -->
+                    <mat-card class="detail-card" *ngIf="selectedInformation(); else emptyDetail">
+                        <mat-card-header class="detail-header">
+                            <mat-card-title class="detail-title">
+                                {{ selectedInformation()?.title }}
+                                <mat-chip
+                                        *ngIf="selectedInformation()?.isImportant"
+                                        class="important-chip large">
+                                    <mat-icon>priority_high</mat-icon>
+                                    Information Importante
+                                </mat-chip>
+                            </mat-card-title>
+                            <mat-card-subtitle class="detail-subtitle">
+                                Créée par {{ selectedInformation()?.createdByName }}
+                                le {{ formatDate(selectedInformation()?.createdAt!) }}
+                            </mat-card-subtitle>
+                        </mat-card-header>
+
+                        <mat-card-content class="detail-content">
+                            <!-- Description complète -->
+                            <div class="detail-section">
+                                <h4 class="section-label">
+                                    <mat-icon>description</mat-icon>
+                                    Description
+                                </h4>
+                                <p class="description-text">{{ selectedInformation()?.description }}</p>
+                            </div>
+
+                            <!-- Période d'importance -->
+                            <div class="detail-section"
+                                 *ngIf="selectedInformation()?.isImportant &&
+                          (selectedInformation()?.importanceDisplayStartDate ||
+                           selectedInformation()?.importanceDisplayEndDate)">
+                                <h4 class="section-label">
+                                    <mat-icon>date_range</mat-icon>
+                                    Période d'affichage important
+                                </h4>
+                                <div class="date-range">
+                                    <div class="date-item" *ngIf="selectedInformation()?.importanceDisplayStartDate">
+                                        <span class="date-label">Du :</span>
+                                        <span class="date-value">{{ formatDate(selectedInformation()?.importanceDisplayStartDate!) }}</span>
+                                    </div>
+                                    <div class="date-item" *ngIf="selectedInformation()?.importanceDisplayEndDate">
+                                        <span class="date-label">Au :</span>
+                                        <span class="date-value">{{ formatDate(selectedInformation()?.importanceDisplayEndDate!) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cibles -->
+                            <div class="detail-section"
+                                 *ngIf="selectedInformation()?.importanceInformationTarget?.length">
+                                <h4 class="section-label">
+                                    <mat-icon>group</mat-icon>
+                                    Cibles ({{ selectedInformation()?.importanceInformationTarget?.length }})
+                                </h4>
+                                <div class="targets-list">
+                                    <mat-chip
+                                            *ngFor="let target of selectedInformation()?.importanceInformationTarget"
+                                            class="target-chip">
+                                        {{ target }}
+                                    </mat-chip>
+                                </div>
+                            </div>
+
+                            <!-- Fichier joint -->
+                            <div class="detail-section" *ngIf="selectedInformation()?.file">
+                                <h4 class="section-label">
+                                    <mat-icon>attach_file</mat-icon>
+                                    Fichier joint
+                                </h4>
+                                <div class="file-attachment">
+                                    <button mat-raised-button
+                                            color="accent"
+                                            class="file-download-btn"
+                                            (click)="downloadFile(selectedInformation()?.file?.fileUrl!,
+                                               selectedInformation()?.file?.fileName!)">
+                                        <mat-icon>download</mat-icon>
+                                        {{ selectedInformation()?.file?.fileName }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Métadonnées -->
+                            <div class="detail-section metadata-section">
+                                <h4 class="section-label">
+                                    <mat-icon>info</mat-icon>
+                                    Informations système
+                                </h4>
+                                <div class="metadata-grid">
+                                    <div class="metadata-item">
+                                        <span class="metadata-label">Créée le :</span>
+                                        <span class="metadata-value">{{ formatDate(selectedInformation()?.createdAt!) }}</span>
+                                    </div>
+                                    <div class="metadata-item" *ngIf="selectedInformation()?.updatedAt">
+                                        <span class="metadata-label">Modifiée le :</span>
+                                        <span class="metadata-value">{{ formatDate(selectedInformation()?.updatedAt!) }}</span>
+                                    </div>
+                                    <div class="metadata-item">
+                                        <span class="metadata-label">Auteur :</span>
+                                        <span class="metadata-value">{{ selectedInformation()?.createdByName }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <!-- Message par défaut -->
+                    <ng-template #emptyDetail>
+                        <div class="empty-detail-state">
+                            <div class="empty-detail-content">
+                                <mat-icon class="empty-icon">touch_app</mat-icon>
+                                <h3>Sélectionnez une information</h3>
+                                <p>Cliquez sur une information dans la liste de gauche pour afficher ses détails complets</p>
+                            </div>
+                        </div>
+                    </ng-template>
+                </div>
             </div>
         </div>
     </div>

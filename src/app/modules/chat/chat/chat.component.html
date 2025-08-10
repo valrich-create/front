@@ -2,54 +2,86 @@
     <div class="chat-container">
         <!-- Chat Sidebar -->
         <div class="chat-sidebar" [class.mobile-hidden]="isMobile && showChatDetail">
+            <!-- Header -->
             <div class="chat-header">
-                <h2 class="chat-title">Chats</h2>
+                <h2 class="chat-title">Messages</h2>
+                <span class="thread-count">{{ getFilteredThreads().length }} conversations</span>
             </div>
 
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-input-wrapper">
                     <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                     <input
                             type="text"
                             class="search-input"
-                            placeholder="Search here..."
+                            placeholder="Rechercher une conversation..."
                             [(ngModel)]="searchQuery">
+                    <button *ngIf="searchQuery" class="clear-search" (click)="searchQuery = ''">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
-            <!-- Chats Section -->
-            <div class="section">
-                <div class="chats-list">
-                    <div *ngFor="let thread of getFilteredThreads()" class="chat-item"
+            <!-- Conversations List -->
+            <div class="conversations-section">
+                <div class="conversations-list" *ngIf="getFilteredThreads().length > 0">
+                    <div *ngFor="let thread of getFilteredThreads(); trackBy: trackByThreadId"
+                         class="conversation-item"
+                         [class.active]="selectedThread?.id === thread.id"
                          (click)="selectThread(thread)">
-                        <div class="chat-avatar-wrapper">
-                            <div class="chat-avatar">
-                                <span class="avatar-text">
-                                    {{ thread.title | slice:0:2 | uppercase }}
-                                </span>
+                        <div class="conversation-avatar">
+              <span class="avatar-text">
+                {{ thread.title | slice:0:2 | uppercase }}
+              </span>
+                        </div>
+                        <div class="conversation-content">
+                            <div class="conversation-header">
+                                <h4 class="conversation-title">{{ thread.title }}</h4>
+                                <span class="conversation-time">
+                  {{ thread.createdAt | date:'shortTime' }}
+                </span>
                             </div>
-                            <div class="chat-info-container">
-                                <div class="chat-info-header">
-                                    <h4 class="chat-name">{{ thread.title }}</h4>
-                                    <span class="chat-time">{{ thread.createdAt | date:'shortTime'}}</span>
-                                </div>
-                                <div class="chat-info-footer">
-                                    <p class="chat-description">{{ thread.classServiceId ? 'Class Group' : 'Private Chat' }}</p>
-                                </div>
+                            <div class="conversation-meta">
+                <span class="conversation-type">
+                  {{ thread.classServiceId ? 'Groupe de classe' : 'Discussion privée' }}
+                </span>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
+                <!-- Empty Search State -->
+                <div class="empty-search" *ngIf="getFilteredThreads().length === 0 && searchQuery">
+                    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <p class="empty-text">Aucune conversation trouvée</p>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-conversations" *ngIf="threads.length === 0">
+                    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <p class="empty-text">Aucune conversation pour le moment</p>
+                </div>
             </div>
 
-            <!-- View More Button -->
-            <div class="view-more-container">
-                <button class="view-more-btn" (click)="openNewConversationDialog()">
-                    New Conversation
+            <!-- New Conversation Button -->
+            <div class="new-conversation-container">
+                <button class="new-conversation-btn" (click)="openNewConversationDialog()">
+                    <svg class="plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>Nouvelle conversation</span>
                 </button>
             </div>
         </div>
@@ -64,21 +96,24 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                         </svg>
                     </button>
+
                     <div class="chat-header-info">
-                        <div class="chat-avatar-wrapper">
-                            <div class="chat-avatar">
-                                <span class="avatar-text">{{ selectedThread?.title | slice:0:2 | uppercase }}</span>
-                            </div>
-                            <div *ngIf="false" class="online-indicator"></div>
+                        <div class="chat-avatar-large">
+                            <span class="avatar-text">{{ selectedThread.title | slice:0:2 | uppercase }}</span>
                         </div>
                         <div class="chat-header-details">
-                            <h3 class="chat-header-name">{{ selectedThread?.title }}</h3>
+                            <h3 class="chat-header-name">{{ selectedThread.title }}</h3>
+                            <span class="chat-header-type">
+                {{ selectedThread.classServiceId ? 'Groupe de classe' : 'Discussion privée' }}
+              </span>
                         </div>
                     </div>
+
                     <div class="chat-actions">
-                        <button class="action-btn">
+                        <button class="action-btn" title="Plus d'options">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                             </svg>
                         </button>
                     </div>
@@ -86,43 +121,47 @@
 
                 <!-- Messages -->
                 <div class="messages-container">
-                    <div *ngFor="let message of messages" class="message-container" [class.message-own]="isOwnMessage(message)">
+                    <div *ngFor="let message of messages; trackBy: trackByMessageId"
+                         class="message-container"
+                         [class.message-own]="isOwnMessage(message)">
+
                         <div *ngIf="!isOwnMessage(message)" class="message-avatar">
-<!--                            {{ getSenderName(message.senderId) }}-->
                             {{ getInitials(getSenderName(message.senderId)) }}
                         </div>
+
                         <div class="message-content">
                             <div *ngIf="!isOwnMessage(message)" class="message-sender">
                                 {{ getSenderName(message.senderId) }}
                             </div>
                             <div class="message-bubble" [class.own]="isOwnMessage(message)">
-                                <p>{{ message.content }}</p>
+                                <p class="message-text">{{ message.content }}</p>
                                 <span class="message-time">{{ message.sendAt | date:'shortTime' }}</span>
                             </div>
                         </div>
-<!--                        <div class="message-bubble">-->
-<!--                            <p class="message-text" >{{ message.content }}</p>-->
-<!--                            <span class="message-time">{{ message.sendAt | date:'shortTime' }}</span>-->
-<!--                        </div>-->
                     </div>
                 </div>
 
                 <!-- Message Input -->
                 <div class="message-input-container">
                     <div class="message-input-wrapper">
-                        <button class="attach-btn">
+                        <button class="attach-btn" title="Joindre un fichier">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                             </svg>
                         </button>
-                        <input
-                                type="text"
+
+                        <textarea
                                 class="message-input"
-                                placeholder="Write your message..."
+                                placeholder="Tapez votre message..."
                                 [(ngModel)]="newMessage"
-                                (keypress)="onKeyPress($event)">
-                        <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()">
-                            <span class="send-text">Send</span>
+                                (keypress)="onKeyPress($event)"
+                                rows="1"></textarea>
+
+                        <button class="send-btn"
+                                (click)="sendMessage()"
+                                [disabled]="!newMessage.trim()"
+                                [class.active]="newMessage.trim()">
                             <svg class="send-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
@@ -134,11 +173,22 @@
             <!-- Empty State -->
             <div *ngIf="!selectedThread" class="chat-empty">
                 <div class="empty-content">
-                    <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                    </svg>
-                    <h3 class="empty-title">Select a conversation</h3>
-                    <p class="empty-description">Choose a conversation from the sidebar to start chatting</p>
+                    <div class="empty-icon-container">
+                        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="empty-title">Sélectionnez une conversation</h3>
+                    <p class="empty-description">
+                        Choisissez une conversation dans la liste pour commencer à discuter
+                    </p>
+                    <button class="empty-action-btn" (click)="openNewConversationDialog()">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nouvelle conversation
+                    </button>
                 </div>
             </div>
         </div>

@@ -65,7 +65,13 @@ export interface ZonePointageResponse {
 	createdAt: Date;
 	updatedAt: Date;
 	establishmentId: string;
+	establishmentName: string;
+	ownerType: OwnerType;
 	classServiceId: string;
+	classServiceName: string;
+	userId: string;
+	userFirstName: string;
+	userLastName: string;
 }
 
 export interface PresenceAbsenceCountResponse {
@@ -78,6 +84,11 @@ export enum PointageStatus {
 	SUCCEED,
 	FAILED,
 	PENDING
+}
+
+export enum OwnerType {
+	CLASS,
+	USER
 }
 
 export enum PeriodType {

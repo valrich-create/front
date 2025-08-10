@@ -1,84 +1,137 @@
-<app-layout>
-    <app-navbar [pageTitle]="'Information'"></app-navbar>
+<div class="content-container">
+    <div class="event-form-container">
+        <div class="form-card">
+            <div class="card-header">
+                <h2>New Information</h2>
+            </div>
 
-    <div class="content-container">
-        <div class="event-form-container">
-            <div class="form-card">
-                <div class="card-header">
-                    <h2>New Information</h2>
-                </div>
+            <div class="card-content">
+                <form [formGroup]="informationForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="title">Title <span class="required">*</span></label>
+                        <input
+                                type="text"
+                                id="title"
+                                formControlName="title"
+                                placeholder="Enter information title"
+                                class="form-control"
+                                [ngClass]="{'invalid-input': isFieldInvalid('title')}"
+                        >
+                        <div class="error-message" *ngIf="isFieldInvalid('title')">
+                            Title is required
+                        </div>
+                    </div>
 
-                <div class="card-content">
-                    <form [formGroup]="informationForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="description">Description <span class="required">*</span></label>
+                        <textarea
+                                id="description"
+                                formControlName="description"
+                                placeholder="Enter information description"
+                                class="form-control text-area"
+                                [ngClass]="{'invalid-input': isFieldInvalid('description')}"
+                        ></textarea>
+                        <div class="character-count" [ngClass]="{'warning': descriptionLength > 2700, 'danger': descriptionLength > 2900}">
+                            {{ descriptionLength }}/3000
+                        </div>
+                        <div class="error-message" *ngIf="isFieldInvalid('description')">
+                            Description is required
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-container">
+                            <input type="checkbox" formControlName="isImportant">
+                            <span class="checkmark"></span>
+                            Mark as important information
+                        </label>
+                    </div>
+
+                    <div class="date-group" *ngIf="informationForm.get('isImportant')?.value">
                         <div class="form-group">
-                            <label for="title">Title <span class="required">*</span></label>
+                            <label for="importanceDisplayStartDate">Start Date <span class="required">*</span></label>
                             <input
-                                    type="text"
-                                    id="title"
-                                    formControlName="title"
-                                    placeholder="Enter information title"
+                                    type="datetime-local"
+                                    id="importanceDisplayStartDate"
+                                    formControlName="importanceDisplayStartDate"
                                     class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('title')}"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('importanceDisplayStartDate')}"
                             >
-                            <div class="error-message" *ngIf="isFieldInvalid('title')">
-                                Title is required
+                            <div class="error-message" *ngIf="isFieldInvalid('importanceDisplayStartDate')">
+                                Start date is required
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="description">Description <span class="required">*</span></label>
-                            <textarea
-                                    id="description"
-                                    formControlName="description"
-                                    placeholder="Enter information description"
-                                    class="form-control text-area"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('description')}"
-                            ></textarea>
-                            <div class="character-count" [ngClass]="{'warning': descriptionLength > 2700, 'danger': descriptionLength > 2900}">
-                                {{ descriptionLength }}/3000
-                            </div>
-                            <div class="error-message" *ngIf="isFieldInvalid('description')">
-                                Description is required
+                            <label for="importanceDisplayEndDate">End Date <span class="required">*</span></label>
+                            <input
+                                    type="datetime-local"
+                                    id="importanceDisplayEndDate"
+                                    formControlName="importanceDisplayEndDate"
+                                    class="form-control"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('importanceDisplayEndDate')}"
+                            >
+                            <div class="error-message" *ngIf="isFieldInvalid('importanceDisplayEndDate')">
+                                End date is required
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <label class="checkbox-container">
-                                <input type="checkbox" formControlName="isImportant">
-                                <span class="checkmark"></span>
-                                Mark as important information
+                    <!-- File Upload Section -->
+                    <div class="form-group file-upload-section">
+                        <label>Attachments</label>
+                        <div class="file-upload-container">
+                            <input
+                                    type="file"
+                                    id="fileInput"
+                                    multiple
+                                    accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                                    (change)="onFileSelect($event)"
+                                    class="file-input"
+                            >
+                            <label for="fileInput" class="file-upload-button">
+                                <span class="upload-icon">📎</span>
+                                <span class="upload-text">Choose Files</span>
+                                <span class="upload-subtext">(Max 5 files, 10MB each)</span>
                             </label>
                         </div>
 
-                        <div class="date-group" *ngIf="informationForm.get('isImportant')?.value">
-                            <div class="form-group">
-                                <label for="importanceDisplayStartDate">Start Date</label>
-                                <input
-                                        type="datetime-local"
-                                        id="importanceDisplayStartDate"
-                                        formControlName="importanceDisplayStartDate"
-                                        class="form-control"
-                                >
+                        <!-- Selected Files Preview -->
+                        <div class="selected-files" *ngIf="selectedFiles.length > 0">
+                            <div class="files-header">
+                                <span class="files-count">{{ selectedFiles.length }}/{{ maxFiles }} files selected</span>
                             </div>
-
-                            <div class="form-group">
-                                <label for="importanceDisplayEndDate">End Date</label>
-                                <input
-                                        type="datetime-local"
-                                        id="importanceDisplayEndDate"
-                                        formControlName="importanceDisplayEndDate"
-                                        class="form-control"
+                            <div class="file-list">
+                                <div
+                                        class="file-item"
+                                        *ngFor="let file of selectedFiles; let i = index"
                                 >
+                                    <div class="file-info">
+                                        <span class="file-icon">{{ getFileIcon(file) }}</span>
+                                        <div class="file-details">
+                                            <span class="file-name">{{ file.name }}</span>
+                                            <span class="file-size">{{ formatFileSize(file.size) }}</span>
+                                        </div>
+                                    </div>
+                                    <button
+                                            type="button"
+                                            class="remove-file-btn"
+                                            (click)="removeFile(i)"
+                                            title="Remove file"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="form-actions">
-                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
-                            <button type="submit" class="btn-submit" [disabled]="informationForm.invalid">Submit</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                        <button type="submit" class="btn-submit" [disabled]="informationForm.invalid">Submit</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</app-layout>
+</div>

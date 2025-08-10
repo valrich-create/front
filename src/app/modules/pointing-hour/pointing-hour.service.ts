@@ -3,6 +3,7 @@ import {Page} from "../users/users.models";
 import {Observable} from "rxjs";
 import {PointingHourRequest, PointingHourResponse, PointingHourUpdateRequest} from "./pointing-hour";
 import {HttpClient, HttpParams} from "@angular/common/http";
+import {start} from "node:repl";
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,27 @@ export class PointingHourService {
 
     return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/by-time-range`, { params });
   }
+
+  getClassServicePointingHoursBetween(classId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+    const params = new HttpParams()
+        .set('start', start)
+        .set('end', end);
+
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${classId}/by-time-range`, { params });
+  }
+
+  getUserPointingHoursBetween(classId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+    const params = new HttpParams()
+        .set('start', start)
+        .set('end', end);
+
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${classId}/by-time-range`, { params });
+  }
+
+  deleteHorairePointage(hourId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${hourId}`);
+  }
+
 
   // Get paginated pointing hours
   getAllPointingHoursPaginated(

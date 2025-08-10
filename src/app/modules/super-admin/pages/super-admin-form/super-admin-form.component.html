@@ -6,6 +6,52 @@
             <div class="form-section">
                 <h2>Super Admin Details</h2>
 
+                <!-- Section Photo de profil -->
+                <div class="form-row">
+                    <div class="form-group full-width">
+                        <label for="photoInput">Profile Photo</label>
+                        <div class="photo-upload-container">
+                            <div class="photo-preview-wrapper">
+                                <!-- Aperçu de la nouvelle photo sélectionnée -->
+                                <div *ngIf="photoPreviewUrl" class="photo-preview">
+                                    <img [src]="photoPreviewUrl" alt="Photo Preview" class="preview-image">
+                                    <button type="button" class="remove-photo-btn" (click)="removePhoto()" title="Remove photo">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Affichage de la photo existante (mode édition) -->
+                                <div *ngIf="existingPhotoUrl && !photoPreviewUrl" class="photo-preview">
+                                    <img [src]="existingPhotoUrl" alt="Current Photo" class="preview-image">
+                                    <button type="button" class="remove-photo-btn" (click)="removePhoto()" title="Remove photo">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Zone d'upload par défaut -->
+                                <div *ngIf="!photoPreviewUrl && !existingPhotoUrl" class="photo-upload-placeholder">
+                                    <i class="fa fa-camera"></i>
+                                    <p>Click to upload photo</p>
+                                    <small>JPG, PNG, GIF up to 5MB</small>
+                                </div>
+                            </div>
+
+                            <input
+                                    type="file"
+                                    id="photoInput"
+                                    accept="image/*"
+                                    (change)="onFileSelected($event)"
+                                    class="photo-input"
+                                    formControlName="photo"
+                            >
+
+                            <label for="photoInput" class="photo-upload-btn">
+                                {{ (photoPreviewUrl || existingPhotoUrl) ? 'Change Photo' : 'Select Photo' }}
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="firstName">First Name <span class="required">*</span></label>
@@ -78,85 +124,6 @@
                     </div>
                 </div>
 
-<!--                <div class="form-row">-->
-<!--                    <div class="form-group">-->
-<!--                        <label for="password">Password <span class="required">*</span></label>-->
-<!--                        <div class="password-input-container">-->
-<!--                            <input-->
-<!--                                    [type]="showPassword ? 'text' : 'password'"-->
-<!--                                    id="password"-->
-<!--                                    formControlName="password"-->
-<!--                                    placeholder="••••••••"-->
-<!--                                    [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"-->
-<!--                            >-->
-<!--                            <span class="toggle-password" (click)="togglePasswordVisibility('password')">-->
-<!--                                <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">-->
-<!--                            Password is required-->
-<!--                        </div>-->
-<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">-->
-<!--                            Must be at least 8 characters-->
-<!--                        </div>-->
-<!--                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">-->
-<!--                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces-->
-<!--                        </div>-->
-<!--                    </div>-->
-
-<!--&lt;!&ndash;                    <div class="form-group">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <label for="password">Password <span class="required">*</span></label>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <input&ndash;&gt;-->
-<!--&lt;!&ndash;                                type="password"&ndash;&gt;-->
-<!--&lt;!&ndash;                                id="password"&ndash;&gt;-->
-<!--&lt;!&ndash;                                formControlName="password"&ndash;&gt;-->
-<!--&lt;!&ndash;                                placeholder="••••••••"&ndash;&gt;-->
-<!--&lt;!&ndash;                                [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"&ndash;&gt;-->
-<!--&lt;!&ndash;                        >&ndash;&gt;-->
-<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">&ndash;&gt;-->
-<!--&lt;!&ndash;                            Password is required&ndash;&gt;-->
-<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">&ndash;&gt;-->
-<!--&lt;!&ndash;                            Must be at least 8 characters&ndash;&gt;-->
-<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">&ndash;&gt;-->
-<!--&lt;!&ndash;                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces&ndash;&gt;-->
-<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-<!--&lt;!&ndash;                    <div class="form-group">&ndash;&gt;-->
-<!--&lt;!&ndash;                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>&ndash;&gt;-->
-<!--&lt;!&ndash;                        <input&ndash;&gt;-->
-<!--&lt;!&ndash;                                type="password"&ndash;&gt;-->
-<!--&lt;!&ndash;                                id="confirmPassword"&ndash;&gt;-->
-<!--&lt;!&ndash;                                formControlName="confirmPassword"&ndash;&gt;-->
-<!--&lt;!&ndash;                                placeholder="••••••••"&ndash;&gt;-->
-<!--&lt;!&ndash;                                [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"&ndash;&gt;-->
-<!--&lt;!&ndash;                        >&ndash;&gt;-->
-<!--&lt;!&ndash;                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">&ndash;&gt;-->
-<!--&lt;!&ndash;                            Passwords do not match&ndash;&gt;-->
-<!--&lt;!&ndash;                        </div>&ndash;&gt;-->
-<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
-
-<!--                    <div class="form-group">-->
-<!--                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>-->
-<!--                        <div class="password-input-container">-->
-<!--                            <input-->
-<!--                                    [type]="showConfirmPassword ? 'text' : 'password'"-->
-<!--                                    id="confirmPassword"-->
-<!--                                    formControlName="confirmPassword"-->
-<!--                                    placeholder="••••••••"-->
-<!--                                    [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"-->
-<!--                            >-->
-<!--                            <span class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')">-->
-<!--                                <i [class]="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>-->
-<!--                            </span>-->
-<!--                        </div>-->
-<!--                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">-->
-<!--                            Passwords do not match-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
                 <!-- Section mot de passe - Afficher uniquement en mode création -->
                 <div *ngIf="!isEditMode" class="form-row">
                     <div class="form-group">

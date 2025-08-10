@@ -20,6 +20,7 @@ export interface ZonePointageRequest {
 	rayonMetres: number;
 	description: string;
 	etablissementId: string;
+	userId: string;
 	classeServiceId: string;
 }
 
@@ -30,4 +31,5 @@ export interface ZonePointageUpdateRequest {
 	rayonMetres: number;
 	description: string;
 	classServiceId: string;
+	userId: string;
 }

@@ -1,60 +1,24 @@
-<!-- calendar.component.html -->
-<div class="calendar-container">
+<div class="calendar">
     <div class="calendar-header">
-        <h2>Calendar</h2>
-        <div class="calendar-controls">
-            <div class="month-selector">
-                <select [ngModel]="displayMonth()" (ngModelChange)="onMonthChange($event)" class="custom-select">
-                    <option *ngFor="let month of months" [value]="month">{{ month }}</option>
-                </select>
-            </div>
-            <div class="year-selector">
-                <select [ngModel]="displayYear()" (ngModelChange)="onYearChange($event)" class="custom-select">
-                    <option *ngFor="let year of years()" [value]="year">{{ year }}</option>
-                </select>
-            </div>
-            <div class="new-event-btn">
-                <button class="btn-new-event" (click)="createNewEvent()">
-                    <span class="icon-plus">+</span>
-                    <span>Add Info</span>
-                </button>
-            </div>
+        <button (click)="changeMonth(-1)">‹</button>
+        <h3>{{ currentMonth | date:'MMMM yyyy' }}</h3>
+        <button (click)="changeMonth(1)">›</button>
+    </div>
+    <div class="weekdays">
+        <div *ngFor="let day of weekdays" class="weekday">{{ day }}</div>
+    </div>
+
+    <div class="days-grid">
+        <div *ngFor="let day of days" class="day"
+             [class.current-month]="day.isCurrentMonth"
+             [class.other-month]="!day.isCurrentMonth"
+             [class.today]="day.isToday"
+             [class.selected]="day.isSelected"
+             [class.has-events]="day.hasEvents"
+             (click)="selectDay(day)">
+            {{ day.dayOfMonth }}
+            <div *ngIf="day.hasEvents" class="event-dot"></div>
         </div>
     </div>
 
-    <div class="calendar-grid">
-        <div class="weekdays">
-            <div class="weekday" *ngFor="let day of weekdays">{{ day }}</div>
-        </div>
-
-        <div class="days">
-            <div
-                    *ngFor="let day of days()"
-                    class="day"
-                    [class.inactive]="!day.isCurrentMonth"
-                    [class.today]="day.isToday"
-                    [class.has-events]="hasEvents(day)"
-                    (click)="selectDay(day)"
-            >
-                <div class="day-number">{{ day.dayOfMonth }}</div>
-
-                <div class="event-indicators" *ngIf="hasEvents(day)">
-                    <div
-                            *ngFor="let color of getEventColors(day)"
-                            class="event-dot"
-                            [style.background-color]="color"
-                    ></div>
-                </div>
-
-                <div class="user-avatars" *ngIf="hasEvents(day)">
-                    <ng-container *ngFor="let event of day.events.slice(0, 1)">
-                        <div *ngIf="event.attendees && event.attendees.length" class="attendee">
-                            {{ event.attendees[0].name.charAt(0) }}
-                            <span *ngIf="event.attendees.length > 1">+{{ event.attendees.length }}</span>
-                        </div>
-                    </ng-container>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>

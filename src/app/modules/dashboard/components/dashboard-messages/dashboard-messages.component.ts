@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import {EventService} from "../../../events/events.service";
-import {EventResponse} from "../../../events/events";
+import {InformationResponse} from "../../../events/information";
 
 @Component({
 	selector: 'app-dashboard-messages',
@@ -12,7 +12,7 @@ import {EventResponse} from "../../../events/events";
 })
 export class DashboardMessagesComponent implements OnInit {
 	@Input() establishmentId?: string;
-	informations: EventResponse[] = [];
+	informations: InformationResponse[] = [];
 	colors: string[] = [];
 
 	constructor(private eventService: EventService) { }

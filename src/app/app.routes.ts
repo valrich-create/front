@@ -117,6 +117,22 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'schedule',
+        children: [
+            { path: '', component: PointingHourListComponent },
+            { path: 'new', component: PointingHourFormComponent },
+            { path: 'edit/:id', component: PointingHourFormComponent },
+        ]
+    },
+    {
+        path: 'zone',
+        children: [
+            { path: '', component: PointingZoneListComponent },
+            { path: 'new', component: PointingZoneFormComponent },
+            { path: 'edit/:id', component: PointingZoneFormComponent },
+        ]
+    },
+    {
         path: 'classes/:classId/pointing-hours',
         children: [
             { path: '', component: PointingHourListComponent },

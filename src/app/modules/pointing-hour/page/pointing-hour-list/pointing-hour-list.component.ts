@@ -1,46 +1,40 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {PointingHourResponse} from "../../pointing-hour";
 import {PointingHourFormComponent} from "../pointing-hour-form/pointing-hour-form.component";
 import {PointingHourService} from "../../pointing-hour.service";
 import {MatDialog} from "@angular/material/dialog";
-import {CalendarEvent, CalendarModule, CalendarView} from 'angular-calendar';
-import {Subject} from "rxjs";
-import { startOfDay, endOfDay, isSameMonth } from 'date-fns';
 import {isSameDay} from "date-fns";
 import {FormsModule} from "@angular/forms";
 import {CommonModule, DatePipe} from "@angular/common";
+import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
+import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
+import {MatNativeDateModule} from "@angular/material/core";
+import {catchError, of} from "rxjs";
+import {CalendarComponent} from "../../../events/calendar/calendar.component";
 
 @Component({
   selector: 'app-pointing-hour-list',
   standalone: true,
   imports: [
-      CommonModule,
+    CommonModule,
     FormsModule,
-    CalendarModule,
-    DatePipe
+    MatNativeDateModule,
+    DatePipe,
+    LayoutComponent,
+    NavbarComponent,
+    CalendarComponent
   ],
   templateUrl: 'pointing-hour-list.component.html',
   styleUrls: ['pointing-hour-list.component.scss'],
 })
-export class PointingHourListComponent {
-  @Input() classId!: string;
+
+export class PointingHourListComponent implements OnInit {
+  eventDates: Date[] = [];
+  selectedDate = new Date();
+  currentMonth = new Date();
+  pageTitlePrincipal: string = "Horaire";
+  pageTitle = "Classe / Services & Users";
   pointingHours: PointingHourResponse[] = [];
-  filteredHours: PointingHourResponse[] = [];
-  selectedDateHours: PointingHourResponse[] = [];
-  selectedDate: Date = new Date();
-
-  // Calendar configuration
-  view: CalendarView = CalendarView.Month;
-  CalendarView = CalendarView;
-  viewDate: Date = new Date();
-  events: CalendarEvent[] = [];
-  refresh = new Subject<void>();
-
-  // Filter
-  dateRange = {
-    start: new Date(),
-    end: new Date(new Date().setMonth(new Date().getMonth() + 1))
-  };
 
   constructor(
       private pointingHourService: PointingHourService,
@@ -48,105 +42,59 @@ export class PointingHourListComponent {
   ) {}
 
   ngOnInit(): void {
-    this.loadPointingHours();
+    this.loadData();
   }
 
-  loadPointingHours(): void {
-    this.pointingHourService.getPointingHoursByClassService(this.classId).subscribe({
-      next: (hours) => {
-        this.pointingHours = hours;
-        this.filteredHours = [...hours];
-        this.updateCalendarEvents();
-        this.updateSelectedDateHours();
-      },
-      error: (err) => console.error('Failed to load pointing hours:', err)
-    });
+  loadData(): void {
+    const start = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
+    const end = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
+
+    this.pointingHourService.getPointingHoursBetween(start.toISOString(), end.toISOString())
+        .pipe(catchError(() => of([])))
+        .subscribe(hours => {
+          this.pointingHours = hours;
+          this.updateEventDates();
+          this.loadHoursForDay(this.selectedDate);
+        });
   }
 
-  updateCalendarEvents(): void {
-    this.events = this.filteredHours.map(hour => ({
-      start: new Date(hour.startTime),
-      end: new Date(hour.endTime),
-      title: `${hour.startTime} - ${hour.endTime}`,
-      color: {
-        primary: '#1e90ff',
-        secondary: '#D1E8FF'
-      },
-      meta: hour
-    }));
+  openAdd(): void {
+    const ref = this.dialog.open(PointingHourFormComponent, { width: '500px' });
+    ref.afterClosed().subscribe(() => this.loadData());
   }
 
-  updateSelectedDateHours(): void {
-    this.selectedDateHours = this.filteredHours.filter(hour =>
-        isSameDay(new Date(hour.startTime), this.selectedDate)
-    );
+  updateEventDates(): void {
+    this.eventDates = [...new Set(
+        this.pointingHours.map(h => new Date(h.startTime).toDateString())
+    )].map(dateStr => new Date(dateStr));
   }
 
-  onDateSelect(date: Date): void {
+  loadHoursForDay(date: Date): void {
     this.selectedDate = date;
-    this.updateSelectedDateHours();
+    // Filtrage local pour l'exemple (peut être remplacé par un appel API)
+    this.pointingHours = this.pointingHours.filter(h =>
+        isSameDay(new Date(h.startTime), date)
+    );
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    this.pointingHourService.getPointingHoursBetween(startOfDay.toISOString(), endOfDay.toISOString())
+        .pipe(catchError(() => of([])))
+        .subscribe(hours => {
+          this.pointingHours = hours;
+        });
   }
 
-  applyFilter(): void {
-    if (this.dateRange.start && this.dateRange.end) {
-      const start = this.dateRange.start.toISOString();
-      const end = this.dateRange.end.toISOString();
-
-      this.pointingHourService.getPointingHoursBetween(start, end).subscribe({
-        next: (hours) => {
-          this.filteredHours = hours;
-          this.updateCalendarEvents();
-          this.updateSelectedDateHours();
-        },
-        error: (err) => console.error('Failed to filter pointing hours:', err)
-      });
-    }
+  onDateSelected(date: Date): void {
+    this.loadHoursForDay(date);
   }
 
-  resetFilter(): void {
-    this.dateRange = {
-      start: new Date(),
-      end: new Date(new Date().setMonth(new Date().getMonth() + 1))
-    };
-    this.filteredHours = [...this.pointingHours];
-    this.updateCalendarEvents();
-    this.updateSelectedDateHours();
-  }
-
-  openAddPointingHour(): void {
-    const dialogRef = this.dialog.open(PointingHourFormComponent, {
-      width: '500px',
-      data: { classId: this.classId }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadPointingHours();
-      }
-    });
-  }
-
-  openEditPointingHour(hour: PointingHourResponse): void {
-    const dialogRef = this.dialog.open(PointingHourFormComponent, {
-      width: '500px',
-      data: { hour, classId: this.classId }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.loadPointingHours();
-      }
-    });
-  }
-
-  deletePointingHour(hourId: string): void {
-    if (confirm('Are you sure you want to delete this pointing hour?')) {
-      // this.pointingHourService.deletePointingHour(hourId).subscribe({
-      //   next: () => {
-      //     this.loadPointingHours();
-      //   },
-      //   error: (err) => console.error('Failed to delete pointing hour:', err)
-      // });
-    }
+  onMonthChanged(month: Date): void {
+    this.currentMonth = month;
+    this.loadData();
   }
 }

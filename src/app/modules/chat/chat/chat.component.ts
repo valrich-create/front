@@ -1,25 +1,25 @@
-import {Component, OnInit} from '@angular/core';
-import {LayoutComponent} from "../../base-component/components/layout/layout.component";
-import {MessageResponse, MessageThreadResponse} from '../chat';
-import {CommonModule} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {ChatService} from "../chat.service";
-import {UserService} from "../../users/services/user.service";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {NewConversationDialogComponent} from "../new-conversation-dialog/new-conversation-dialog.component";
-import {ClassServiceService} from "../../services/class-service.service";
-import {lastValueFrom} from "rxjs";
-import {UserResponse} from "../../users/users.models";
-import {MatButtonModule} from "@angular/material/button";
-import {MatInputModule} from "@angular/material/input";
-import {MatListModule} from "@angular/material/list";
-import {MatFormFieldModule} from "@angular/material/form-field";
+import { Component, OnInit } from '@angular/core';
+import { LayoutComponent } from "../../base-component/components/layout/layout.component";
+import { MessageResponse, MessageThreadResponse } from '../chat';
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { ChatService } from "../chat.service";
+import { UserService } from "../../users/services/user.service";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { NewConversationDialogComponent } from "../new-conversation-dialog/new-conversation-dialog.component";
+import { ClassServiceService } from "../../services/class-service.service";
+import { lastValueFrom } from "rxjs";
+import { UserResponse } from "../../users/users.models";
+import { MatButtonModule } from "@angular/material/button";
+import { MatInputModule } from "@angular/material/input";
+import { MatListModule } from "@angular/material/list";
+import { MatFormFieldModule } from "@angular/material/form-field";
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [
-      CommonModule,
+    CommonModule,
     FormsModule,
     LayoutComponent,
     MatButtonModule,
@@ -31,9 +31,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
   templateUrl: 'chat.component.html',
   styleUrls: ['chat.component.scss']
 })
-
 export class ChatComponent implements OnInit {
-  threads: MessageThreadResponse[] = []; // Remplace les chats/groups
+  threads: MessageThreadResponse[] = [];
   selectedThread: MessageThreadResponse | null = null;
   messages: MessageResponse[] = [];
   newMessage = '';
@@ -41,8 +40,6 @@ export class ChatComponent implements OnInit {
   isMobile = false;
   showChatDetail = false;
   currentUser: UserResponse | null = null;
-
-  // Pour la nouvelle conversation
   availableUsers: UserResponse[] = [];
   availableClasses: any[] = [];
 
@@ -56,8 +53,18 @@ export class ChatComponent implements OnInit {
   async ngOnInit() {
     await this.loadCurrentUser();
     await this.loadUserThreads();
+    await this.loadEstablishmentData();
     this.checkScreenSize();
     window.addEventListener('resize', () => this.checkScreenSize());
+  }
+
+  async loadCurrentUser() {
+    try {
+      const user$ = this.userService.getCurrentUser();
+      this.currentUser = await lastValueFrom(user$);
+    } catch (error) {
+      console.error('Failed to load current user', error);
+    }
   }
 
   async loadUserThreads() {
@@ -70,19 +77,30 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  async loadCurrentUser() {
+  async loadEstablishmentData() {
+    if (!this.currentUser?.establishmentId) return;
+
     try {
-      const user$ = this.userService.getCurrentUser();
-      this.currentUser = await lastValueFrom(user$);
+      const [users, classes] = await Promise.all([
+        lastValueFrom(this.userService.getAllUsers()),
+        lastValueFrom(this.classService.getClassServicesByEstablishment(this.currentUser.establishmentId))
+      ]);
+
+      // Filtrer les utilisateurs du même établissement
+      this.availableUsers = (users.content || []).filter(
+          user => user.establishmentId === this.currentUser?.establishmentId
+      );
+      this.availableClasses = classes;
     } catch (error) {
-      console.error('Failed to load current user', error);
+      console.error('Failed to load establishment data', error);
     }
   }
 
   async selectThread(thread: MessageThreadResponse) {
     this.selectedThread = thread;
+    this.showChatDetail = true;
+
     try {
-      // this.messages = await this.chatService.getThreadMessages(thread.id).toPromise();
       const messages$ = this.chatService.getThreadMessages(thread.id);
       this.messages = await lastValueFrom(messages$);
     } catch (error) {
@@ -91,22 +109,20 @@ export class ChatComponent implements OnInit {
   }
 
   async sendMessage() {
-    if (this.newMessage.trim() && this.selectedThread) {
-      const messageRequest = {
-        threadId: this.selectedThread.id,
-        content: this.newMessage,
-        establishmentId: this.selectedThread.establishmentId
-      };
+    if (!this.newMessage.trim() || !this.selectedThread) return;
 
-      try {
-        await lastValueFrom(this.chatService.sendMessage(messageRequest));
-        // await this.chatService.sendMessage(messageRequest).toPromise();
-        this.newMessage = '';
-        // Recharger les messages
-        this.selectThread(this.selectedThread);
-      } catch (error) {
-        console.error('Failed to send message', error);
-      }
+    const messageRequest = {
+      threadId: this.selectedThread.id,
+      content: this.newMessage,
+      establishmentId: this.selectedThread.establishmentId
+    };
+
+    try {
+      await lastValueFrom(this.chatService.sendMessage(messageRequest));
+      this.newMessage = '';
+      await this.selectThread(this.selectedThread);
+    } catch (error) {
+      console.error('Failed to send message', error);
     }
   }
 
@@ -118,21 +134,8 @@ export class ChatComponent implements OnInit {
   }
 
   async openNewConversationDialog() {
-    if (!this.currentUser || !this.currentUser.establishmentId) {
+    if (!this.currentUser?.establishmentId) {
       console.error('No establishment ID available');
-      return;
-    }
-
-    try {
-      const [users, classes] = await Promise.all([
-        lastValueFrom(this.userService.getAllUsers()),
-        lastValueFrom(this.classService.getClassServicesByEstablishment(this.currentUser.establishmentId))
-      ]);
-
-      this.availableUsers = users.content || [];
-      this.availableClasses = classes;
-    } catch (error) {
-      console.error('Failed to load data for new conversation', error);
       return;
     }
 
@@ -154,14 +157,10 @@ export class ChatComponent implements OnInit {
   async createNewThread(data: any) {
     if (!this.currentUser) return;
 
-    const participantIds = Array.isArray(data.selectedUsers)
-        ? data.selectedUsers
-        : [];
-
+    const participantIds = Array.isArray(data.selectedUsers) ? data.selectedUsers : [];
     const request = {
       classServiceId: data.selectedClass || null,
       participantIds: participantIds
-      // establishmentId: this.currentUser.establishmentId,
     };
 
     try {
@@ -180,29 +179,39 @@ export class ChatComponent implements OnInit {
   }
 
   isOwnMessage(message: MessageResponse): boolean {
-    return message.senderId === 'current-user-id'; // À remplacer
+    return message.senderId === this.currentUser?.id;
   }
 
   getSenderName(senderId: string): string {
     const user = this.availableUsers.find(u => u.id === senderId);
-    return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
-  }
-
-  getParticipantsNames(thread: MessageThreadResponse): Set<string> {
-    // Implémentez la logique pour concaténer les noms des participants
-    return thread.participantIds.add(', ');
+    return user ? `${user.firstName} ${user.lastName}` : 'Unknown User';
   }
 
   getInitials(name: string): string {
-    return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    return name.split(' ')
+        .map(n => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
   }
 
   checkScreenSize() {
     this.isMobile = window.innerWidth < 768;
   }
 
-  // Ajout de la méthode manquante
   closeChatDetail() {
     this.showChatDetail = false;
+    if (this.isMobile) {
+      this.selectedThread = null;
+    }
+  }
+
+  // Méthodes de tracking pour optimiser les performances
+  trackByThreadId(index: number, thread: MessageThreadResponse): string {
+    return thread.id;
+  }
+
+  trackByMessageId(index: number, message: MessageResponse): string {
+    return message.id || `${message.senderId}-${message.sendAt}`;
   }
 }

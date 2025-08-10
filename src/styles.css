@@ -28,8 +28,8 @@ body {
 /* Variables globales */
 :root {
     --primary-color: #5e4dcd;
-    --secondary-color: #ff7a59;
-    --tertiary-color: #ffb84d;
+    --secondary-color: rgba(94, 77, 205, 0.7);
+    --tertiary-color: rgba(94, 77, 205, 0.4);
     --text-color: #333;
     --light-text: #666;
     --lighter-text: #999;

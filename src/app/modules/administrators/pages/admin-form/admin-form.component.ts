@@ -16,7 +16,6 @@ import { NavbarComponent } from "../../../base-component/components/navbar/navba
 import {UserPermission, UserResponse, UserRole} from "../../../users/users.models";
 import { Establishment } from "../../../organizations/organization";
 import { OrganizationService } from "../../../organizations/organization.service";
-import { Admin } from "../../admin";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AdministratorServiceService } from "../../services/administrator-service.service";
 import { ToastService } from "../../../base-component/services/toast/toast.service";
@@ -40,6 +39,15 @@ export class AdminFormComponent implements OnInit {
     characterCount: number = 0;
     maxCharacters: number = 2000;
     permissionsFormArray: FormArray<FormControl<boolean | null>>;
+
+    // Photo profile properties
+    selectedFile: File | null = null;
+    photoPreview: string | null = null;
+    maxFileSize = 5 * 1024 * 1024; // 5MB
+
+    // Password visibility properties
+    showPassword = false;
+    showConfirmPassword = false;
 
     constructor(
         private fb: FormBuilder,
@@ -82,10 +90,9 @@ export class AdminFormComponent implements OnInit {
     initializePermissions(): void {
         this.permissionsFormArray.clear();
         this.authorizations.forEach(() => {
-            const control = new FormControl<boolean>(false); // 👈 important
+            const control = new FormControl<boolean>(false);
             this.permissionsFormArray.push(control);
         });
-
     }
 
     loadAdminData(id: string): void {
@@ -114,10 +121,15 @@ export class AdminFormComponent implements OnInit {
             organization: admin.establishmentId
         });
 
+        // Load existing profile photo if available
+        if ((admin as any).profilePhotoUrl) {
+            this.photoPreview = (admin as any).profilePhotoUrl;
+        }
+
         this.permissionsFormArray.clear();
         this.authorizations.forEach(permission => {
             const hasPermission = admin.permissions?.includes(permission) ?? false;
-            const control = new FormControl<boolean>(hasPermission); // 👈 ici aussi
+            const control = new FormControl<boolean>(hasPermission);
             this.permissionsFormArray.push(control);
         });
 
@@ -129,6 +141,95 @@ export class AdminFormComponent implements OnInit {
         }
     }
 
+    // Photo handling methods
+    onFileSelected(event: Event): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                this.toastService.show('Please select a valid image file', 'danger');
+                return;
+            }
+
+            // Validate file size
+            if (file.size > this.maxFileSize) {
+                this.toastService.show('File size must be less than 5MB', 'danger');
+                return;
+            }
+
+            this.selectedFile = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.photoPreview = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    onDragOver(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    onDragLeave(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    onDrop(event: DragEvent): void {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const files = event.dataTransfer?.files;
+        if (files && files.length > 0) {
+            const file = files[0];
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                this.toastService.show('Please select a valid image file', 'danger');
+                return;
+            }
+
+            // Validate file size
+            if (file.size > this.maxFileSize) {
+                this.toastService.show('File size must be less than 5MB', 'danger');
+                return;
+            }
+
+            this.selectedFile = file;
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.photoPreview = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    removePhoto(): void {
+        this.selectedFile = null;
+        this.photoPreview = null;
+        // Reset file input
+        const fileInput = document.getElementById('profilePhoto') as HTMLInputElement;
+        if (fileInput) {
+            fileInput.value = '';
+        }
+    }
+
+    // Password visibility methods
+    togglePasswordVisibility(): void {
+        this.showPassword = !this.showPassword;
+    }
+
+    toggleConfirmPasswordVisibility(): void {
+        this.showConfirmPassword = !this.showConfirmPassword;
+    }
+
     getSelectedPermissions(): string[] {
         return this.authorizations
             .filter((_, index) => this.permissionsFormArray.at(index).value)
@@ -137,18 +238,36 @@ export class AdminFormComponent implements OnInit {
 
     onSubmit(): void {
         if (this.adminForm.valid) {
-            const formData = {
-                ...this.adminForm.value,
-                permissions: this.getSelectedPermissions()
-            };
+            const formData = new FormData();
 
-            delete formData.confirmPassword;
-            if (this.isEditMode && !formData.password) {
-                delete formData.password;
+            // Add all form fields to FormData
+            Object.keys(this.adminForm.value).forEach(key => {
+                if (key !== 'permissions' && key !== 'confirmPassword') {
+                    const value = this.adminForm.value[key];
+                    if (value !== null && value !== undefined && value !== '') {
+                        formData.append(key, value);
+                    }
+                }
+            });
+
+            // Add permissions
+            const permissions = this.getSelectedPermissions();
+            permissions.forEach(permission => {
+                formData.append('permissions', permission);
+            });
+
+            // Add profile photo if selected
+            if (this.selectedFile) {
+                formData.append('profilePhoto', this.selectedFile);
+            }
+
+            // Remove password if in edit mode and empty
+            if (this.isEditMode && !this.adminForm.value.password) {
+                formData.delete('password');
             }
 
             const operation$ = this.isEditMode
-                ? this.adminService.updateAdministrator(formData.id, formData)
+                ? this.adminService.updateAdministrator(this.adminForm.value.id, formData)
                 : this.adminService.createAdministrator(formData);
 
             operation$.subscribe({

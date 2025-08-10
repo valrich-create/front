@@ -1,69 +1,152 @@
-<app-layout>
-    <app-navbar [pageTitle]="'Create Pointing Hour'"></app-navbar>
+<!-- CHANGEMENT: Conteneur avec hauteur fixe et scroll interne -->
+<div class="form-container">
+    <div class="form-card">
+        <!-- En-tête fixe -->
+        <div class="card-header">
+            <h2>{{ isEditMode ? 'Modifier' : 'Nouvelle' }} Heure de Pointage</h2>
+        </div>
 
-    <div class="content-container">
-        <div class="pointing-hour-form-container">
-            <div class="form-card">
-                <div class="card-header">
-                    <h2>{{ isEditMode ? 'Edit' : 'New' }} Pointing Hour</h2>
+        <!-- Corps du formulaire avec scroll interne -->
+        <div class="card-content">
+            <form [formGroup]="pointingHourForm" (ngSubmit)="onSubmit()">
+
+                <!-- Heure de pointage -->
+                <div class="form-group">
+                    <label for="time">Heure de pointage <span class="required">*</span></label>
+                    <input
+                            type="datetime-local"
+                            id="time"
+                            formControlName="time"
+                            class="form-control"
+                            [ngClass]="{'invalid': isFieldInvalid('time')}"
+                            [min]="minDateTime"
+                    >
+                    <div class="error-message" *ngIf="isFieldInvalid('time')">
+            <span *ngIf="pointingHourForm.get('time')?.errors?.['required']">
+              L'heure de pointage est obligatoire
+            </span>
+                        <span *ngIf="pointingHourForm.get('time')?.errors?.['futureDate']">
+              L'heure de pointage doit être dans le futur
+            </span>
+                    </div>
                 </div>
 
-                <div class="card-content">
-                    <form [formGroup]="pointingHourForm" (ngSubmit)="onSubmit()">
-                        <div class="form-group">
-                            <label for="time">Pointing Time <span class="required">*</span></label>
-                            <input
-                                    type="datetime-local"
-                                    id="time"
-                                    formControlName="time"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('time')}"
-                                    [min]="minDateTime"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('time')">
-                                <span *ngIf="pointingHourForm.get('time')?.errors?.['required']">
-                                    Pointing time is required
-                                </span>
-                                <span *ngIf="pointingHourForm.get('time')?.errors?.['futureDate']">
-                                    Pointing time must be in the future
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="marge">Margin (minutes) <span class="required">*</span></label>
-                            <input
-                                    type="number"
-                                    id="marge"
-                                    formControlName="marge"
-                                    placeholder="Enter margin in minutes"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('marge')}"
-                                    min="0"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('marge')">
-                                <span *ngIf="pointingHourForm.get('marge')?.errors?.['required']">
-                                    Margin is required
-                                </span>
-                                <span *ngIf="pointingHourForm.get('marge')?.errors?.['min']">
-                                    Margin must be positive
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="form-actions">
-                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
-                            <button
-                                    type="submit"
-                                    class="btn-submit"
-                                    [disabled]="pointingHourForm.invalid || !isFutureDate()"
-                            >
-                                {{ isEditMode ? 'Update' : 'Create' }}
-                            </button>
-                        </div>
-                    </form>
+                <!-- Marge -->
+                <div class="form-group">
+                    <label for="marge">Marge (minutes) <span class="required">*</span></label>
+                    <input
+                            type="number"
+                            id="marge"
+                            formControlName="marge"
+                            placeholder="Saisir la marge en minutes"
+                            class="form-control"
+                            [ngClass]="{'invalid': isFieldInvalid('marge')}"
+                            min="0"
+                    >
+                    <div class="error-message" *ngIf="isFieldInvalid('marge')">
+            <span *ngIf="pointingHourForm.get('marge')?.errors?.['required']">
+              La marge est obligatoire
+            </span>
+                        <span *ngIf="pointingHourForm.get('marge')?.errors?.['min']">
+              La marge doit être positive ou nulle
+            </span>
+                    </div>
                 </div>
-            </div>
+
+                <!-- CHANGEMENT: Section de sélection avec style amélioré -->
+                <div class="selection-section">
+                    <p class="selection-note">
+                        <i class="icon-info"></i>
+                        Sélectionnez soit une classe/service, soit un utilisateur (exclusif).
+                    </p>
+
+                    <!-- Classe/Service -->
+                    <div class="form-group">
+                        <label for="classServiceId">Classe / Service</label>
+                        <div class="select-wrapper">
+                            <select
+                                    id="classServiceId"
+                                    formControlName="classServiceId"
+                                    class="form-control select-scrollable"
+                                    [ngClass]="{'invalid': isFieldInvalid('classServiceId')}"
+                            >
+                                <option value="">-- Sélectionner une classe/service --</option>
+                                <option *ngFor="let classService of availableClassServiceIds" [value]="classService.id">
+                                    {{ classService.nom }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Utilisateur -->
+                    <div class="form-group">
+                        <label for="userId">Utilisateur</label>
+                        <div class="select-wrapper">
+                            <select
+                                    id="userId"
+                                    formControlName="userId"
+                                    class="form-control select-scrollable"
+                                    [ngClass]="{'invalid': isFieldInvalid('userId')}"
+                            >
+                                <option value="">-- Sélectionner un utilisateur --</option>
+                                <option *ngFor="let user of availableUserIds" [value]="user.id">
+                                    {{ user.firstName }} {{ user.lastName }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CHANGEMENT: Validateur -->
+                    <div class="form-group" [ngClass]="{'disabled': !isValidatorEnabled()}">
+                        <label for="validatorId">
+                            Validateur <span class="required" *ngIf="isValidatorEnabled()">*</span>
+                            <span class="optional-text" *ngIf="!isValidatorEnabled()">(Sélectionnez d'abord une classe ou un utilisateur)</span>
+                        </label>
+                        <div class="select-wrapper">
+                            <select
+                                    id="validatorId"
+                                    formControlName="validatorId"
+                                    *ngIf="!updatingForm"
+                                    class="form-control select-scrollable"
+                                    [disabled]="!isValidatorEnabled()"
+                                    [ngClass]="{'invalid': isFieldInvalid('validatorId')}"
+                            >
+                                <option value="">-- Sélectionner un validateur --</option>
+                                <option *ngFor="let validator of availableValidators; trackBy: trackByUserId" [value]="validator.id">
+                                    {{ validator.firstName }} {{ validator.lastName }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="error-message" *ngIf="isFieldInvalid('validatorId')">
+              <span *ngIf="pointingHourForm.get('validatorId')?.errors?.['required']">
+                Le validateur est obligatoire
+              </span>
+                        </div>
+                    </div>
+
+                    <!-- CHANGEMENT: Message d'erreur global pour la sélection -->
+                    <div class="global-error" *ngIf="!pointingHourForm.get('classServiceId')?.value && !pointingHourForm.get('userId')?.value && (pointingHourForm.get('classServiceId')?.touched || pointingHourForm.get('userId')?.touched)">
+                        Vous devez sélectionner soit une classe/service, soit un utilisateur.
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- CHANGEMENT: Barre de boutons fixe en bas -->
+        <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="onCancel()">
+                <i class="icon-close"></i>
+                Annuler
+            </button>
+            <button
+                    type="submit"
+                    class="btn btn-primary"
+                    [disabled]="!isFormValid()"
+                    (click)="onSubmit()"
+            >
+                <i class="icon-save"></i>
+                {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+            </button>
         </div>
     </div>
-</app-layout>
+</div>

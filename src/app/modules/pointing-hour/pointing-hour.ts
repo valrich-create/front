@@ -7,6 +7,7 @@ export interface PointingHour {
 	createdAt: Date;
 	updatedAt: Date;
 	classServiceId: string;
+	userId: string;
 	classServiceName: string;
 	pointage: any;
 }
@@ -19,6 +20,12 @@ export interface PointingHourResponse {
 	endTime: Date;
 	classServiceId: string;
 	classServiceName: string;
+	userId: string;
+	userFirstName: string;
+	userLastName: string;
+	validatorId: string;
+	validatorFistName: string;
+	validatorLastName: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -27,6 +34,8 @@ export interface PointingHourRequest {
 	time: Date;
 	marge: number;
 	classServiceId: string;
+	userId: string;
+	validatorId: string;
 }
 
 export interface PointingHourUpdateRequest {

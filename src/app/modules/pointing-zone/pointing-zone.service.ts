@@ -62,13 +62,22 @@ export class PointingZoneService {
   }
 
   /**
-   * Get zones grouped by class/service for an establishment
+   * Get zones by class/service ID
+   * @param userId ID of the class/service
+   * @returns List of zones for the specified class/service
+   */
+  getZonesByUser(userId: string): Observable<ZonePointageResponse[]> {
+    return this.http.get<ZonePointageResponse[]>(`${this.apiUrl}/by-user/${userId}`);
+  }
+
+  /**
+   * Get All zones for an establishment
    * @param establishmentId ID of the establishment
    * @returns Grouped zones data
    */
-  getZonesGroupedByClass(establishmentId: string): Observable<ZonePointageByClassServiceByEstablishment> {
-    return this.http.get<ZonePointageByClassServiceByEstablishment>(
-        `${this.apiUrl}/by-establishment/${establishmentId}/grouped`
+  getAllZonesByEstablishmentId(establishmentId: string): Observable<ZonePointageResponse[]> {
+    return this.http.get<ZonePointageResponse[]>(
+        `${this.apiUrl}/by-establishment/${establishmentId}`
     );
   }
 

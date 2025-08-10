@@ -1,18 +1,46 @@
-<div class="sidebar">
+<div class="sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="logo">
-        <div class="logo-icon"><img class="logo-icon" src="/favicon.ico" alt="Logo"></div>
-        <div class="logo-text">
+        <div class="logo-icon">
+            <img class="logo-icon" src="/favicon.ico" alt="Logo">
+        </div>
+        <div class="logo-text" *ngIf="!sidebarCollapsed">
             <h3>Smart Tracking</h3>
             <p>presences</p>
         </div>
     </div>
 
-    <ul class="menu">
-        <li *ngFor="let item of menuItems" [class.active]="item.active">
-            <a [routerLink]="item.route">
-                <i [class]="'feather-' + item.icon"></i>
-                <span>{{ item.label }}</span>
-            </a>
-        </li>
-    </ul>
+    <nav class="menu-container">
+        <div *ngFor="let section of menuSections"
+             class="menu-section"
+             [class.hidden]="!section.visible">
+
+            <!-- Titre de section (visible uniquement en mode étendu) -->
+            <div class="section-title" *ngIf="!sidebarCollapsed">
+                {{ section.title }}
+            </div>
+
+            <!-- Items du menu -->
+            <ul class="menu">
+                <li *ngFor="let item of section.items"
+                    [class.active]="item.active"
+                    [attr.data-tooltip]="sidebarCollapsed ? item.label : null"
+                    class="menu-item">
+                    <a [routerLink]="item.route">
+                        <i [class]="item.icon"></i>
+                        <span *ngIf="!sidebarCollapsed">{{ item.label }}</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Séparateur (sauf pour la dernière section) -->
+            <div class="section-separator"
+                 *ngIf="!sidebarCollapsed && section !== menuSections[menuSections.length - 1] && section.visible">
+            </div>
+        </div>
+    </nav>
 </div>
+
+<!-- Bouton hamburger -->
+<button class="toggle-sidebar" (click)="toggleSidebar()">
+    <i class="bi bi-list"></i>
+</button>

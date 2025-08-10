@@ -126,48 +126,6 @@
                     </ul>
                 </div>
 
-                <!-- User Stats -->
-                <div class="profile-section" *ngIf="!isAdmin">
-                    <h3 class="section-title">Statistics:</h3>
-                    <ul class="education-list">
-                        <li class="education-item" *ngIf="user.pointagesCount">
-                            <div class="bullet-point"></div>
-                            <div class="education-details">
-                                <p class="degree"><i class="bi bi-fingerprint"></i> Pointages</p>
-                                <p class="years">{{ user.pointagesCount }}</p>
-                            </div>
-                        </li>
-                        <li class="education-item" *ngIf="user.pointagesConfirmesCount">
-                            <div class="bullet-point"></div>
-                            <div class="education-details">
-                                <p class="degree"><i class="bi bi-check-circle-fill"></i> Confirmed Pointages</p>
-                                <p class="years">{{ user.pointagesConfirmesCount }}</p>
-                            </div>
-                        </li>
-                        <li class="education-item" *ngIf="user.messagesEnvoyesCount">
-                            <div class="bullet-point"></div>
-                            <div class="education-details">
-                                <p class="degree"><i class="bi bi-send-fill"></i> Messages Sent</p>
-                                <p class="years">{{ user.messagesEnvoyesCount }}</p>
-                            </div>
-                        </li>
-                        <li class="education-item" *ngIf="user.receivedMessagesCount">
-                            <div class="bullet-point"></div>
-                            <div class="education-details">
-                                <p class="degree"><i class="bi bi-inbox-fill"></i> Messages Received</p>
-                                <p class="years">{{ user.receivedMessagesCount }}</p>
-                            </div>
-                        </li>
-                        <li class="education-item" *ngIf="user.createdEventsCount">
-                            <div class="bullet-point"></div>
-                            <div class="education-details">
-                                <p class="degree"><i class="bi bi-calendar-event-fill"></i> Created Events</p>
-                                <p class="years">{{ user.createdEventsCount }}</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
                 <!-- Action Buttons -->
                 <div class="profile-actions-buttons">
                     <button class="action-button edit-button" (click)="onEdit(user)">

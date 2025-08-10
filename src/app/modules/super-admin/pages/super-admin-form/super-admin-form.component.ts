@@ -17,7 +17,7 @@ import {ToastService} from "../../../base-component/services/toast/toast.service
 @Component({
   selector: 'app-super-admin-form',
   imports: [
-      CommonModule,
+    CommonModule,
     NgClass,
     ReactiveFormsModule,
     NavbarComponent,
@@ -32,6 +32,9 @@ export class SuperAdminFormComponent implements OnInit {
   showConfirmPassword = false;
   isEditMode = false;
   currentAdminId: string | null = null;
+  selectedPhoto: File | null = null;
+  photoPreviewUrl: string | null = null;
+  existingPhotoUrl: string | null = null;
 
   togglePasswordVisibility(field: 'password' | 'confirmPassword'): void {
     if (field === 'password') {
@@ -72,6 +75,11 @@ export class SuperAdminFormComponent implements OnInit {
         email: admin.email,
         phoneNumber: admin.phoneNumber
       });
+
+      // Afficher la photo existante si disponible
+      if (admin.profileImageUrl) {
+        this.existingPhotoUrl = admin.profileImageUrl;
+      }
     });
   }
 
@@ -82,7 +90,8 @@ export class SuperAdminFormComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required, this.validatePhoneNumber]],
       password: ['', [Validators.required, Validators.minLength(8), this.validatePasswordStrength]],
-      confirmPassword: ['']
+      confirmPassword: [''],
+      photo: [null] // Nouveau champ pour la photo
     }, { validators: this.passwordMatchValidator });
 
     if (this.isEditMode) {
@@ -90,6 +99,39 @@ export class SuperAdminFormComponent implements OnInit {
       this.adminForm.get('confirmPassword')?.clearValidators();
       this.adminForm.get('password')?.updateValueAndValidity();
       this.adminForm.get('confirmPassword')?.updateValueAndValidity();
+    }
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      this.selectedPhoto = file;
+      this.adminForm.patchValue({
+        photo: file
+      });
+
+      // Créer l'aperçu
+      this.photoPreviewUrl = URL.createObjectURL(file);
+
+      // Supprimer l'ancienne URL d'aperçu s'il y en avait une
+      if (this.existingPhotoUrl) {
+        this.existingPhotoUrl = null;
+      }
+    }
+  }
+
+  removePhoto(): void {
+    this.selectedPhoto = null;
+    this.photoPreviewUrl = null;
+    this.existingPhotoUrl = null;
+    this.adminForm.patchValue({
+      photo: null
+    });
+
+    // Réinitialiser l'input file
+    const fileInput = document.getElementById('photoInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   }
 
@@ -120,11 +162,22 @@ export class SuperAdminFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.adminForm.valid) {
-      const formData = this.adminForm.value;
-      delete formData.confirmPassword;
+      const formData = new FormData();
 
-      if (this.isEditMode && !formData.password) {
-        delete formData.password;
+      // Ajouter tous les champs du formulaire à FormData
+      formData.append('firstName', this.adminForm.get('firstName')?.value || '');
+      formData.append('lastName', this.adminForm.get('lastName')?.value || '');
+      formData.append('email', this.adminForm.get('email')?.value || '');
+      formData.append('phoneNumber', this.adminForm.get('phoneNumber')?.value || '');
+
+      // Ajouter le mot de passe seulement si ce n'est pas le mode édition ou s'il y a une valeur
+      if (!this.isEditMode && this.adminForm.get('password')?.value) {
+        formData.append('password', this.adminForm.get('password')?.value);
+      }
+
+      // Ajouter la photo seulement si un fichier est sélectionné
+      if (this.selectedPhoto) {
+        formData.append('photo', this.selectedPhoto, this.selectedPhoto.name);
       }
 
       if (this.isEditMode && this.currentAdminId) {
@@ -167,5 +220,4 @@ export class SuperAdminFormComponent implements OnInit {
   cancel(): void {
     this.router.navigate(['/super-admin']);
   }
-
 }

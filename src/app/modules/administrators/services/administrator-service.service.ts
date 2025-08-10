@@ -64,13 +64,11 @@ export class AdministratorServiceService {
   //   return this.http.put<UserResponse>(`${this.apiUrl}/${id}`, UserResponse);
   // }
 
-  createAdministrator(user: Partial<UserResponse>): Observable<UserResponse> {
-    const formData = this.buildFormData(user);
+  createAdministrator(formData: FormData): Observable<UserResponse> {
     return this.http.post<UserResponse>(this.apiUrl, formData);
   }
 
-  updateAdministrator(id: string, user: Partial<UserResponse>): Observable<UserResponse> {
-    const formData = this.buildFormData(user);
+  updateAdministrator(id: string, formData: FormData): Observable<UserResponse> {
     return this.http.put<UserResponse>(`${this.apiUrl}/${id}`, formData);
   }
 

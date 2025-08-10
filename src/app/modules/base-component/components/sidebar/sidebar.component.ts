@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {NavigationEnd, RouterLink, Router} from "@angular/router";
 import {CommonModule} from "@angular/common";
-// import {Router} from "express";
 import {filter} from "rxjs";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {AuthService} from "../../../auth/service/auth.service";
@@ -11,6 +10,12 @@ interface MenuItem {
     label: string;
     route: string;
     active?: boolean;
+}
+
+interface MenuSection {
+    title: string;
+    items: MenuItem[];
+    visible: boolean;
 }
 
 @Component({
@@ -27,46 +32,53 @@ interface MenuItem {
 
 export class SidebarComponent implements OnInit {
     role: string | null = null;
+    menuSections: MenuSection[] = [];
+    sidebarOpen = false;
+    sidebarCollapsed = false;
 
-    menuItems: MenuItem[] = [];
-
-    private buildMenuItemsForRole(role: string | null): MenuItem[] {
-        const commonItems: MenuItem[] = [
-            {icon: 'bi-house', label: 'Dashboard', route: '/dashboard'},
+    private buildMenuSectionsForRole(role: string | null): MenuSection[] {
+        const administrationItems: MenuItem[] = [
             {icon: 'bi-shield', label: 'Super Admins', route: '/super-admin'},
-            {icon: 'bi-shield', label: 'Administrators', route: '/administrators'},
-            {icon: 'bi-shield', label: 'Org Admins', route: '/organization-admin'},
-            {icon: 'bi-building', label: 'Organizations', route: '/organizations'},
-            {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
-            {icon: 'bi-people', label: 'Users', route: '/users'},
-            {icon: 'bi-calendar', label: 'Event', route: '/events'},
-            {icon: 'bi-chat', label: 'Chat', route: '/chat'},
-            {icon: 'bi-person', label: 'Profile', route: '/profile'},
+            {icon: 'bi-building', label: 'Organisations', route: '/organizations'},
+            {icon: 'bi-shield', label: 'Admins d\'organisation', route: '/administrators'},
         ];
 
-        const adminItems: MenuItem[] = [
-            {icon: 'bi-house', label: 'Dashboard', route: '/dashboard'},
-            {icon: 'bi-shield', label: 'Administrators', route: '/administrators'},
-            {icon: 'bi-people', label: 'Users', route: '/users'},
-            {icon: 'bi-chat', label: 'Chat', route: '/chat'},
-            {icon: 'bi-person', label: 'Profile', route: '/profile'},
-            {icon: 'bi-collection', label: 'Classes/Services', route: '/class-services'},
-            {icon: 'bi-calendar', label: 'Event', route: '/events'}
+        const etablissementItems: MenuItem[] = [
+            {icon: 'bi-house', label: 'Tableau de bord', route: '/dashboard'},
+            {icon: 'bi-shield', label: 'Administrateurs', route: '/organization-admin'},
+            {icon: 'bi-collection', label: 'Classes / Services', route: '/class-services'},
+            {icon: 'bi-people', label: 'Utilisateurs', route: '/users'},
+            {icon: 'bi-calendar', label: 'Événements', route: '/events'},
+            {icon: 'bi-clock', label: 'Horaires', route: '/schedule'},
+            {icon: 'bi-geo', label: 'Zones', route: '/zone'}
         ];
 
-        switch (role) {
-            case 'SUPER_ADMIN':
-                return [...commonItems];
-            // case 'ADMIN':
-            //     return [...commonItems]; // e.g. Users + Events
-            // case 'USER':
-            //     return commonItems;
-            default:
-                return adminItems;
-        }
+        const compteItems: MenuItem[] = [
+            {icon: 'bi-chat', label: 'Messagerie', route: '/chat'},
+            {icon: 'bi-person', label: 'Profil', route: '/profile'}
+        ];
+
+        const sections: MenuSection[] = [
+            {
+                title: 'GESTION ADMINISTRATIVE',
+                items: administrationItems,
+                visible: role === 'SUPER_ADMIN'
+            },
+            {
+                title: 'MON ÉTABLISSEMENT',
+                items: etablissementItems,
+                visible: true
+            },
+            {
+                title: 'MON COMPTE',
+                items: compteItems,
+                visible: true
+            }
+        ];
+
+        return sections;
     }
 
-    // constructor() { }
     constructor(
         private router: Router,
         private authService: AuthService
@@ -74,7 +86,7 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit(): void {
         this.role = this.authService.getUserRole();
-        this.menuItems = this.buildMenuItemsForRole(this.role);
+        this.menuSections = this.buildMenuSectionsForRole(this.role);
 
         this.updateActiveState();
 
@@ -85,11 +97,17 @@ export class SidebarComponent implements OnInit {
             });
     }
 
+    toggleSidebar(): void {
+        this.sidebarCollapsed = !this.sidebarCollapsed;
+    }
+
     private updateActiveState(): void {
         const currentRoute = this.router.url.split('?')[0];
 
-        this.menuItems.forEach(item => {
-            item.active = currentRoute === item.route || currentRoute.startsWith(item.route + '/');
+        this.menuSections.forEach(section => {
+            section.items.forEach(item => {
+                item.active = currentRoute === item.route || currentRoute.startsWith(item.route + '/');
+            });
         });
     }
 }

@@ -1,21 +1,31 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit, PLATFORM_ID, Inject} from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+  ValidatorFn,
+  AbstractControl, ValidationErrors
+} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 import {CommonModule, isPlatformBrowser} from '@angular/common';
-import { LayoutComponent } from '../../../base-component/components/layout/layout.component';
-import { NavbarComponent } from '../../../base-component/components/navbar/navbar.component';
 import {PointingZoneService} from "../../pointing-zone.service";
 import {ZonePointageRequest} from "../../pointing-zone";
 import {MAT_DIALOG_DATA} from "@angular/material/dialog";
 import {ClassServiceService} from "../../../services/class-service.service";
-
+import {ClassServiceResponse} from "../../../services/class-service";
+import {UserResponse} from "../../../users/users.models";
+import {UserService} from "../../../users/services/user.service";
+import {PersonalPointingService} from "../../../base-component/services/personal-pointing.service";
 
 @Component({
   selector: 'app-zone-pointage-form',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ],
   templateUrl: 'pointing-zone-form.component.html',
   styleUrls: ['pointing-zone-form.component.scss']
@@ -28,61 +38,117 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
   private marker: any;
   private circle: any;
   private leaflet: any;
-  private defaultCenter = [4.0511, 9.7679]; // Default center (London)
+  private defaultCenter = [4.0511, 9.7679];
   private defaultZoom = 13;
-  private classId: string;
-  private establishmentId: string='';
 
+  // Données pour les sélections
+  availableClassServices: ClassServiceResponse[] = [];
+  availableUsers: UserResponse[] = [];
+
+  // Contexte route / dialog
+  classServiceId?: string;
+  userId?: string;
+  establishmentId = '';
+
+  showIdSelection = false;
   isBrowser = false;
 
   constructor(
       private fb: FormBuilder,
       private router: Router,
+      private route: ActivatedRoute,
       private zoneService: PointingZoneService,
+      private personalPointingService: PersonalPointingService,
       private classService: ClassServiceService,
+      private userService: UserService,
       @Inject(PLATFORM_ID) private platformId: Object,
       @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    this.classId = data.classId;
   }
 
   ngOnInit(): void {
-    this.loadClassDetails();
+    this.getEstablishmentIdFromStorage();
     this.initForm();
-    this.setupFormListeners();
+    this.getClassServiceId();
+    this.getUserId();
+    this.loadSelectionData();
+
+    if (this.isBrowser) this.loadLeaflet();
   }
 
   ngAfterViewInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.loadLeaflet();
-    }
+    if (this.isBrowser) this.initMap();
   }
 
-  private loadClassDetails(): void {
-    this.classService.getClassServiceById(this.classId).subscribe({
-      next: (classDetails) => {
-        if (!classDetails.establishment?.id) {
-          throw new Error('Establishment ID not found in class details');
-        }
-        this.establishmentId = classDetails.establishment.id;
-        this.initForm(); // Initialisez le formulaire une fois les données chargées
-        this.setupFormListeners();
-      },
-      error: (err) => console.error('Failed to load class details', err)
+  /* ----------  GESTION DES IDs DEPUIS LA ROUTE  ---------- */
+  getClassServiceId(): void {
+    this.route.params.subscribe(params => {
+      this.classServiceId = params['classId'];
+      if (this.classServiceId) {
+        this.zoneForm.patchValue({ classServiceId: this.classServiceId });
+        this.zoneForm.get('userId')?.disable();
+        this.zoneForm.get('userId')?.setValue(null);
+      }
     });
   }
 
-  private async loadLeaflet() {
-    try {
-      const L = await import('leaflet');
-      this.leaflet = L.default;
-      this.initMap();
-    } catch (error) {
-      console.error('Failed to load Leaflet:', error);
+  getUserId(): void {
+    this.route.params.subscribe(params => {
+      this.userId = params['userId'];
+      if (this.userId) {
+        this.zoneForm.patchValue({ userId: this.userId });
+        this.zoneForm.get('classServiceId')?.disable();
+        this.zoneForm.get('classServiceId')?.setValue(null);
+      }
+    });
+  }
+
+  /* ----------  CHARGEMENT DES DONNÉES DE SÉLECTION  ---------- */
+  loadSelectionData(): void {
+    // Charger les classes/services
+    this.classService.getClassServicesByEstablishment(this.establishmentId).subscribe({
+      next: (classes) => {
+        this.availableClassServices = classes;
+        this.showIdSelection = true;
+      },
+      error: (err) => console.error('Failed to load available class services:', err)
+    });
+
+    // Charger les utilisateurs
+    this.userService.getUsersByEstablishmentId(this.establishmentId, 0, 300).subscribe({
+      next: (page) => {
+        this.availableUsers = page.content;
+        this.showIdSelection = true;
+      },
+      error: (err) => console.error('Failed to load available users:', err)
+    });
+  }
+
+  /* ----------  GESTION DES SÉLECTIONS MUTUELLEMENT EXCLUSIVES  ---------- */
+  onClassServiceChange(classServiceId: string): void {
+    if (classServiceId) {
+      this.zoneForm.get('userId')?.disable();
+      this.zoneForm.get('userId')?.setValue(null);
+      this.zoneForm.patchValue({ classServiceId: classServiceId });
+    } else {
+      this.zoneForm.get('userId')?.enable();
+      this.zoneForm.patchValue({ classServiceId: null });
     }
   }
 
+  onUserChange(userId: string): void {
+    if (userId) {
+      this.zoneForm.get('classServiceId')?.disable();
+      this.zoneForm.get('classServiceId')?.setValue(null);
+      this.zoneForm.patchValue({ userId: userId });
+    } else {
+      this.zoneForm.get('classServiceId')?.enable();
+      this.zoneForm.patchValue({ userId: null });
+    }
+  }
+
+  /* ----------  INITIALISATION DU FORMULAIRE  ---------- */
   initForm(): void {
     this.zoneForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(100)]],
@@ -102,9 +168,13 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
         Validators.max(10000)
       ]],
       description: ['', [Validators.maxLength(500)]],
-      classServiceId: [this.classId, [Validators.required]],
-      establishmentId: [this.establishmentId, [Validators.required]]
+      classServiceId: [null],
+      userId: [null],
+      establishmentId: [this.establishmentId, [Validators.required]],
     });
+
+    // Validation personnalisée : soit classServiceId soit userId doit être sélectionné
+    this.zoneForm.setValidators(this.atLeastOneSelectedValidator);
 
     this.zoneForm.get('latitude')?.valueChanges.subscribe(lat => {
       if (this.zoneForm.get('latitude')?.valid &&
@@ -119,16 +189,35 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
         this.updateMapFromForm();
       }
     });
+
+    this.setupFormListeners();
+  }
+
+  /* ----------  VALIDATEUR PERSONNALISÉ  ---------- */
+  atLeastOneSelectedValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const formGroup = control as FormGroup;
+    const classServiceId = formGroup.get('classServiceId')?.value;
+    const userId = formGroup.get('userId')?.value;
+
+    if (!classServiceId && !userId) {
+      return { atLeastOneRequired: true };
+    }
+    return null;
+  }
+
+  /* ----------  LEAFLET MAP  ---------- */
+  private async loadLeaflet() {
+    try {
+      const L = await import('leaflet');
+      this.leaflet = L.default;
+      this.initMap();
+    } catch (error) {
+      console.error('Failed to load Leaflet:', error);
+    }
   }
 
   initMap(): void {
     if (!this.leaflet) return;
-
-    // this.map = this.leaflet.map(this.mapContainer.nativeElement).setView(
-    //     [this.zoneForm.value.latitude, this.zoneForm.value.longitude],
-    //     this.defaultZoom
-    // );
-
     const initialLat = this.zoneForm.value.latitude;
     const initialLng = this.zoneForm.value.longitude;
 
@@ -141,10 +230,8 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
 
-    // Add initial marker
     this.updateMapFeatures();
 
-    // Handle map clicks
     this.map.on('click', (e: any) => {
       this.zoneForm.patchValue({
         latitude: e.latlng.lat,
@@ -164,27 +251,6 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
     this.updateMapFeatures();
   }
 
-  setupFormListeners(): void {
-    // Update map when coordinates change
-    // this.zoneForm.get('latitude')?.valueChanges.subscribe(() => {
-    //   if (this.zoneForm.get('latitude')?.valid) {
-    //     this.updateMapFeatures();
-    //   }
-    // });
-    //
-    // this.zoneForm.get('longitude')?.valueChanges.subscribe(() => {
-    //   if (this.zoneForm.get('longitude')?.valid) {
-    //     this.updateMapFeatures();
-    //   }
-    // });
-
-    this.zoneForm.get('radius')?.valueChanges.subscribe(() => {
-      if (this.zoneForm.get('radius')?.valid) {
-        this.updateMapFeatures();
-      }
-    });
-  }
-
   updateMapFeatures(): void {
     if (!this.leaflet || !this.map) return;
 
@@ -201,8 +267,8 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
 
     // Add circle
     this.circle = this.leaflet.circle([lat, lng], {
-      color: '#5E50C5',
-      fillColor: '#E7E6FB',
+      color: '#28a745',
+      fillColor: '#28a74530',
       fillOpacity: 0.5,
       radius: radius
     }).addTo(this.map);
@@ -211,9 +277,23 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
     this.map.setView([lat, lng], this.map.getZoom());
   }
 
+  /* ----------  VALIDATION ET SUBMIT  ---------- */
   isFieldInvalid(fieldName: string): boolean {
     const field = this.zoneForm.get(fieldName);
     return field ? (field.invalid && (field.dirty || field.touched)) : false;
+  }
+
+  hasSelectionError(): boolean {
+    return this.zoneForm.errors?.['atLeastOneRequired'] &&
+        (this.zoneForm.get('classServiceId')?.touched || this.zoneForm.get('userId')?.touched);
+  }
+
+  setupFormListeners(): void {
+    this.zoneForm.get('radius')?.valueChanges.subscribe(() => {
+      if (this.zoneForm.get('radius')?.valid) {
+        this.updateMapFeatures();
+      }
+    });
   }
 
   onCoordinatesChange(): void {
@@ -231,29 +311,66 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
         longitude: formValue.longitude,
         rayonMetres: formValue.radius,
         description: formValue.description,
-        classeServiceId: this.classId,
-        etablissementId: this.establishmentId
+        classeServiceId: formValue.classServiceId,
+        userId: formValue.userId,
+        etablissementId: this.establishmentId,
       };
 
-      console.log('Class Id: ',this.classId);
-      console.log('Establishment Id :', this.establishmentId);
-      this.zoneService.createZone(request).subscribe({
-        next: (response) => {
-          this.router.navigate(['/zones']);
-        },
-        error: (error) => {
-          console.error('Full error:', error);
-          console.error('Error details:', error.error);
-        }
-      });
+      console.log('Zone de pointage à créer:', request);
+
+      if (formValue.userId || this.userId) {
+        this.submitForUser(request);
+      } else {
+        this.submitForClassService(request);
+      }
     } else {
-      Object.keys(this.zoneForm.controls).forEach(key => {
-        this.zoneForm.get(key)?.markAsTouched();
-      });
+      this.markAllAsTouched();
     }
   }
 
-  onCancel(): void {
+  private submitForUser(request: ZonePointageRequest): void {
+    this.personalPointingService.createZone(request).subscribe({
+      next: (response) => {
+        console.log('Zone créée avec succès pour utilisateur:', response);
+        this.router.navigate(['/zones']);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création pour utilisateur:', error);
+      }
+    });
+  }
+
+  private submitForClassService(request: ZonePointageRequest): void {
+    this.zoneService.createZone(request).subscribe({
+      next: (response) => {
+        console.log('Zone créée avec succès pour classe/service:', response);
+        this.router.navigate(['/zones']);
+      },
+      error: (error) => {
+        console.error('Erreur lors de la création pour classe/service:', error);
+      }
+    });
+  }
+
+  private markAllAsTouched(): void {
+    Object.keys(this.zoneForm.controls).forEach(key => {
+      this.zoneForm.get(key)?.markAsTouched();
+    });
+  }
+
+
+onCancel(): void {
     this.router.navigate(['/zones']);
+  }
+
+  private getEstablishmentIdFromStorage(): void {
+    const data = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
+    if (data) {
+      try {
+        this.establishmentId = JSON.parse(data).establishment?.id || '';
+      } catch (e) {
+        console.error('Cannot read establishment id', e);
+      }
+    }
   }
 }

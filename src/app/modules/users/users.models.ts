@@ -70,12 +70,6 @@ export interface UserResponse {
 
     classeManagerId?: string;
     classeManagerNom?: string;
-
-    pointagesCount?: number;
-    pointagesConfirmesCount?: number;
-    messagesEnvoyesCount?: number;
-    createdEventsCount?: number;
-    receivedMessagesCount?: number;
 }
 
 export interface UserRegistrationRequest {

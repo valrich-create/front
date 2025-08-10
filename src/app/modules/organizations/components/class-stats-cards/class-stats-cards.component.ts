@@ -136,6 +136,7 @@ export class ClassStatsCardsComponent implements OnInit {
   openPointingHours() {
     this.showOptionsMenu = false;
     this.showPointingHoursModal = true;
+    this.router.navigate(['/classes', this.classId, 'pointing-hours']);
   }
 
   closePointingHours() {

@@ -3,7 +3,7 @@ import {Component, input, effect, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DatePipe } from '@angular/common';
 import {EventService} from "../events.service";
-import {Events} from "../events";
+import {Information} from "../information";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 
@@ -16,7 +16,7 @@ import {LayoutComponent} from "../../base-component/components/layout/layout.com
 })
 export class EventsListComponent {
   selectedDate = input<Date>();
-  events = signal<Events[]>([]);
+  events = signal<Information[]>([]);
 
   constructor(private eventService: EventService) {
     effect(() => {

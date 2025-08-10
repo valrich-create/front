@@ -1,47 +1,68 @@
 <app-layout>
-    <app-navbar [pageTitle]="'Pointing Zones for ' + className"></app-navbar>
-        <div class="zone-list-container">
-            <div class="header">
-                <h2>Pointing Zones for {{className}}</h2>
-                <button mat-raised-button color="primary" (click)="openCreateDialog()">
-                    <mat-icon>add</mat-icon>
-                    Add Zone
-                </button>
+    <app-navbar [pageTitle]="pageTitle"></app-navbar>
+
+    <div class="zone-list-container">
+        <div class="header">
+            <h2>{{ pageTitle }}</h2>
+            <button mat-raised-button color="primary" (click)="openCreateDialog()">
+                <mat-icon>add</mat-icon> Add Zone
+            </button>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filter-bar">
+            <label>Class</label>
+            <select [(ngModel)]="selectedFilterClass" (change)="onFilterChange()">
+                <option value="">All classes</option>
+                <option *ngFor="let c of classes" [value]="c.id">{{ c.nom }}</option>
+            </select>
+
+            <label>User</label>
+            <select [(ngModel)]="selectedFilterUser" (change)="onFilterChange()">
+                <option value="">All users</option>
+                <option *ngFor="let u of users" [value]="u.id">{{ u.firstName }} {{ u.lastName }}</option>
+            </select>
+        </div>
+
+        <!-- Contenu -->
+        <div class="content">
+            <div class="map-wrapper">
+                <div #mapContainer class="map"></div>
             </div>
 
-            <div class="content">
-                <div class="map-wrapper">
-                    <div #mapContainer class="map"></div>
-                </div>
-
-                <div class="zone-list">
-                    <mat-list>
-                        <ng-container *ngIf="zones.length > 0; else noData">
-                            <mat-list-item
-                                    *ngFor="let zone of zones"
-                                    (click)="selectZone(zone)"
-                                    [class.selected]="selectedZone?.id === zone.id"
-                            >
-                                <div class="zone-item">
-                                    <div class="zone-info">
-                                        <h3>{{ zone.nom }}</h3>
-                                        <p>Radius: {{ zone.rayonMetres }}m</p>
-                                        <p *ngIf="zone.description">{{ zone.description }}</p>
-                                    </div>
-                                    <button mat-icon-button color="warn" (click)="deleteZone(zone, $event)">
-                                        <mat-icon>delete</mat-icon>
-                                    </button>
+            <div class="zone-list">
+                <mat-list>
+                    <ng-container *ngIf="zones.length; else noData">
+                        <mat-list-item
+                                *ngFor="let zone of zones"
+                                (click)="selectZone(zone)"
+                                [class.selected]="selectedZone?.id === zone.id"
+                        >
+                            <div class="zone-item">
+                                <div class="zone-info">
+                                    <h3>{{ zone.nom }}</h3>
+                                    <p>
+                                        {{ zone.ownerType === OwnerType.CLASS' ? 'CLASS' : 'USER' }} :
+                                        {{ getOwnerName(zone) }}
+                                    </p>
+<!--                                    <p>{{ zone.ownerType === 'class' ? 'Class' : 'User' }} : {{ this.ownerName }}</p>-->
+                                    <p>Radius : {{ zone.rayonMetres }} m</p>
+                                    <p *ngIf="zone.description">{{ zone.description }}</p>
                                 </div>
-                            </mat-list-item>
-                        </ng-container>
-                        <ng-template #noData>
-                            <div class="no-data">
-                                <mat-icon>location_off</mat-icon>
-                                <p>No zones available</p>
+                                <button mat-icon-button color="warn" (click)="deleteZone(zone, $event)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
                             </div>
-                        </ng-template>
-                    </mat-list>
-                </div>
+                        </mat-list-item>
+                    </ng-container>
+                    <ng-template #noData>
+                        <div class="no-data">
+                            <mat-icon>location_off</mat-icon>
+                            <p>No zones available</p>
+                        </div>
+                    </ng-template>
+                </mat-list>
             </div>
         </div>
+    </div>
 </app-layout>

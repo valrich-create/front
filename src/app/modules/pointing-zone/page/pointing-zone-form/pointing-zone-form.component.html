@@ -2,152 +2,193 @@
     <div class="zone-form-container">
         <div class="form-card">
             <div class="card-header">
-                <h2>New Pointing Zone</h2>
+                <h2>Nouvelle Zone de Pointage</h2>
             </div>
 
             <div class="card-content">
                 <form [formGroup]="zoneForm" (ngSubmit)="onSubmit()">
-                    <div class="form-group">
-                        <label for="name">Zone Name <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="name"
-                                formControlName="name"
-                                placeholder="Enter zone name"
-                                class="form-control"
-                                [ngClass]="{'invalid-input': isFieldInvalid('name')}"
-                        >
-                        <div class="error-message" *ngIf="isFieldInvalid('name')">
-                            Zone name is required
+
+                    <!-- Section Assignation -->
+                    <div class="assignment-section" *ngIf="showIdSelection && !classServiceId && !userId">
+                        <h3>Assignation de la Zone</h3>
+                        <p class="assignment-instruction">Sélectionnez soit une classe/service, soit un utilisateur pour cette zone de pointage.</p>
+
+                        <div class="selection-row">
+                            <div class="form-group selection-group">
+                                <label for="classService">Classe/Service</label>
+                                <select
+                                        id="classService"
+                                        formControlName="classServiceId"
+                                        (change)="onClassServiceChange($any($event.target)?.value || '')"
+                                        class="form-control selection-dropdown"
+                                        [ngClass]="{'invalid-input': hasSelectionError()}">
+                                    <option value="">-- Choisir une classe/service --</option>
+                                    <option
+                                            *ngFor="let classService of availableClassServices"
+                                            [value]="classService.id">
+                                        {{ classService.nom }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="separator">OU</div>
+
+                            <div class="form-group selection-group">
+                                <label for="user">Utilisateur</label>
+                                <select
+                                        id="user"
+                                        formControlName="userId"
+                                        (change)="onUserChange($any($event.target)?.value || '')"
+                                        class="form-control selection-dropdown"
+                                        [ngClass]="{'invalid-input': hasSelectionError()}">
+                                    <option value="">-- Choisir un utilisateur --</option>
+                                    <option
+                                            *ngFor="let user of availableUsers"
+                                            [value]="user.id">
+                                        {{ user.firstName }} {{ user.lastName }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="error-message" *ngIf="hasSelectionError()">
+                            Vous devez sélectionner soit une classe/service, soit un utilisateur.
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="radius">Radius (meters) <span class="required">*</span></label>
-                        <input
-                                type="number"
-                                id="radius"
-                                formControlName="radius"
-                                placeholder="Enter radius in meters"
-                                class="form-control"
-                                [ngClass]="{'invalid-input': isFieldInvalid('radius')}"
-                                min="1"
-                                max="10000"
-                        >
-                        <div class="error-message" *ngIf="isFieldInvalid('radius')">
-                            <span *ngIf="zoneForm.get('radius')?.errors?.['required']">
-                                Radius is required
+                    <!-- Assignation fixe depuis la route -->
+                    <div class="fixed-assignment" *ngIf="classServiceId || userId">
+                        <div class="assignment-info">
+                            <span class="assignment-label">Zone assignée à :</span>
+                            <span class="assignment-value" *ngIf="classServiceId">
+                                <i class="icon-class"></i>
+                                Classe/Service (ID: {{ classServiceId }})
                             </span>
-                            <span *ngIf="zoneForm.get('radius')?.errors?.['min'] || zoneForm.get('radius')?.errors?.['max']">
-                                Radius must be between 1 and 10000 meters
+                            <span class="assignment-value" *ngIf="userId">
+                                <i class="icon-user"></i>
+                                Utilisateur (ID: {{ userId }})
                             </span>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Location Selection</label>
-                        <div class="map-container">
-                            <div #mapContainer class="map"></div>
-                        </div>
-                    </div>
+                    <!-- Informations de base de la zone -->
+                    <div class="basic-info-section">
+                        <h3>Informations de la Zone</h3>
 
-                    <div class="coordinates-group" *ngIf="!isBrowser">
                         <div class="form-group">
-                            <label for="latitude">Latitude <span class="required">*</span></label>
+                            <label for="name">Nom de la zone <span class="required">*</span></label>
                             <input
-                                    type="number"
-                                    id="latitudes"
-                                    formControlName="latitude"
-                                    placeholder="Ex: 51.505"
+                                    type="text"
+                                    id="name"
+                                    formControlName="name"
+                                    placeholder="Saisissez le nom de la zone"
                                     class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('latitude')}"
-                                    step="0.000001"
-                                    min="-90"
-                                    max="90"
-                                    (change)="onCoordinatesChange()"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('name')}"
                             >
-                            <div class="error-message" *ngIf="isFieldInvalid('latitude')">
-                                Valid latitude is required (-90 to 90)
+                            <div class="error-message" *ngIf="isFieldInvalid('name')">
+                                Le nom de la zone est obligatoire
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="longitude">Longitude <span class="required">*</span></label>
+                            <label for="radius">Rayon (mètres) <span class="required">*</span></label>
                             <input
                                     type="number"
-                                    id="longitudes"
-                                    formControlName="longitude"
-                                    placeholder="Ex: -0.09"
+                                    id="radius"
+                                    formControlName="radius"
+                                    placeholder="Saisissez le rayon en mètres"
                                     class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('longitude')}"
-                                    step="0.000001"
-                                    min="-180"
-                                    max="180"
-                                    (change)="onCoordinatesChange()"
+                                    [ngClass]="{'invalid-input': isFieldInvalid('radius')}"
+                                    min="1"
+                                    max="10000"
                             >
-                            <div class="error-message" *ngIf="isFieldInvalid('longitude')">
-                                Valid longitude is required (-180 to 180)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="coordinates-group">
-                        <div class="form-group">
-                            <label for="latitude">Latitude <span class="required">*</span></label>
-                            <input
-                                    type="number"
-                                    id="latitude"
-                                    formControlName="latitude"
-                                    placeholder="Ex: 51.505"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('latitude')}"
-                                    step="0.000001"
-                                    min="-90"
-                                    max="90"
-                                    (change)="onCoordinatesChange()"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('latitude')">
-                                Valid latitude is required (-90 to 90)
+                            <div class="error-message" *ngIf="isFieldInvalid('radius')">
+                                <span *ngIf="zoneForm.get('radius')?.errors?.['required']">
+                                    Le rayon est obligatoire
+                                </span>
+                                <span *ngIf="zoneForm.get('radius')?.errors?.['min'] || zoneForm.get('radius')?.errors?.['max']">
+                                    Le rayon doit être entre 1 et 10 000 mètres
+                                </span>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="longitude">Longitude <span class="required">*</span></label>
-                            <input
-                                    type="number"
-                                    id="longitude"
-                                    formControlName="longitude"
-                                    placeholder="Ex: -0.09"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('longitude')}"
-                                    step="0.000001"
-                                    min="-180"
-                                    max="180"
-                                    (change)="onCoordinatesChange()"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('longitude')">
-                                Valid longitude is required (-180 to 180)
+                            <label for="description">Description</label>
+                            <textarea
+                                    id="description"
+                                    formControlName="description"
+                                    placeholder="Description optionnelle de la zone"
+                                    class="form-control text-area"
+                                    rows="3"
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section localisation -->
+                    <div class="location-section">
+                        <h3>Sélection de l'Emplacement</h3>
+
+                        <div class="form-group">
+                            <label>Localisation sur la carte</label>
+                            <div class="map-container">
+                                <div #mapContainer class="map"></div>
+                            </div>
+                            <p class="map-instruction">Cliquez sur la carte pour définir l'emplacement de la zone</p>
+                        </div>
+
+                        <div class="coordinates-group">
+                            <div class="form-group">
+                                <label for="latitude">Latitude <span class="required">*</span></label>
+                                <input
+                                        type="number"
+                                        id="latitude"
+                                        formControlName="latitude"
+                                        placeholder="Ex: 4.0511"
+                                        class="form-control"
+                                        [ngClass]="{'invalid-input': isFieldInvalid('latitude')}"
+                                        step="0.000001"
+                                        min="-90"
+                                        max="90"
+                                        (change)="onCoordinatesChange()"
+                                >
+                                <div class="error-message" *ngIf="isFieldInvalid('latitude')">
+                                    Latitude valide requise (-90 à 90)
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="longitude">Longitude <span class="required">*</span></label>
+                                <input
+                                        type="number"
+                                        id="longitude"
+                                        formControlName="longitude"
+                                        placeholder="Ex: 9.7679"
+                                        class="form-control"
+                                        [ngClass]="{'invalid-input': isFieldInvalid('longitude')}"
+                                        step="0.000001"
+                                        min="-180"
+                                        max="180"
+                                        (change)="onCoordinatesChange()"
+                                >
+                                <div class="error-message" *ngIf="isFieldInvalid('longitude')">
+                                    Longitude valide requise (-180 à 180)
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea
-                                id="description"
-                                formControlName="description"
-                                placeholder="Optional zone description"
-                                class="form-control text-area"
-                                rows="3"
-                        ></textarea>
-                    </div>
-
-                    <input type="hidden" formControlName="classServiceId">
+                    <!-- Champs cachés -->
                     <input type="hidden" formControlName="establishmentId">
 
+                    <!-- Boutons d'action -->
                     <div class="form-actions">
-                        <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                        <button type="button" class="btn-cancel" (click)="onCancel()">
+                            <i class="icon-cancel"></i>
+                            Annuler
+                        </button>
                         <button type="submit" class="btn-submit" [disabled]="zoneForm.invalid">
-                            Create Zone
+                            <i class="icon-add"></i>
+                            Créer la Zone
                         </button>
                     </div>
                 </form>
@@ -155,4 +196,3 @@
         </div>
     </div>
 </div>
-<!--</app-layout>-->
