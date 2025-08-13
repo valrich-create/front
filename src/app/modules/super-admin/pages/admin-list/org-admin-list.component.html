@@ -6,7 +6,7 @@
     <div class="users-container">
         <app-search-bar
                 newButtonText="New Admin"
-                newItemRoute="/administrators/new"
+                newItemRoute="/organization-admin/new"
                 [currentSort]="currentSort"
                 (sortChange)="onSortChange($event)"
                 (searchChange)="onSearchChange($event)">
@@ -26,7 +26,7 @@
             </div>
             <h3>No administrators found</h3>
             <p>There are currently no administrators registered in the system.</p>
-            <button class="btn btn-primary" routerLink="/administrators/new">
+            <button class="btn btn-primary" routerLink="/organization-admin/new">
                 <i class="fas fa-plus-circle"></i> Create New Admin
             </button>
         </div>

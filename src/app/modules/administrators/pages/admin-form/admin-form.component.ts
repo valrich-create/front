@@ -19,6 +19,7 @@ import { OrganizationService } from "../../../organizations/organization.service
 import { ActivatedRoute, Router } from "@angular/router";
 import { AdministratorServiceService } from "../../services/administrator-service.service";
 import { ToastService } from "../../../base-component/services/toast/toast.service";
+import {UserService} from "../../../users/services/user.service";
 
 @Component({
     selector: 'app-admin-form',
@@ -55,6 +56,7 @@ export class AdminFormComponent implements OnInit {
         private toastService: ToastService,
         private route: ActivatedRoute,
         private adminService: AdministratorServiceService,
+        private userService: UserService,
         private router: Router
     ) {
         this.adminForm = this.fb.group({
@@ -66,7 +68,7 @@ export class AdminFormComponent implements OnInit {
             dateOfBirth: ['', this.validateDateNotInFuture.bind(this)],
             placeOfBirth: [''],
             role: ['', Validators.required],
-            organization: ['', Validators.required],
+            establishmentId: ['', Validators.required],
             password: ['', [Validators.minLength(8)]],
             confirmPassword: [''],
             permissions: this.fb.array<FormControl<boolean>>([])
@@ -118,7 +120,7 @@ export class AdminFormComponent implements OnInit {
             dateOfBirth: birthDate,
             placeOfBirth: admin.placeOfBirth,
             role: admin.role,
-            organization: admin.establishmentId
+            establishmentId: admin.establishmentId
         });
 
         // Load existing profile photo if available
@@ -266,15 +268,18 @@ export class AdminFormComponent implements OnInit {
                 formData.delete('password');
             }
 
+            console.log("Valeur de organization:", this.adminForm.value.establishmentId);
+
             const operation$ = this.isEditMode
-                ? this.adminService.updateAdministrator(this.adminForm.value.id, formData)
-                : this.adminService.createAdministrator(formData);
+                ? this.userService.updateUser(this.adminForm.value.id, formData)
+                : this.userService.createUser(formData);
 
             operation$.subscribe({
                 next: () => {
                     const message = this.isEditMode
                         ? 'Admin updated successfully'
                         : 'Admin created successfully';
+                    console.log("Data send : {} " ,formData);
                     this.toastService.show(message, 'success');
                     this.router.navigate(['/administrators']);
                 },

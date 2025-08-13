@@ -1,20 +1,11 @@
 <app-layout>
     <div class="main-content">
         <app-navbar [pageTitle]="establishmentName"></app-navbar>
-
-<!--        <app-navbar>-->
-<!--            <ng-container *ngIf="currentEstablishment">-->
-<!--                pageTitle="{{ establishmentName }}"-->
-<!--                &lt;!&ndash; reste du contenu &ndash;&gt;-->
-<!--            </ng-container>-->
-<!--&lt;!&ndash;            pageTitle="{{ establishmentName }}"&ndash;&gt;-->
-<!--        </app-navbar>-->
     </div>
 
-    <div class="dashboard-content" *ngIf="currentEstablishment; else loading">
+    <div class="dashboard-content" *ngIf="currentEstablishment && !isLoading">
         <div class="main-section">
             <!-- Statistiques en haut -->
-            <ng-container *ngIf="isAdmin; else adminStats">
                 <app-statistics-cards
                         [currentUsersCount]="userMetrics?.currentUsers || 0"
                         [adminsCount]="userMetrics?.adminsCount || 0"
@@ -22,18 +13,16 @@
                         [globalPresencePercentage]="dailyStats?.presenceRate || 0"
                         [isSuperAdmin]="false">
                 </app-statistics-cards>
-            </ng-container>
 
-            <ng-template #adminStats>
-                <app-statistics-cards
-                        [isSuperAdmin]="true"
-                        [globalStats]="globalStats">
-                </app-statistics-cards>
-            </ng-template>
+<!--            <ng-template #adminStats>-->
+<!--                <app-statistics-cards-->
+<!--                        [isSuperAdmin]="true"-->
+<!--                        [globalStats]="globalStats">-->
+<!--                </app-statistics-cards>-->
+<!--            </ng-template>-->
 
             <!-- Graphique de performance (caché pour SuperAdmin) -->
             <app-school-performance-chart
-                    *ngIf="!isAdmin"
                     [yearlyPresenceStats]="yearlyStats"
                     [currentYear]="currentYear"
                     [previousYear]="previousYear">
@@ -46,7 +35,7 @@
                 </div>
 
                 <!-- Graphique de présence (caché pour SuperAdmin) -->
-                <div class="column" *ngIf="!isAdmin">
+                <div class="column">
                     <app-organization-presence-chart
                             [establishmentId]="establishmentId">
                     </app-organization-presence-chart>
@@ -56,7 +45,7 @@
             <!-- Activités récentes (adapté pour les deux rôles) -->
             <app-recent-administration-activity
                     [establishmentId]="establishmentId"
-                    [isSuperAdmin]="isAdmin">
+                    [isSuperAdmin]="false">
             </app-recent-administration-activity>
         </div>
 
@@ -64,12 +53,11 @@
             <!-- Top ranking (adapté pour les deux rôles) -->
             <app-recent-students
                     [establishmentId]="establishmentId"
-                    [isSuperAdmin]="isAdmin">
+                    [isSuperAdmin]="false">
             </app-recent-students>
 
             <!-- Messages (caché pour SuperAdmin) -->
             <app-dashboard-messages
-                    *ngIf="!isAdmin"
                     [establishmentId]="establishmentId">
             </app-dashboard-messages>
 
@@ -84,160 +72,43 @@
         </div>
     </div>
 
-    <ng-template #loading>
-        <div class="loading-container">
-            <p>Chargement des données en cours...</p>
-            <!-- Vous pouvez aussi ajouter un spinner ici -->
+    <div class="loading-container" *ngIf="isLoading">
+        <p>Chargement des données en cours...</p>
+        <!-- Vous pouvez aussi ajouter un spinner ici -->
+    </div>
+
+    <div class="no-establishment-warning" *ngIf="!isLoading && !currentEstablishment">
+        <div class="warning-content">
+            <i class="warning-icon">⚠️</i>
+            <h3>Établissement non trouvé</h3>
+            <p>Nous n'avons pas réussi identifier votre établissement. Certaines fonctionnalités seront limitées.</p>
+            <p>Veuillez contacter l'administration si cela persiste.</p>
+            <!-- On pourrait ajouter un bouton pour réessayer -->
+            <button class="retry-button" (click)="retryLoading()">
+                Réessayer
+            </button>
         </div>
-    </ng-template>
+    </div>
+
+<!--    <ng-template *ngIf="!currentEstablishment; else loading">-->
+<!--        <div class="no-establishment-warning" *ngIf="!currentEstablishment; else loading">-->
+<!--            <div class="warning-content">-->
+<!--                <i class="warning-icon">⚠️</i>-->
+<!--                <h3>Établissement non trouvé</h3>-->
+<!--                <p>Nous n'avons pas réussi identifier votre établissement. Certaines fonctionnalités seront limitées.</p>-->
+<!--                <p>Veuillez contacter l'administration si cela persiste.</p>-->
+<!--                &lt;!&ndash; On pourrait ajouter un bouton pour réessayer &ndash;&gt;-->
+<!--                <button class="retry-button" (click)="retryLoading()">-->
+<!--                    Réessayer-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </ng-template>-->
+
+<!--    <ng-template #loading>-->
+<!--        <div class="loading-container" *ngIf="isLoading">-->
+<!--            <p>Chargement des données en cours...</p>-->
+<!--            &lt;!&ndash; Vous pouvez aussi ajouter un spinner ici &ndash;&gt;-->
+<!--        </div>-->
+<!--    </ng-template>-->
 </app-layout>
-
-
-
-
-
-<!--<app-layout>-->
-<!--    <div class="main-content">-->
-<!--        <app-navbar>-->
-<!--            pageTitle="{{ establishmentName }}"-->
-<!--        </app-navbar>-->
-<!--    </div>-->
-
-<!--    <div class="dashboard-content">-->
-<!--        <div class="main-section">-->
-<!--            &lt;!&ndash; Statistiques en haut &ndash;&gt;-->
-<!--            <app-statistics-cards-->
-<!--                    [currentUsersCount]="userMetrics?.currentUsers || 0"-->
-<!--                    [adminsCount]="userMetrics?.adminsCount || 0"-->
-<!--                    [classesCount]="userMetrics?.adminsCount || 0"-->
-<!--                    [globalPresencePercentage]="dailyStats?.presenceRate || 0">-->
-<!--            </app-statistics-cards>-->
-
-<!--            &lt;!&ndash; Graphique de performance &ndash;&gt;-->
-<!--            <app-school-performance-chart-->
-<!--                    [yearlyPresenceStats]="yearlyStats"-->
-<!--                    [currentYear]="currentYear"-->
-<!--                    [previousYear]="previousYear">-->
-<!--            </app-school-performance-chart>-->
-
-<!--            <div class="two-columns">-->
-<!--                &lt;!&ndash; Calendrier &ndash;&gt;-->
-<!--                <div class="column">-->
-<!--                    <app-organization-calendar></app-organization-calendar>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; Graphique de présence &ndash;&gt;-->
-<!--                <div class="column">-->
-<!--                    <app-organization-presence-chart-->
-<!--                            [establishmentId]="currentEstablishmentId">-->
-<!--                    </app-organization-presence-chart>-->
-<!--&lt;!&ndash;                    <app-organization-presence-chart></app-organization-presence-chart>&ndash;&gt;-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Activités récentes &ndash;&gt;-->
-<!--            <app-recent-administration-activity-->
-<!--                    [establishmentId]="currentEstablishmentId">-->
-<!--            </app-recent-administration-activity>-->
-<!--        </div>-->
-
-<!--        <div class="side-section">-->
-<!--            &lt;!&ndash; Top ranking users &ndash;&gt;-->
-<!--            <app-recent-students [establishmentId]="currentEstablishmentId"></app-recent-students>-->
-
-<!--            &lt;!&ndash; lastest infos &ndash;&gt;-->
-<!--            <app-dashboard-messages [establishmentId]="currentEstablishmentId"></app-dashboard-messages>-->
-
-<!--            &lt;!&ndash; Services &ndash;&gt;-->
-<!--&lt;!&ndash;            <app-dashboard-services></app-dashboard-services>&ndash;&gt;-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</app-layout>-->
-
-
-<!--<app-layout>-->
-<!--    <div class="main-content">-->
-<!--        <app-navbar>-->
-<!--            pageTitle="{{ establishmentName }}"-->
-<!--        </app-navbar>-->
-<!--    </div>-->
-
-<!--    <div class="dashboard-content">-->
-<!--        <div class="main-section">-->
-<!--            &lt;!&ndash; Statistiques en haut &ndash;&gt;-->
-<!--            <app-statistics-cards-->
-<!--                    *ngIf="isAdmin; else publicStats"-->
-<!--                    [currentUsersCount]="userMetrics?.currentUsers || 0"-->
-<!--                    [adminsCount]="userMetrics?.adminsCount || 0"-->
-<!--                    [classesCount]="userMetrics?.adminsCount || 0"-->
-<!--                    [globalPresencePercentage]="dailyStats?.presenceRate || 0">-->
-<!--            </app-statistics-cards>-->
-
-<!--            <ng-template #publicStats>-->
-<!--                <app-statistics-cards-->
-<!--                        [currentUsersCount]="globalStats?.totalUsers || 0"-->
-<!--                        [adminsCount]="globalStats?.maxCapacity || 0"-->
-<!--                        [classesCount]="globalStats?.totalEstablishments || 0"-->
-<!--                        [globalPresencePercentage]="0">-->
-<!--                </app-statistics-cards>-->
-<!--            </ng-template>-->
-
-<!--            &lt;!&ndash; Graphique de performance (caché pour les non-admins) &ndash;&gt;-->
-<!--            <app-school-performance-chart-->
-<!--                    *ngIf="isAdmin"-->
-<!--                    [yearlyPresenceStats]="yearlyStats"-->
-<!--                    [currentYear]="currentYear"-->
-<!--                    [previousYear]="previousYear">-->
-<!--            </app-school-performance-chart>-->
-
-<!--            <div class="two-columns">-->
-<!--                &lt;!&ndash; Calendrier &ndash;&gt;-->
-<!--                <div class="column">-->
-<!--                    <app-organization-calendar></app-organization-calendar>-->
-<!--                </div>-->
-
-<!--                &lt;!&ndash; Graphique de présence (caché pour les non-admins) &ndash;&gt;-->
-<!--                <div class="column" *ngIf="isAdmin">-->
-<!--                    <app-organization-presence-chart-->
-<!--                            [establishmentId]="currentEstablishmentId">-->
-<!--                    </app-organization-presence-chart>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Activités récentes (caché pour les non-admins) &ndash;&gt;-->
-<!--            <app-recent-administration-activity-->
-<!--                    *ngIf="isAdmin"-->
-<!--                    [establishmentId]="currentEstablishmentId">-->
-<!--            </app-recent-administration-activity>-->
-<!--        </div>-->
-
-<!--        <div class="side-section">-->
-<!--            &lt;!&ndash; Top ranking users (remplacé par top établissements pour les non-admins) &ndash;&gt;-->
-<!--            <ng-container *ngIf="isAdmin; else publicTopUsers">-->
-<!--                <app-recent-students [establishmentId]="currentEstablishmentId"></app-recent-students>-->
-<!--            </ng-container>-->
-
-<!--            <ng-template #publicTopUsers>-->
-<!--                <app-recent-students-->
-<!--                        *ngIf="topByExistingUsers.length > 0"-->
-<!--                        [title]="'Top 10 établissements (utilisateurs actifs)'"-->
-<!--                        [users]="topByExistingUsers">-->
-<!--                </app-recent-students>-->
-<!--            </ng-template>-->
-
-<!--            &lt;!&ndash; lastest infos (caché pour les non-admins) &ndash;&gt;-->
-<!--            <app-dashboard-messages-->
-<!--                    *ngIf="isAdmin"-->
-<!--                    [establishmentId]="currentEstablishmentId">-->
-<!--            </app-dashboard-messages>-->
-
-<!--            &lt;!&ndash; Services (remplacé par top établissements capacité max pour les non-admins) &ndash;&gt;-->
-<!--            <ng-container *ngIf="!isAdmin && topByTotalUsers.length > 0">-->
-<!--                <app-recent-students-->
-<!--                        [title]="'Top 10 établissements (capacité max)'"-->
-<!--                        [users]="topByTotalUsers">-->
-<!--                </app-recent-students>-->
-<!--            </ng-container>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</app-layout>-->

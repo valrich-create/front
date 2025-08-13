@@ -1,23 +1,25 @@
-import {Component, OnInit} from '@angular/core';
-import {StatisticsCardsComponent} from "../components/statistics-cards/statistics-cards.component";
+import { Component, OnInit } from '@angular/core';
+import { StatisticsCardsComponent } from "../components/statistics-cards/statistics-cards.component";
 import { SchoolPerformanceChartComponent } from "../components/school-performance-chart/school-performance-chart.component";
-import {OrganizationCalendarComponent} from "../components/organization-calendar/organization-calendar.component";
+import { OrganizationCalendarComponent } from "../components/organization-calendar/organization-calendar.component";
 import { OrganizationPresenceChartComponent } from "../components/organization-presence-chart/organization-presence-chart.component";
 import { RecentAdministrationActivityComponent } from "../components/recent-administration-activity/recent-administration-activity.component";
-import {RecentStudentsComponent} from "../components/recent-students/recent-students.component";
-import {DashboardMessagesComponent} from "../components/dashboard-messages/dashboard-messages.component";
-import {CommonModule} from "@angular/common";
-import {LayoutComponent} from "../../base-component/components/layout/layout.component";
-import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
+import { RecentStudentsComponent } from "../components/recent-students/recent-students.component";
+import { DashboardMessagesComponent } from "../components/dashboard-messages/dashboard-messages.component";
+import { CommonModule } from "@angular/common";
+import { LayoutComponent } from "../../base-component/components/layout/layout.component";
+import { NavbarComponent } from "../../base-component/components/navbar/navbar.component";
 import {
-  DailyGlobalStatsResponse, Establishment, GlobalStatsResponse, TopEstablishmentByUsersResponse,
+  DailyGlobalStatsResponse,
+  Establishment,
   UserMetricsResponse,
   YearlyPresenceStatsResponse
 } from "../../organizations/organization";
-import {OrganizationService} from "../../organizations/organization.service";
-import {EventService} from "../../events/events.service";
-import {ActivatedRoute} from "@angular/router";
-import {ToastService} from "../../base-component/services/toast/toast.service";
+import { OrganizationService } from "../../organizations/organization.service";
+import { EventService } from "../../events/events.service";
+import { ActivatedRoute } from "@angular/router";
+import { ToastService } from "../../base-component/services/toast/toast.service";
+import {UserService} from "../../users/services/user.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -42,64 +44,56 @@ export class DashboardComponent implements OnInit {
   userEmail: string = '';
   userPhone: string = '';
   userRole: string = '';
-  // currentEstablishmentId: string = '';
-  // establishmentName: string = '';
   currentEstablishment?: Establishment;
 
   currentYear: number = new Date().getFullYear();
   previousYear = this.currentYear - 1;
 
-  // Données pour les composants enfants
   userMetrics?: UserMetricsResponse;
   dailyStats?: DailyGlobalStatsResponse;
   yearlyStats?: YearlyPresenceStatsResponse;
 
-  isAdmin: boolean = false;
-  globalStats?: GlobalStatsResponse;
-  topByExistingUsers: TopEstablishmentByUsersResponse[] | undefined;
-  topByTotalUsers: TopEstablishmentByUsersResponse[] | undefined;
   isLoading: boolean = true;
 
   constructor(
       private route: ActivatedRoute,
       private organizationService: OrganizationService,
+      private userService: UserService,
       private toast: ToastService,
       private eventService: EventService
   ) { }
 
-  // async ngOnInit(): Promise<void>  {
-  //   this.loadUserData();
-  //   await this.loadEstablishmentData();
-  //
-  //   if (this.currentEstablishment) {
-  //     this.loadDashboardData();
-  //   }
-  // }
-
   async ngOnInit(): Promise<void> {
     try {
-      await this.loadUserData(); // Charge d'abord les données utilisateur
+      await this.loadUserData();
+      await this.loadEstablishmentData();
 
-      if (this.isSuperAdmin()) {
-        await this.loadSuperAdminDashboard();
+      if (this.currentEstablishment) {
+        await this.loadOrganizationDashboard();
       } else {
-        await this.loadEstablishmentData();
-        if (this.currentEstablishment) {
-          await this.loadOrganizationDashboard();
-        } else {
-          this.toast.show("No data found", "warning");
-        }
+        this.toast.show("Aucune donnée trouvée pour votre compte.", "warning");
       }
     } catch (error) {
       console.error("Dashboard loading error:", error);
-      this.toast.show("Error Occurred", "danger");
+      this.toast.show("Une erreur est survenue lors du chargement.", "danger");
     } finally {
       this.isLoading = false;
     }
   }
 
-  private isSuperAdmin(): boolean {
-    return this.userRole === 'SUPER_ADMIN';
+  async retryLoading(): Promise<void> {
+    this.isLoading = true;
+    try {
+      await this.loadEstablishmentData();
+      if (this.currentEstablishment) {
+        await this.loadOrganizationDashboard();
+      }
+    } catch (error) {
+      console.error("Retry failed:", error);
+      this.toast.show("Échec du rechargement", "danger");
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   private async loadUserData(): Promise<void> {
@@ -133,28 +127,20 @@ export class DashboardComponent implements OnInit {
             .getEstablishmentById(userData.establishment.id)
             .toPromise();
       }
+
+      // 3. Avertir si aucune Organisation trouvé
+      if (!this.currentEstablishment) {
+        this.toast.show(
+            "Impossible de déterminer votre établissement. \nCertaines fonctionnalités organisationnelles ne seront pas disponibles.",
+            "warning"
+        );
+      }
     } catch (error) {
       console.warn("Establishment loading warning:", error);
-      // Ne pas throw ici pour continuer le flux
-    }
-  }
-
-  private async loadSuperAdminDashboard(): Promise<void> {
-    try {
-      const [globalStats, topExisting, topTotal] = await Promise.all([
-        this.organizationService.getGlobalStatistics().toPromise(),
-        this.organizationService.getTop10EstablishmentsByExistingUsers().toPromise(),
-        this.organizationService.getTop10EstablishmentsByTotalUsers().toPromise()
-      ]);
-
-      this.globalStats = globalStats;
-      this.topByExistingUsers = topExisting;
-      this.topByTotalUsers = topTotal;
-
-      this.toast.show("Dashboard loading successfully", "success");
-    } catch (error) {
-      console.error("SuperAdmin dashboard error:", error);
-      throw error;
+      this.toast.show(
+          "Erreur lors du chargement de votre organisation. Certaines fonctionnalités pourraient être limitées.",
+          "warning"
+      );
     }
   }
 
@@ -177,152 +163,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // async ngOnInit(): Promise<void> {
-  //   try {
-  //     this.loadUserAndEstablishmentData();
-  //     if (this.currentEstablishment) {
-  //       this.loadDashboardData();
-  //     } else {
-  //       this.toast.show("No Data found", "warning");
-  //     }
-  //   } catch (error) {
-  //     this.toast.show("Error occurred", "danger");
-  //   }
-  // }
-
   get establishmentId(): string {
     return this.currentEstablishment?.id || '';
   }
 
   get establishmentName(): string {
     return this.currentEstablishment?.nom || '';
-  }
-
-  // private async loadEstablishmentData(): Promise<void> {
-  //   // 1. Essayer de récupérer depuis l'URL
-  //   const routeId = this.route.snapshot.paramMap.get('id');
-  //
-  //   if (routeId) {
-  //     try {
-  //       this.currentEstablishment = await this.organizationService
-  //           .getEstablishmentById(routeId).toPromise();
-  //       return;
-  //     } catch (error) {
-  //       console.warn('Établissement non trouvé via URL, tentative via storage');
-  //     }
-  //   }
-  //
-  //   // 2. Récupérer depuis le storage
-  //   const storage = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
-  //   if (!storage) return;
-  //
-  //   try {
-  //     const userData = JSON.parse(storage);
-  //     if (userData.establishment?.id) {
-  //       this.currentEstablishment = await this.organizationService
-  //           .getEstablishmentById(userData.establishment.id).toPromise();
-  //     }
-  //   } catch (error) {
-  //     console.error('Erreur lecture données établissement', error);
-  //   }
-  // }
-  //
-  // private loadUserData(): void {
-  //   const storage = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
-  //   if (!storage) return;
-  //
-  //   try {
-  //     const userData = JSON.parse(storage);
-  //     this.isAdmin = ['SUPER_ADMIN', 'ADMIN'].includes(userData.role);
-  //     this.userFullName = `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim();
-  //     this.userEmail = userData.email ?? '';
-  //     this.userPhone = userData.phoneNumber ?? '';
-  //     this.userRole = userData.role ?? '';
-  //   } catch (error) {
-  //     console.error('Erreur lecture données utilisateur', error);
-  //   }
-  // }
-
-  private loadUserAndEstablishmentData(): void {
-    const storage = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
-    if (!storage) {
-      console.warn('Aucune donnée utilisateur trouvée.');
-      return;
-    }
-
-    try {
-      const userData = JSON.parse(storage);
-      this.isAdmin = ['SUPER_ADMIN'].includes(userData.role);
-
-      // Données utilisateur
-      this.userFullName = `${userData.firstName ?? ''} ${userData.lastName ?? ''}`.trim();
-      this.userEmail = userData.email ?? '';
-      this.userPhone = userData.phoneNumber ?? '';
-      this.userRole = userData.role ?? '';
-
-      // Données établissement (imbriquées dans userData)
-      const establishment = userData.establishment;
-      if (establishment) {
-
-        // Charger les données spécifiques du tableau de bord
-        if (this.establishmentId) {
-          if (this.isAdmin) {
-            this.loadSuperAdminDashboardData();
-          } else {
-            this.loadDashboardData();
-          }
-        }
-      } else {
-        console.warn('Aucun établissement trouvé dans les données utilisateur.');
-      }
-
-    } catch (error) {
-      console.error('Erreur lors de la lecture des données utilisateur:', error);
-    }
-  }
-
-  private loadDashboardData(): void {
-    if (!this.currentEstablishment) return;
-
-    console.log(`Chargement dashboard pour ${this.establishmentName} (${this.establishmentId})`);
-
-    if (this.isAdmin) {
-      this.loadSuperAdminDashboardData();
-    } else {
-      // Chargement des métriques utilisateurs
-      this.organizationService.getUserMetrics(this.establishmentId)
-          .subscribe({
-            next: metrics => this.userMetrics = metrics,
-            error: err => console.error('Failed to load user metrics', err)
-          });
-
-      // Chargement des stats quotidiennes
-      this.organizationService.getDailyGlobalStats(this.establishmentId)
-          .subscribe(stats => this.dailyStats = stats);
-
-      // Chargement des stats annuelles
-      this.organizationService.getYearlyPresenceStats(this.establishmentId, this.currentYear)
-          .subscribe(stats => this.yearlyStats = stats);
-    }
-  }
-
-  private loadSuperAdminDashboardData(): void {
-    // Chargement des statistiques globales
-    this.organizationService.getGlobalStatistics().subscribe({
-      next: stats => this.globalStats = stats,
-      error: err => console.error('Failed to load global stats', err)
-    });
-
-    // Chargement du top 10 par utilisateurs existants
-    this.organizationService.getTop10EstablishmentsByExistingUsers().subscribe({
-      next: data => this.topByExistingUsers = data,
-      error: err => console.error('Failed to load top by existing users', err)
-    });
-
-    // Chargement du top 10 par capacité totale
-    this.organizationService.getTop10EstablishmentsByTotalUsers().subscribe({
-      next: data => this.topByTotalUsers = data,
-      error: err => console.error('Failed to load top by total users', err)
-    });
   }
 }

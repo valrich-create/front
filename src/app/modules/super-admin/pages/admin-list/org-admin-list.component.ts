@@ -30,7 +30,7 @@ import {AdminCardComponent} from "../../../administrators/components/admin-card/
 export class OrgAdminListComponent implements OnInit {
   totalAdmins = 100;
   currentPage = 1;
-  pageSize = 15;
+  pageSize = 50;
   establishmentId?: string;
 
   currentSort: SortOption = 'createdAt';
