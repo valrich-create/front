@@ -48,7 +48,7 @@ export class SidebarComponent implements OnInit {
             {icon: 'bi-shield', label: 'Administrateurs', route: '/organization-admin'},
             {icon: 'bi-collection', label: 'Classes / Services', route: '/class-services'},
             {icon: 'bi-people', label: 'Utilisateurs', route: '/users'},
-            {icon: 'bi-calendar', label: 'Événements', route: '/events'},
+            {icon: 'bi-calendar', label: 'Babillard', route: '/events'},
             {icon: 'bi-clock', label: 'Horaires', route: '/schedule'},
             {icon: 'bi-geo', label: 'Zones', route: '/zone'}
         ];

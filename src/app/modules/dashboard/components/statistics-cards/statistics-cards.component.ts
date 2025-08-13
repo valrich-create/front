@@ -84,4 +84,33 @@ export class StatisticsCardsComponent {
 			];
 		}
 	}
+
+	getMaterialIcon(featherIcon: string): string {
+		const iconMap: { [key: string]: string } = {
+			'users': 'people',
+			'shield': 'admin_panel_settings',
+			'layers': 'layers',
+			'activity': 'analytics',
+			'database': 'storage',
+			'home': 'home'
+		};
+		return iconMap[featherIcon] || 'help';
+	}
+
+	getCardClass(color: string): string {
+		switch (color) {
+			case '#5e4dcd': return 'card-purple';
+			case '#ff7a59': return 'card-orange';
+			case '#ffb84d': return 'card-yellow';
+			case '#475569': return 'card-gray';
+			default: return 'card-gray';
+		}
+	}
+
+	isHighValue(count: any): boolean {
+		const numericCount = typeof count === 'string' ?
+			parseInt(count.replace(/[^\d]/g, '')) : count;
+		return numericCount > 100;
+	}
+
 }

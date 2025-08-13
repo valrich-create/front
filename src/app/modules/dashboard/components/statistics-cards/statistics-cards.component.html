@@ -1,30 +1,22 @@
 <div class="statistics-container">
-    <div class="statistic-card" *ngFor="let stat of statistics" [style.background-color]="stat.color">
-        <div class="icon">
-            <i [class]="'feather-' + stat.icon"></i>
+    <div class="statistic-card"
+         *ngFor="let stat of statistics; let i = index"
+         [ngClass]="getCardClass(stat.color)"
+         [style.animation-delay]="(i * 0.1) + 's'">
+
+        <div class="card-header">
+            <div class="icon-container">
+                <span class="material-icons icon">{{ getMaterialIcon(stat.icon) }}</span>
+            </div>
+            <div class="card-content">
+                <div class="title">{{ stat.title }}</div>
+                <div class="count" [ngClass]="{'highlight': isHighValue(stat.count)}">{{ stat.count }}</div>
+            </div>
         </div>
-        <div class="content">
-            <h4>{{ stat.title }}</h4>
-            <p class="count">{{ stat.count }}</p>
+
+        <div class="trend-indicator">
+            <span class="material-icons" style="font-size: 16px; margin-right: 4px;">trending_up</span>
+            En temps réel
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-<!--<div class="statistics-container">-->
-<!--    <div class="statistic-card" *ngFor="let stat of statistics" [style.background-color]="stat.color">-->
-<!--        <div class="icon">-->
-<!--            <i [class]="'feather-' + stat.icon"></i>-->
-<!--        </div>-->
-<!--        <div class="content">-->
-<!--            <h4>{{ stat.title }}</h4>-->
-<!--            <p class="count">{{ stat.count }}</p>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->
