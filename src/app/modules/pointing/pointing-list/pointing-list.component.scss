@@ -1,3 +1,5 @@
+@import '@angular/material';
+
 // Variables CSS pour le thème médical moderne
 :root {
   --primary-color: #2563eb;
@@ -58,7 +60,7 @@
     justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
-    background: var(--bg-white);
+    background: var(--primary-color);
     border: 1px solid var(--border-light);
     border-radius: var(--radius-md);
     color: var(--text-secondary);
@@ -104,18 +106,8 @@
   text-align: center;
   color: var(--text-secondary);
 
-  .spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 3px solid var(--bg-gray-200);
-    border-top: 3px solid var(--primary-color);
-    border-radius: 50%;
-    margin: 0 auto 1rem;
-    animation: spin 1s linear infinite;
-  }
-
   p {
-    margin: 0;
+    margin: 1rem 0 0 0;
     font-weight: 500;
   }
 }
@@ -193,13 +185,37 @@
   }
 }
 
-// Conteneur du tableau
+// Conteneur du tableau avec overlay de chargement
 .table-container {
+  position: relative;
   background: var(--bg-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   border: 1px solid var(--border-light);
+
+  .page-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    backdrop-filter: blur(2px);
+
+    .page-loading-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+  }
 }
 
 .table-wrapper {
@@ -225,6 +241,12 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
+  transition: var(--transition);
+
+  &.loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
 
   // En-têtes
   thead {
@@ -412,6 +434,82 @@
   }
 }
 
+// Pagination personnalisée
+.pagination-container {
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-gray-50);
+
+  .custom-paginator {
+    background: transparent;
+
+    // Personnalisation des couleurs
+    ::ng-deep {
+      .mat-mdc-paginator-container {
+        padding: 1rem 1.5rem;
+        min-height: 64px;
+      }
+
+      .mat-mdc-paginator-page-size-label,
+      .mat-mdc-paginator-range-label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin: 0 8px;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .mat-mdc-icon-button {
+        width: 40px;
+        height: 40px;
+        color: var(--text-secondary);
+
+        &:hover:not([disabled]) {
+          background-color: var(--bg-gray-100);
+          color: var(--primary-color);
+        }
+
+        &[disabled] {
+          opacity: 0.4;
+        }
+      }
+
+      .mat-mdc-select {
+        font-size: 0.875rem;
+
+        .mat-mdc-select-trigger {
+          color: var(--text-secondary);
+        }
+      }
+
+      .mat-mdc-select-arrow {
+        color: var(--text-secondary);
+      }
+
+      // Personnalisation du select
+      .mat-mdc-form-field {
+        .mat-mdc-form-field-flex {
+          background-color: transparent;
+        }
+
+        .mat-mdc-form-field-infix {
+          border-color: transparent;
+          padding: 0.5rem 0;
+        }
+
+        &.mat-focused {
+          .mat-mdc-form-field-infix {
+            border-color: var(--primary-color);
+          }
+        }
+      }
+    }
+  }
+}
+
 // Pied du tableau
 .table-footer {
   padding: 1rem 1.5rem;
@@ -440,6 +538,22 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Animation d'apparition pour les éléments chargés
+.table-row {
+  animation: fadeIn 0.3s ease-out;
 }
 
 // Responsive Design
@@ -482,6 +596,26 @@
       .status-badge {
         padding: 0.25rem 0.5rem;
         font-size: 0.7rem;
+      }
+    }
+  }
+
+  .pagination-container {
+    ::ng-deep {
+      .mat-mdc-paginator-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        padding: 1rem;
+        min-height: auto;
+      }
+
+      .mat-mdc-paginator-page-size {
+        align-self: center;
+      }
+
+      .mat-mdc-paginator-range-actions {
+        justify-content: center;
       }
     }
   }
@@ -548,6 +682,24 @@
       text-align: center;
     }
   }
+
+  .pagination-container {
+    ::ng-deep {
+      .mat-mdc-paginator-container {
+        padding: 0.75rem;
+      }
+
+      .mat-mdc-paginator-page-size-label,
+      .mat-mdc-paginator-range-label {
+        font-size: 0.75rem;
+      }
+
+      .mat-mdc-icon-button {
+        width: 36px;
+        height: 36px;
+      }
+    }
+  }
 }
 
 @media (max-width: 480px) {
@@ -595,6 +747,25 @@
     margin: 0 -1rem;
     border-radius: 0;
   }
+
+  .pagination-container {
+    ::ng-deep {
+      .mat-mdc-paginator-container {
+        padding: 0.5rem;
+      }
+
+      .mat-mdc-paginator-page-size-label,
+      .mat-mdc-paginator-range-label {
+        font-size: 0.7rem;
+        margin: 0 4px;
+      }
+
+      .mat-mdc-icon-button {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
 }
 
 // Mode sombre (optionnel)
@@ -611,6 +782,32 @@
 
     --border-light: #374151;
     --border-medium: #4b5563;
+  }
+
+  .pagination-container {
+    .custom-paginator {
+      ::ng-deep {
+        .mat-mdc-paginator-page-size-label,
+        .mat-mdc-paginator-range-label {
+          color: var(--text-secondary);
+        }
+
+        .mat-mdc-icon-button {
+          color: var(--text-secondary);
+
+          &:hover:not([disabled]) {
+            background-color: var(--bg-gray-100);
+            color: var(--primary-color);
+          }
+        }
+
+        .mat-mdc-select {
+          .mat-mdc-select-trigger {
+            color: var(--text-secondary);
+          }
+        }
+      }
+    }
   }
 }
 
@@ -633,4 +830,14 @@
 .retry-btn:focus-visible {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
+}
+
+// Amélioration de l'accessibilité pour la pagination
+.custom-paginator {
+  ::ng-deep {
+    .mat-mdc-icon-button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+  }
 }

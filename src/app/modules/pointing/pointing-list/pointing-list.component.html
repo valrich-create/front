@@ -1,5 +1,6 @@
 <app-layout>
     <app-navbar pageTitle="{{pageTitle}}"></app-navbar>
+
     <!-- En-tête avec titre et bouton de rafraîchissement -->
     <div class="table-header">
         <h2 class="table-title">
@@ -9,16 +10,16 @@
         <button
                 class="refresh-btn"
                 (click)="onRefresh()"
-                [disabled]="isLoading"
+                [disabled]="isAnyLoading"
                 [attr.aria-label]="'Actualiser les données'">
-            <i class="icon-refresh" [class.spinning]="isLoading"></i>
+            <i class="icon-refresh" [class.spinning]="isAnyLoading"></i>
         </button>
     </div>
 
-    <!-- État de chargement -->
+    <!-- État de chargement initial -->
     <div class="loading-container" *ngIf="isLoading">
         <div class="loading-spinner">
-            <div class="spinner"></div>
+            <mat-spinner diameter="40"></mat-spinner>
             <p>Chargement des pointages...</p>
         </div>
     </div>
@@ -35,11 +36,19 @@
         </div>
     </div>
 
-    <!-- Tableau principal -->
+    <!-- Conteneur principal du tableau -->
     <div class="table-container" *ngIf="!isLoading && !hasError">
 
+        <!-- Indicateur de chargement pour changement de page -->
+        <div class="page-loading-overlay" *ngIf="isPageLoading">
+            <div class="page-loading-content">
+                <mat-spinner diameter="30"></mat-spinner>
+                <span>Chargement...</span>
+            </div>
+        </div>
+
         <!-- Message quand aucune donnée -->
-        <div class="empty-state" *ngIf="filteredPointings.length === 0">
+        <div class="empty-state" *ngIf="filteredPointings.length === 0 && !isPageLoading">
             <div class="empty-content">
                 <i class="icon-empty"></i>
                 <h3>Aucune donnée disponible</h3>
@@ -49,37 +58,37 @@
 
         <!-- Tableau avec données -->
         <div class="table-wrapper" *ngIf="filteredPointings.length > 0">
-            <table class="pointing-table">
+            <table class="pointing-table" [class.loading]="isPageLoading">
                 <thead>
                 <tr>
                     <th
                             class="sortable"
                             (click)="onSort('userName')"
                             [attr.aria-sort]="sortConfig.key === 'userName' ? sortConfig.direction : 'none'">
-            <span class="header-content">
-              <span class="header-text">Utilisateur</span>
-              <i class="sort-icon" [class]="'icon-' + getSortIcon('userName')"></i>
-            </span>
+                        <span class="header-content">
+                            <span class="header-text">Utilisateur</span>
+                            <i class="sort-icon" [class]="'icon-' + getSortIcon('userName')"></i>
+                        </span>
                     </th>
 
                     <th
                             class="sortable"
                             (click)="onSort('zoneName')"
                             [attr.aria-sort]="sortConfig.key === 'zoneName' ? sortConfig.direction : 'none'">
-            <span class="header-content">
-              <span class="header-text">Zone</span>
-              <i class="sort-icon" [class]="'icon-' + getSortIcon('zoneName')"></i>
-            </span>
+                        <span class="header-content">
+                            <span class="header-text">Zone</span>
+                            <i class="sort-icon" [class]="'icon-' + getSortIcon('zoneName')"></i>
+                        </span>
                     </th>
 
                     <th
                             class="sortable"
                             (click)="onSort('status')"
                             [attr.aria-sort]="sortConfig.key === 'status' ? sortConfig.direction : 'none'">
-            <span class="header-content">
-              <span class="header-text">Statut</span>
-              <i class="sort-icon" [class]="'icon-' + getSortIcon('status')"></i>
-            </span>
+                        <span class="header-content">
+                            <span class="header-text">Statut</span>
+                            <i class="sort-icon" [class]="'icon-' + getSortIcon('status')"></i>
+                        </span>
                     </th>
 
                     <th class="text-center">Longitude</th>
@@ -89,20 +98,20 @@
                             class="sortable text-center"
                             (click)="onSort('attemptTime')"
                             [attr.aria-sort]="sortConfig.key === 'attemptTime' ? sortConfig.direction : 'none'">
-            <span class="header-content">
-              <span class="header-text">Heure tentative</span>
-              <i class="sort-icon" [class]="'icon-' + getSortIcon('attemptTime')"></i>
-            </span>
+                        <span class="header-content">
+                            <span class="header-text">Heure tentative</span>
+                            <i class="sort-icon" [class]="'icon-' + getSortIcon('attemptTime')"></i>
+                        </span>
                     </th>
 
                     <th
                             class="sortable text-center"
                             (click)="onSort('pointingHour')"
                             [attr.aria-sort]="sortConfig.key === 'pointingHour' ? sortConfig.direction : 'none'">
-            <span class="header-content">
-              <span class="header-text">Date & Heure</span>
-              <i class="sort-icon" [class]="'icon-' + getSortIcon('pointingHour')"></i>
-            </span>
+                        <span class="header-content">
+                            <span class="header-text">Date & Heure</span>
+                            <i class="sort-icon" [class]="'icon-' + getSortIcon('pointingHour')"></i>
+                        </span>
                     </th>
                 </tr>
                 </thead>
@@ -129,11 +138,11 @@
 
                     <!-- Statut -->
                     <td class="status-cell">
-            <span
-                    class="status-badge"
-                    [class]="getStatusClass(pointing.status)">
-              {{ pointing.status | titlecase }}
-            </span>
+                        <span
+                                class="status-badge"
+                                [class]="getStatusClass(pointing.status)">
+                            {{ pointing.status | titlecase }}
+                        </span>
                     </td>
 
                     <!-- Longitude -->
@@ -160,13 +169,29 @@
             </table>
         </div>
 
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="totalItems > 0">
+            <mat-paginator
+                #paginator
+                [length]="totalItems"
+                [pageSize]="pageSize"
+                [pageIndex]="currentPage"
+                [pageSizeOptions]="pageSizeOptions"
+                [showFirstLastButtons]="true"
+                [disabled]="isPageLoading"
+                (page)="onPageChange($event)"
+                class="custom-paginator">
+            </mat-paginator>
+        </div>
+
         <!-- Informations complémentaires -->
         <div class="table-footer" *ngIf="filteredPointings.length > 0">
             <div class="table-info">
                 <span class="records-count">
-                      {{ filteredPointings.length }}
-                      {{ filteredPointings.length === 1 ? 'pointage' : 'pointages' }}
-                      affiché{{ filteredPointings.length > 1 ? 's' : '' }}
+                    {{ filteredPointings.length }}
+                    {{ filteredPointings.length === 1 ? 'pointage' : 'pointages' }}
+                    affiché{{ filteredPointings.length > 1 ? 's' : '' }}
+                    sur {{ totalItems }} total{{ totalItems > 1 ? 'aux' : '' }}
                 </span>
                 <span class="last-updated">
                     Dernière mise à jour : {{ currentDate | date:'dd/MM/yyyy HH:mm' }}

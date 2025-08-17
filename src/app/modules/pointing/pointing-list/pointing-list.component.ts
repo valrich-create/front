@@ -1,11 +1,15 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {PeriodType, PointageResponse, PointageStatus} from "../../base-component/pointage";
 import {PointingResponse} from "../pointing";
 import {PointageService} from "../../base-component/services/pointage.service";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 import {CommonModule} from "@angular/common";
-import {finalize} from "rxjs";
+import {finalize, Subject, takeUntil} from "rxjs";
+import {MatPaginatorModule, MatPaginator, PageEvent} from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {Router, ActivatedRoute} from '@angular/router';
+import {Page} from "../../users/users.models";
 
 type SortDirection = 'asc' | 'desc' | null;
 
@@ -14,49 +18,126 @@ interface SortConfig {
 	direction: SortDirection;
 }
 
+interface PaginatedResponse<T> {
+	content: T[];
+	totalElements: number;
+	totalPages: number;
+	currentPage: number;
+	size: number;
+	first: boolean;
+	last: boolean;
+	numberOfElements: number;
+}
+
 @Component({
 	selector: 'app-pointing-list',
 	imports: [
 		NavbarComponent,
 		LayoutComponent,
-		CommonModule
+		CommonModule,
+		MatPaginatorModule,
+		MatProgressSpinnerModule
 	],
 	standalone: true,
 	templateUrl: 'pointing-list.component.html',
 	styleUrls: ['pointing-list.component.scss']
 })
-export class PointingListComponent implements OnInit, OnDestroy {
+export class PointingListComponent implements OnInit, OnDestroy, AfterViewInit {
+	@ViewChild(MatPaginator) paginator!: MatPaginator;
+
 	pointings: PointageResponse[] = [];
 	filteredPointings: PointageResponse[] = [];
-	currentDate = new Date(); // Ajoutez cette propriété
+	currentDate = new Date();
 
 	pageTitle: string = "Pointage";
+
 	// Configuration du tri
 	sortConfig: SortConfig = { key: 'userName', direction: null };
 
 	// Pagination
 	currentPage = 0;
-	pageSize = 10;
+	pageSize = 100;
 	totalItems = 0;
+	pageSizeOptions: number[] = [25, 50, 100, 200];
 
 	// État de chargement
 	isLoading = false;
+	isPageLoading = false; // Chargement spécifique pour le changement de page
 	hasError = false;
 	errorMessage = '';
 
 	// Énumération pour le template
 	PointageStatus = PointageStatus;
 
+	// Subject pour gérer les souscriptions
+	private destroy$ = new Subject<void>();
+
 	constructor(
-		private pointageService: PointageService
+		private pointageService: PointageService,
+		private router: Router,
+		private route: ActivatedRoute
 	) {}
 
 	async ngOnInit() {
+		this.loadQueryParams();
 		this.loadTodayPointings();
 	}
 
+	ngAfterViewInit() {
+		// Configuration du paginator en français
+		this.paginator._intl.itemsPerPageLabel = 'Éléments par page :';
+		this.paginator._intl.nextPageLabel = 'Page suivante';
+		this.paginator._intl.previousPageLabel = 'Page précédente';
+		this.paginator._intl.firstPageLabel = 'Première page';
+		this.paginator._intl.lastPageLabel = 'Dernière page';
+		this.paginator._intl.getRangeLabel = this.getFrenchRangeLabel.bind(this);
+	}
+
+	/**
+	 * Charge les paramètres de pagination depuis l'URL
+	 */
+	private loadQueryParams(): void {
+		this.route.queryParams.pipe(
+			takeUntil(this.destroy$)
+		).subscribe(params => {
+			this.currentPage = params['page'] ? parseInt(params['page']) : 0;
+			this.pageSize = params['size'] ? parseInt(params['size']) : 100;
+
+			// Valider les paramètres
+			if (this.currentPage < 0) this.currentPage = 0;
+			if (!this.pageSizeOptions.includes(this.pageSize)) {
+				this.pageSize = 100;
+			}
+		});
+	}
+
+	/**
+	 * Met à jour les paramètres de l'URL
+	 */
+	private updateUrlParams(): void {
+		this.router.navigate([], {
+			relativeTo: this.route,
+			queryParams: {
+				page: this.currentPage,
+				size: this.pageSize
+			},
+			queryParamsHandling: 'merge'
+		});
+	}
+
+	/**
+	 * Charge les pointages avec pagination
+	 */
 	private loadTodayPointings(): void {
-		this.isLoading = true;
+		// Détermine le type de chargement
+		const isInitialLoad = this.pointings.length === 0;
+
+		if (isInitialLoad) {
+			this.isLoading = true;
+		} else {
+			this.isPageLoading = true;
+		}
+
 		this.hasError = false;
 
 		this.pointageService.getPointagesByEstablishmentPaginated(
@@ -64,12 +145,24 @@ export class PointingListComponent implements OnInit, OnDestroy {
 			this.currentPage,
 			this.pageSize
 		).pipe(
-			finalize(() => this.isLoading = false)
+			finalize(() => {
+				this.isLoading = false;
+				this.isPageLoading = false;
+			}),
+			takeUntil(this.destroy$)
 		).subscribe({
-			next: (response) => {
+			next: (response: Page<PointageResponse>) => {
 				this.pointings = response.content;
 				this.filteredPointings = [...this.pointings];
 				this.totalItems = response.totalElements;
+
+				// Applique le tri s'il y en a un
+				if (this.sortConfig.direction) {
+					this.applySorting();
+				}
+
+				// Met à jour l'URL
+				this.updateUrlParams();
 			},
 			error: (error) => {
 				this.hasError = true;
@@ -80,11 +173,19 @@ export class PointingListComponent implements OnInit, OnDestroy {
 	}
 
 	/**
-	 * Gère le changement de page
+	 * Gère le changement de page via le paginator
 	 */
-	onPageChange(page: number): void {
-		this.currentPage = page;
-		this.loadTodayPointings();
+	onPageChange(event: PageEvent): void {
+		const previousPage = this.currentPage;
+		const previousSize = this.pageSize;
+
+		this.currentPage = event.pageIndex;
+		this.pageSize = event.pageSize;
+
+		// Ne recharge que si les paramètres ont changé
+		if (previousPage !== this.currentPage || previousSize !== this.pageSize) {
+			this.loadTodayPointings();
+		}
 	}
 
 	/**
@@ -210,15 +311,40 @@ export class PointingListComponent implements OnInit, OnDestroy {
 	 * Recharge les données
 	 */
 	onRefresh(): void {
+		this.currentPage = 0;
+		if (this.paginator) {
+			this.paginator.pageIndex = 0;
+		}
 		this.loadTodayPointings();
 	}
 
 	/**
+	 * Libelle en français pour le paginator
+	 */
+	private getFrenchRangeLabel(page: number, pageSize: number, length: number): string {
+		if (length === 0 || pageSize === 0) {
+			return `0 sur ${length}`;
+		}
+		length = Math.max(length, 0);
+		const startIndex = page * pageSize;
+		const endIndex = startIndex < length ?
+			Math.min(startIndex + pageSize, length) :
+			startIndex + pageSize;
+		return `${startIndex + 1} - ${endIndex} sur ${length}`;
+	}
+
+	/**
+	 * Retourne le statut de chargement global
+	 */
+	get isAnyLoading(): boolean {
+		return this.isLoading || this.isPageLoading;
+	}
+
+	/**
 	 * Méthode appelée lors de la destruction du composant
-	 * À utiliser pour nettoyer les souscriptions si nécessaire
 	 */
 	ngOnDestroy(): void {
-		// TODO: Implémenter le nettoyage des souscriptions si nécessaire
-		// Example: this.subscription?.unsubscribe();
+		this.destroy$.next();
+		this.destroy$.complete();
 	}
 }
