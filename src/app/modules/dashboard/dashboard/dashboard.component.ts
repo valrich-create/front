@@ -71,11 +71,11 @@ export class DashboardComponent implements OnInit {
       if (this.currentEstablishment) {
         await this.loadOrganizationDashboard();
       } else {
-        this.toast.show("Aucune donnée trouvée pour votre compte.", "warning");
+        this.toast.warning("Aucune donnée trouvée pour votre compte.");
       }
     } catch (error) {
       console.error("Dashboard loading error:", error);
-      this.toast.show("Une erreur est survenue lors du chargement.", "danger");
+      this.toast.error("Une erreur est survenue lors du chargement.");
     } finally {
       this.isLoading = false;
     }
@@ -90,7 +90,7 @@ export class DashboardComponent implements OnInit {
       }
     } catch (error) {
       console.error("Retry failed:", error);
-      this.toast.show("Échec du rechargement", "danger");
+      this.toast.error("Échec du rechargement");
     } finally {
       this.isLoading = false;
     }
@@ -130,16 +130,14 @@ export class DashboardComponent implements OnInit {
 
       // 3. Avertir si aucune Organisation trouvé
       if (!this.currentEstablishment) {
-        this.toast.show(
-            "Impossible de déterminer votre établissement. \nCertaines fonctionnalités organisationnelles ne seront pas disponibles.",
-            "warning"
+        this.toast.warning(
+            "Impossible de déterminer votre établissement. \nCertaines fonctionnalités organisationnelles ne seront pas disponibles."
         );
       }
     } catch (error) {
       console.warn("Establishment loading warning:", error);
-      this.toast.show(
-          "Erreur lors du chargement de votre organisation. Certaines fonctionnalités pourraient être limitées.",
-          "warning"
+      this.toast.warning(
+          "Erreur lors du chargement de votre organisation. Certaines fonctionnalités pourraient être limitées."
       );
     }
   }
@@ -156,7 +154,7 @@ export class DashboardComponent implements OnInit {
       this.dailyStats = dailyStats;
       this.yearlyStats = yearlyStats;
 
-      this.toast.show("Dashboard organisation chargé", "success");
+      this.toast.success("Dashboard organisation chargé");
     } catch (error) {
       console.error("Organization dashboard error:", error);
       throw error;

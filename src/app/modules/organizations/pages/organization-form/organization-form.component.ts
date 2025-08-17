@@ -98,12 +98,12 @@ export class OrganizationFormComponent implements OnInit {
 				const updateRequest: EstablishmentUpdateRequest = this.establishmentForm.value;
 				this.organizationService.updateEstablishment(this.establishmentId, updateRequest).subscribe({
 					next: () => {
-						this.toastService.show('Update successfully done!', 'success');
+						this.toastService.success('Mise a jour réussie!');
 						this.router.navigate(['/establishments']);
 					},
 					error: (error) => {
-						console.error('Error updating establishment:', error);
-						this.toastService.show('Error occurred, Try again later', 'danger');
+						console.error('Une erreur est survenue:', error);
+						this.toastService.error(error.error.message || error.message);
 						// Handle error
 					}
 				});
@@ -111,11 +111,11 @@ export class OrganizationFormComponent implements OnInit {
 				const createRequest: EstablishmentRequest = this.establishmentForm.value;
 				this.organizationService.createEstablishment(createRequest).subscribe({
 					next: () => {
-						this.toastService.show('Success', 'danger');
+						this.toastService.success("Organisation créée avec succès!");
 						this.router.navigate(['/establishments']);
 					},
 					error: (error) => {
-						this.toastService.show('Error occurred, Try again later', 'danger');
+						this.toastService.error(error.error.message || error.message);
 						console.error('Error creating establishment:', error);
 						// Handle error
 					}

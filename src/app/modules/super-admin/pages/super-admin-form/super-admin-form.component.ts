@@ -183,22 +183,22 @@ export class SuperAdminFormComponent implements OnInit {
       if (this.isEditMode && this.currentAdminId) {
         this.adminService.updateAdministrator(this.currentAdminId, formData).subscribe({
           next: () => {
-            this.toastService.show('Operation successfully done!', 'success');
+            this.toastService.success('Operation reussie!');
             this.router.navigate(['/super-admin'])
           },
           error: (err) => {
-            this.toastService.show('Error occurred, Try again later', 'danger');
+            this.toastService.error(err.error.message || err.message);
             console.error('Update failed:', err)
           }
         });
       } else {
         this.adminService.createAdministrator(formData).subscribe({
           next: () => {
-            this.toastService.show('Operation successfully done!', 'success');
+            this.toastService.success('Operation reussie!');
             this.router.navigate(['/super-admin'])
           },
           error: (err) => {
-            this.toastService.show('Error occurred, Try again later', 'danger');
+            this.toastService.error(err.error.message || err.message);
             console.error('Creation failed:', err)
           }
         });

@@ -28,6 +28,7 @@ import {PointingHourListComponent} from "./modules/pointing-hour/page/pointing-h
 import {
     AdvanceUsersListComponent
 } from "./modules/super-admin/pages/all-advance-users-list/advance-users-list.component";
+import {PointingListComponent} from "./modules/pointing/pointing-list/pointing-list.component";
 
 export const routes: Routes = [
     {
@@ -109,7 +110,7 @@ export const routes: Routes = [
         ]
     },
     {
-        path: 'events',
+        path: 'informations',
         children: [
             { path: '', component: EventsPageComponent }, // events
             { path: 'new', component: EventFormComponent }, // /events/new
@@ -146,6 +147,12 @@ export const routes: Routes = [
             { path: '', component: PointingZoneListComponent },
             { path: 'new', component: PointingZoneFormComponent },
             { path: 'edit/:id', component: PointingZoneFormComponent },
+        ]
+    },
+    {
+        path: 'pointing-list',
+        children: [
+            { path: '', component: PointingListComponent },
         ]
     },
     {

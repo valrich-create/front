@@ -101,7 +101,8 @@ export class AdminFormComponent implements OnInit {
         this.adminService.getAdministratorById(id).subscribe({
             next: (admin) => this.populateForm(admin),
             error: (err) => {
-                this.toastService.show('Failed to load admin data', 'danger');
+                this.toastService.error(err.message);
+                // this.toastService.show('Failed to load admin data', 'danger');
                 console.error('Error loading admin:', err);
             }
         });
@@ -280,14 +281,14 @@ export class AdminFormComponent implements OnInit {
                         ? 'Admin updated successfully'
                         : 'Admin created successfully';
                     console.log("Data send : {} " ,formData);
-                    this.toastService.show(message, 'success');
+                    this.toastService.success(message);
                     this.router.navigate(['/administrators']);
                 },
                 error: (err) => {
                     const message = this.isEditMode
                         ? 'Failed to update admin'
                         : 'Failed to create admin';
-                    this.toastService.show(message, 'danger');
+                    this.toastService.error(message);
                     console.error('Operation failed:', err);
                 }
             });
@@ -306,7 +307,8 @@ export class AdminFormComponent implements OnInit {
                 }
             },
             error: (err) => {
-                this.toastService.show('Failed to load organizations', 'danger');
+                this.toastService.error(err);
+                // this.toastService.show('Failed to load organizations', 'danger');
                 console.error('Error loading organizations:', err);
             }
         });

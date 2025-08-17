@@ -10,24 +10,24 @@
         <div class="card-content">
             <form [formGroup]="pointingHourForm" (ngSubmit)="onSubmit()">
 
-                <!-- Heure de pointage -->
+                <!-- Heure de début -->
                 <div class="form-group">
-                    <label for="time">Heure de pointage <span class="required">*</span></label>
+                    <label for="startTime">Heure de début <span class="required">*</span></label>
                     <input
                             type="datetime-local"
-                            id="time"
-                            formControlName="time"
+                            id="startTime"
+                            formControlName="startTime"
                             class="form-control"
-                            [ngClass]="{'invalid': isFieldInvalid('time')}"
+                            [ngClass]="{'invalid': isFieldInvalid('startTime')}"
                             [min]="minDateTime"
                     >
-                    <div class="error-message" *ngIf="isFieldInvalid('time')">
-            <span *ngIf="pointingHourForm.get('time')?.errors?.['required']">
-              L'heure de pointage est obligatoire
-            </span>
-                        <span *ngIf="pointingHourForm.get('time')?.errors?.['futureDate']">
-              L'heure de pointage doit être dans le futur
-            </span>
+                    <div class="error-message" *ngIf="isFieldInvalid('startTime')">
+                        <span *ngIf="pointingHourForm.get('startTime')?.errors?.['required']">
+                            L'heure de début est obligatoire
+                        </span>
+                        <span *ngIf="pointingHourForm.get('startTime')?.errors?.['futureDate']">
+                            L'heure de début doit être dans le futur
+                        </span>
                     </div>
                 </div>
 
@@ -44,13 +44,36 @@
                             min="0"
                     >
                     <div class="error-message" *ngIf="isFieldInvalid('marge')">
-            <span *ngIf="pointingHourForm.get('marge')?.errors?.['required']">
-              La marge est obligatoire
-            </span>
+                        <span *ngIf="pointingHourForm.get('marge')?.errors?.['required']">
+                          La marge est obligatoire
+                        </span>
                         <span *ngIf="pointingHourForm.get('marge')?.errors?.['min']">
-              La marge doit être positive ou nulle
-            </span>
+                            La marge doit être positive ou nulle
+                        </span>
                     </div>
+                </div>
+
+                <!-- NOUVEAU: Heure de fin -->
+                <div class="form-group">
+                    <label for="endTime">Heure de fin <span class="required">*</span></label>
+                    <input
+                            type="datetime-local"
+                            id="endTime"
+                            formControlName="endTime"
+                            class="form-control"
+                            [ngClass]="{'invalid': isFieldInvalid('endTime')}"
+                    >
+                    <div class="error-message" *ngIf="isFieldInvalid('endTime')">
+                        <span *ngIf="pointingHourForm.get('endTime')?.errors?.['required']">
+                            L'heure de fin est obligatoire
+                        </span>
+                        <span *ngIf="pointingHourForm.get('endTime')?.errors?.['endTimeBeforeStart']">
+                            L'heure de fin doit être postérieure à l'heure de début
+                        </span>
+                    </div>
+                    <small class="form-hint">
+                        💡 L'heure de fin se calcule automatiquement avec la marge, ou vous pouvez la modifier manuellement
+                    </small>
                 </div>
 
                 <!-- CHANGEMENT: Section de sélection avec style amélioré -->
@@ -135,7 +158,6 @@
         <!-- CHANGEMENT: Barre de boutons fixe en bas -->
         <div class="form-actions">
             <button type="button" class="btn btn-secondary" (click)="onCancel()">
-                <i class="icon-close"></i>
                 Annuler
             </button>
             <button
@@ -144,7 +166,6 @@
                     [disabled]="!isFormValid()"
                     (click)="onSubmit()"
             >
-                <i class="icon-save"></i>
                 {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
             </button>
         </div>

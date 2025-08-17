@@ -203,12 +203,12 @@ export class UserListComponent implements OnInit {
   deleteUser(userId: string): void {
     this.userService.deleteUser(userId).subscribe({
       next: () => {
-        this.toastService.show('User deleted successfully', 'success');
+        this.toastService.success('Operation reussie!');
         this.loadUsers(this.usersPage?.number || 0);
       },
       error: (err) => {
         console.error('Delete error:', err);
-        this.toastService.show('Error deleting user', 'danger');
+        this.toastService.error('Une erreur est survenue, essayer plus tard!', { message: err.message });
       }
     });
   }

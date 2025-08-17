@@ -18,6 +18,8 @@ import {ClassServiceResponse} from "../../../services/class-service";
 import {UserResponse} from "../../../users/users.models";
 import {UserService} from "../../../users/services/user.service";
 import {PersonalPointingService} from "../../../base-component/services/personal-pointing.service";
+import {ToastService} from "../../../base-component/services/toast/toast.service";
+import {response} from "express";
 
 @Component({
   selector: 'app-zone-pointage-form',
@@ -60,6 +62,7 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
       private zoneService: PointingZoneService,
       private personalPointingService: PersonalPointingService,
       private classService: ClassServiceService,
+      private toastService: ToastService,
       private userService: UserService,
       @Inject(PLATFORM_ID) private platformId: Object,
       @Inject(MAT_DIALOG_DATA) public data: any
@@ -331,11 +334,12 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
   private submitForUser(request: ZonePointageRequest): void {
     this.personalPointingService.createZone(request).subscribe({
       next: (response) => {
-        console.log('Zone créée avec succès pour utilisateur:', response);
+        this.toastService.success("Opération réussie")
         this.router.navigate(['/zones']);
       },
       error: (error) => {
         console.error('Erreur lors de la création pour utilisateur:', error);
+        this.toastService.error(error.error.message || error.message);
       }
     });
   }
@@ -343,10 +347,11 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
   private submitForClassService(request: ZonePointageRequest): void {
     this.zoneService.createZone(request).subscribe({
       next: (response) => {
-        console.log('Zone créée avec succès pour classe/service:', response);
+        this.toastService.success("Opération réussie")
         this.router.navigate(['/zones']);
       },
       error: (error) => {
+        this.toastService.error(error.error.message || error.message);
         console.error('Erreur lors de la création pour classe/service:', error);
       }
     });
@@ -359,7 +364,7 @@ export class PointingZoneFormComponent implements OnInit, AfterViewInit {
   }
 
 
-onCancel(): void {
+  onCancel(): void {
     this.router.navigate(['/zones']);
   }
 
@@ -369,6 +374,7 @@ onCancel(): void {
       try {
         this.establishmentId = JSON.parse(data).establishment?.id || '';
       } catch (e) {
+        this.toastService.error("Impossible de lire votre organisation")
         console.error('Cannot read establishment id', e);
       }
     }

@@ -1,5 +1,4 @@
-// events-page.component.ts
-import {Component, HostListener, OnInit, signal} from '@angular/core';
+import {Component, computed, HostListener, OnInit, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {LayoutComponent} from "../../base-component/components/layout/layout.component";
 import {NavbarComponent} from "../../base-component/components/navbar/navbar.component";
@@ -37,6 +36,23 @@ export class EventsPageComponent implements OnInit {
   selectedInformation = signal<InformationResponse | null>(null);
   isMobile = signal(window.innerWidth < 768);
 
+  selectedInfoFiles = computed(() => {
+    const selected = this.selectedInformation();
+    if (!selected) return [];
+
+    // Filtrer les URLs valides (non vides et non nulles)
+    const validFiles = selected.fileUrls?.filter(url =>
+        url && url.trim() !== '' && this.isValidUrl(url)
+    ) || [];
+
+    console.log('Selected info files:', validFiles); // Debug
+    return validFiles;
+  });
+
+  // Signal computed pour vérifier si on a des fichiers
+  hasFiles = computed(() => this.selectedInfoFiles().length > 0);
+
+
   constructor(
       private eventService: EventService,
       private dialog: MatDialog
@@ -55,11 +71,8 @@ export class EventsPageComponent implements OnInit {
     });
   }
 
-  onDaySelected(date: Date): void {
-    this.selectedDate.set(date);
-  }
-
   selectInformation(info: InformationResponse): void {
+    console.log('File URLs:', info.fileUrls); // Debug
     this.selectedInformation.set(info);
   }
 
@@ -129,32 +142,89 @@ export class EventsPageComponent implements OnInit {
     });
   }
 
-  formatDateOnly(date: string | Date): string {
-    if (!date) return '';
-    const d = new Date(date);
-    return d.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  }
+  // downloadFile(fileUrl: string, fileName: string): void {
+  //   const link = document.createElement('a');
+  //   link.href = fileUrl;
+  //   link.download = fileName;
+  //   link.target = '_blank';
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // }
 
   downloadFile(fileUrl: string, fileName: string): void {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    if (!fileUrl || !this.isValidUrl(fileUrl)) {
+      console.error('URL de fichier invalide:', fileUrl);
+      return;
+    }
+
+    try {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = fileName || 'fichier';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Erreur lors du téléchargement:', error);
+      // Fallback: ouvrir dans un nouvel onglet
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    }
+  }
+
+  // Méthode de tracking pour les fichiers
+  trackByFileUrl(index: number, fileUrl: string): string {
+    return fileUrl;
   }
 
   trackByInfoId(index: number, info: InformationResponse): string {
     return info.id.toString();
   }
 
+  // getFileNameFromUrl(url: string): string {
+  //   if (!url) return '';
+  //   return url.substring(url.lastIndexOf('/') + 1);
+  // }
+
+  getFileNameFromUrl(url: string): string {
+    if (!url) return 'Fichier';
+
+    try {
+      // Extraire le nom du fichier de l'URL
+      const urlObject = new URL(url);
+      const pathname = urlObject.pathname;
+      const fileName = pathname.substring(pathname.lastIndexOf('/') + 1);
+
+      // Si pas de nom de fichier dans l'URL, utiliser un nom par défaut
+      if (!fileName || fileName === '') {
+        return 'Fichier';
+      }
+
+      // Décoder l'URL pour gérer les caractères spéciaux
+      return decodeURIComponent(fileName);
+    } catch (error) {
+      console.error('Erreur lors de l\'extraction du nom de fichier:', error);
+      return 'Fichier';
+    }
+  }
+
+
   @HostListener('window:resize')
   onResize() {
     this.isMobile.set(window.innerWidth < 768);
   }
+
+  private isValidUrl(url: string): boolean {
+    if (!url || url.trim() === '') return false;
+
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
 }

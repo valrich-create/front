@@ -31,25 +31,25 @@ export class StatisticsCardsComponent {
 		if (this.isSuperAdmin && this.globalStats) {
 			this.statistics = [
 				{
-					title: 'Total Users',
+					title: 'Total Utilisateurs',
 					count: this.globalStats.totalUsers,
 					icon: 'users',
 					color: '#5e4dcd'
 				},
 				{
-					title: 'Max Capacity',
+					title: 'Capacite Maximale',
 					count: this.globalStats.maxCapacity,
 					icon: 'database',
 					color: '#ff7a59'
 				},
 				{
-					title: 'Total Establishments',
+					title: 'Total Organisations',
 					count: this.globalStats.totalEstablishments,
 					icon: 'home',
 					color: '#ffb84d'
 				},
 				{
-					title: 'Average Presence',
+					title: 'Moyenne de Presence',
 					count: 'N/A', // Ou une valeur calculée si disponible
 					icon: 'activity',
 					color: '#475569'
@@ -58,25 +58,25 @@ export class StatisticsCardsComponent {
 		} else {
 			this.statistics = [
 				{
-					title: 'Current Users',
+					title: 'Utilisateurs actuel',
 					count: this.currentUsersCount,
 					icon: 'users',
 					color: '#5e4dcd'
 				},
 				{
-					title: 'Admins',
+					title: 'Administrateurs',
 					count: this.adminsCount,
 					icon: 'shield',
 					color: '#ff7a59'
 				},
 				{
-					title: 'Classes',
+					title: 'Classes/Services',
 					count: this.classesCount,
 					icon: 'layers',
 					color: '#ffb84d'
 				},
 				{
-					title: 'Global Presence',
+					title: 'Presence Globale',
 					count: `${this.globalPresencePercentage}%`,
 					icon: 'activity',
 					color: '#475569'

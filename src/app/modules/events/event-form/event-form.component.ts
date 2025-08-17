@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { HttpClientModule } from "@angular/common/http";
 import {EventService} from "../events.service";
+import {ToastService} from "../../base-component/services/toast/toast.service";
 
 @Component({
   selector: 'app-event-form',
@@ -38,7 +39,8 @@ export class EventFormComponent implements OnInit {
   constructor(
       private fb: FormBuilder,
       private router: Router,
-      private eventService: EventService
+      private eventService: EventService,
+      private toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -76,9 +78,11 @@ export class EventFormComponent implements OnInit {
             establishmentId: this.establishmentId
           });
         } else {
+          this.toastService.error("Impossible de lire votre organisation")
           console.warn('No establishment ID found in user data');
         }
       } catch (e) {
+        this.toastService.error("Impossible de lire votre organisation")
         console.error('Error parsing user data from storage', e);
       }
     }
@@ -186,10 +190,11 @@ export class EventFormComponent implements OnInit {
 
       this.eventService.createInformation(formData).subscribe({
         next: (response) => {
-          // Navigate back or show success message
-          this.router.navigate(['/events']);
+          this.toastService.success(response.message);
+          this.router.navigate(['/informations']);
         },
         error: (error) => {
+          this.toastService.error(error.error.message || error.message);
           console.error('Error creating information:', error);
           // Handle error (show toast, etc.)
         }

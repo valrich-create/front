@@ -1,10 +1,10 @@
 <div class="activity-container">
     <div class="activity-header">
-        <h2>{{ isSuperAdmin ? 'Establishment Ranking by Active Users' : 'Class Ranking by Presence' }}</h2>
+        <h2>{{ isSuperAdmin ? 'Establishment Ranking by Active Users' : 'Classement de présence par classes/services' }}</h2>
     </div>
 
     <div *ngIf="loading" class="loading-spinner">
-        Loading...
+        Chargement...
     </div>
 
     <div class="activity-table" *ngIf="!loading">
@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="class-info">
-                    <span class="class-label">Active Users</span>
+                    <span class="class-label">Utilisateurs actifs</span>
                     <span class="class-value">{{ establishment.nombreUtilisateursActuels }}</span>
                 </div>
 
@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="class-info">
-                    <span class="class-label">Students</span>
+                    <span class="class-label">Utilisateurs</span>
                     <span class="class-value">{{ class.studentCount }}</span>
                 </div>
 
@@ -72,7 +72,7 @@
     </div>
 
     <div class="no-data" *ngIf="!loading && ((isSuperAdmin && establishments.length === 0) || (!isSuperAdmin && classes.length === 0))">
-        No data available
+        Aucune données disponibles
     </div>
 </div>
 

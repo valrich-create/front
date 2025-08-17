@@ -14,9 +14,13 @@ export interface PointageResponse {
 	id: string;
 	userId: string;
 	userName: string;
+	zoneName: string;
+	latitude: number;
+	longitude: number;
+	pointingHour: Date;
 	status: PointageStatus;
+	attemptTime: string;
 	comment: string;
-	attemptTime: Date;
 }
 
 export interface PointageStatsResponse {
@@ -80,11 +84,12 @@ export interface PresenceAbsenceCountResponse {
 }
 
 export enum PointageStatus {
-	CONFIRMED,
-	SUCCEED,
-	FAILED,
-	PENDING
+	PENDING = 'PENDING',
+	SUCCEED = 'SUCCEED',
+	FAILED = 'FAILED',
+	CONFIRMED = 'CONFIRMED'
 }
+
 
 export enum OwnerType {
 	CLASS,

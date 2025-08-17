@@ -11,7 +11,9 @@ import {
 	ZonePointageResponse
 } from "../pointage";
 import { Observable } from 'rxjs';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
+import {Page} from "../../users/users.models";
+import {PointingResponse} from "../../pointing/pointing";
 
 @Injectable({
 	providedIn: 'root'
@@ -111,5 +113,29 @@ export class PointageService {
 		return this.http.get<PresenceAbsenceCountResponse>(`${this.apiUrl}/class/${classId}/counts`, {
 			params: { timeFilter }
 		});
+	}
+
+	/**
+	 * Récupère les pointages paginés par établissement et période
+	 * @param establishmentId ID de l'établissement
+	 * @param period Période (DAY, WEEK, MONTH, YEAR)
+	 * @param page Numéro de page (0-based)
+	 * @param size Taille de la page
+	 * @returns Observable de Page<PointageResponse>
+	 */
+	getPointagesByEstablishmentPaginated(
+		period: PeriodType,
+		page: number = 0,
+		size: number = 100
+	): Observable<Page<PointageResponse>> {
+		const params = new HttpParams()
+			.set('period', period)
+			.set('page', page.toString())
+			.set('size', size.toString());
+
+		return this.http.get<Page<PointageResponse>>(
+			`${this.apiUrl}/by-establishment/paginated-date-range`,
+			{ params }
+		);
 	}
 }

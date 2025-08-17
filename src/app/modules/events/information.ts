@@ -18,7 +18,7 @@ export interface InformationResponse {
     importanceDisplayStartDate?: Date | null;
     importanceDisplayEndDate?: Date | null;
     importanceInformationTarget?: string[];
-    file?: File | null;
+    fileUrls?: string[];
     createdBy: string;
     createdByName: string;
     establishmentId: string;

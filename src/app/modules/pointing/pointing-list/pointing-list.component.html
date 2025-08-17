@@ -1,10 +1,178 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<app-layout>
+    <app-navbar pageTitle="{{pageTitle}}"></app-navbar>
+    <!-- En-tête avec titre et bouton de rafraîchissement -->
+    <div class="table-header">
+        <h2 class="table-title">
+            <i class="icon-clock"></i>
+            Pointages du jour
+        </h2>
+        <button
+                class="refresh-btn"
+                (click)="onRefresh()"
+                [disabled]="isLoading"
+                [attr.aria-label]="'Actualiser les données'">
+            <i class="icon-refresh" [class.spinning]="isLoading"></i>
+        </button>
+    </div>
+
+    <!-- État de chargement -->
+    <div class="loading-container" *ngIf="isLoading">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Chargement des pointages...</p>
+        </div>
+    </div>
+
+    <!-- Gestion des erreurs -->
+    <div class="error-container" *ngIf="hasError && !isLoading">
+        <div class="error-content">
+            <i class="icon-error"></i>
+            <h3>Une erreur s'est produite</h3>
+            <p>{{ errorMessage }}</p>
+            <button class="retry-btn" (click)="onRefresh()">
+                Réessayer
+            </button>
+        </div>
+    </div>
+
+    <!-- Tableau principal -->
+    <div class="table-container" *ngIf="!isLoading && !hasError">
+
+        <!-- Message quand aucune donnée -->
+        <div class="empty-state" *ngIf="filteredPointings.length === 0">
+            <div class="empty-content">
+                <i class="icon-empty"></i>
+                <h3>Aucune donnée disponible</h3>
+                <p>Aucun pointage n'a été enregistré pour aujourd'hui.</p>
+            </div>
+        </div>
+
+        <!-- Tableau avec données -->
+        <div class="table-wrapper" *ngIf="filteredPointings.length > 0">
+            <table class="pointing-table">
+                <thead>
+                <tr>
+                    <th
+                            class="sortable"
+                            (click)="onSort('userName')"
+                            [attr.aria-sort]="sortConfig.key === 'userName' ? sortConfig.direction : 'none'">
+            <span class="header-content">
+              <span class="header-text">Utilisateur</span>
+              <i class="sort-icon" [class]="'icon-' + getSortIcon('userName')"></i>
+            </span>
+                    </th>
+
+                    <th
+                            class="sortable"
+                            (click)="onSort('zoneName')"
+                            [attr.aria-sort]="sortConfig.key === 'zoneName' ? sortConfig.direction : 'none'">
+            <span class="header-content">
+              <span class="header-text">Zone</span>
+              <i class="sort-icon" [class]="'icon-' + getSortIcon('zoneName')"></i>
+            </span>
+                    </th>
+
+                    <th
+                            class="sortable"
+                            (click)="onSort('status')"
+                            [attr.aria-sort]="sortConfig.key === 'status' ? sortConfig.direction : 'none'">
+            <span class="header-content">
+              <span class="header-text">Statut</span>
+              <i class="sort-icon" [class]="'icon-' + getSortIcon('status')"></i>
+            </span>
+                    </th>
+
+                    <th class="text-center">Longitude</th>
+                    <th class="text-center">Latitude</th>
+
+                    <th
+                            class="sortable text-center"
+                            (click)="onSort('attemptTime')"
+                            [attr.aria-sort]="sortConfig.key === 'attemptTime' ? sortConfig.direction : 'none'">
+            <span class="header-content">
+              <span class="header-text">Heure tentative</span>
+              <i class="sort-icon" [class]="'icon-' + getSortIcon('attemptTime')"></i>
+            </span>
+                    </th>
+
+                    <th
+                            class="sortable text-center"
+                            (click)="onSort('pointingHour')"
+                            [attr.aria-sort]="sortConfig.key === 'pointingHour' ? sortConfig.direction : 'none'">
+            <span class="header-content">
+              <span class="header-text">Date & Heure</span>
+              <i class="sort-icon" [class]="'icon-' + getSortIcon('pointingHour')"></i>
+            </span>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr
+                        *ngFor="let pointing of filteredPointings; trackBy: trackByPointingId"
+                        class="table-row">
+
+                    <!-- Nom utilisateur -->
+                    <td class="user-cell">
+                        <div class="user-info">
+                            <div class="user-avatar">
+                                {{ pointing.userName.charAt(0).toUpperCase() }}
+                            </div>
+                            <span class="user-name">{{ pointing.userName }}</span>
+                        </div>
+                    </td>
+
+                    <!-- Zone -->
+                    <td class="zone-cell">
+                        <span class="zone-name">{{ pointing.zoneName }}</span>
+                    </td>
+
+                    <!-- Statut -->
+                    <td class="status-cell">
+            <span
+                    class="status-badge"
+                    [class]="getStatusClass(pointing.status)">
+              {{ pointing.status | titlecase }}
+            </span>
+                    </td>
+
+                    <!-- Longitude -->
+                    <td class="coordinate-cell text-center">
+                        <code class="coordinate">{{ formatCoordinate(pointing.longitude) }}</code>
+                    </td>
+
+                    <!-- Latitude -->
+                    <td class="coordinate-cell text-center">
+                        <code class="coordinate">{{ formatCoordinate(pointing.latitude) }}</code>
+                    </td>
+
+                    <!-- Heure tentative -->
+                    <td class="time-cell text-center">
+                        <span class="time">{{ formatTime(pointing.attemptTime) }}</span>
+                    </td>
+
+                    <!-- Date et heure -->
+                    <td class="datetime-cell text-center">
+                        <span class="datetime">{{ pointing.pointingHour | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Informations complémentaires -->
+        <div class="table-footer" *ngIf="filteredPointings.length > 0">
+            <div class="table-info">
+                <span class="records-count">
+                      {{ filteredPointings.length }}
+                      {{ filteredPointings.length === 1 ? 'pointage' : 'pointages' }}
+                      affiché{{ filteredPointings.length > 1 ? 's' : '' }}
+                </span>
+                <span class="last-updated">
+                    Dernière mise à jour : {{ currentDate | date:'dd/MM/yyyy HH:mm' }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+</app-layout>

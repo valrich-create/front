@@ -1,4 +1,3 @@
-<!-- events-page.component.html -->
 <app-layout>
     <app-navbar [pageTitle]="'Gestion des Informations'"/>
 
@@ -50,23 +49,6 @@
                                         Important
                                     </mat-chip>
                                 </div>
-
-                                <div class="action-buttons">
-                                    <button mat-icon-button
-                                            color="primary"
-                                            class="edit-btn"
-                                            matTooltip="Modifier"
-                                            (click)="openEditModal(info, $event)">
-                                        <mat-icon>edit</mat-icon>
-                                    </button>
-                                    <button mat-icon-button
-                                            color="warn"
-                                            class="delete-btn"
-                                            matTooltip="Supprimer"
-                                            (click)="deleteInformation(info, $event)">
-                                        <mat-icon>delete</mat-icon>
-                                    </button>
-                                </div>
                             </div>
 
                             <mat-card-content>
@@ -81,7 +63,7 @@
                                         <mat-icon class="meta-icon">schedule</mat-icon>
                                         <span>{{ formatDate(info.createdAt) }}</span>
                                     </div>
-                                    <div class="meta-item" *ngIf="info.file">
+                                    <div class="meta-item" *ngIf="info.fileUrls">
                                         <mat-icon class="meta-icon">attach_file</mat-icon>
                                         <span>Fichier joint</span>
                                     </div>
@@ -195,24 +177,51 @@
                             </div>
 
                             <!-- Fichier joint -->
-                            <div class="detail-section" *ngIf="selectedInformation()?.file">
+<!--                            <div class="detail-section" *ngIf="selectedInformation()?.fileUrls && selectedInformation()?.fileUrls.length > 0">-->
+<!--                                <h4 class="section-label">-->
+<!--                                    <mat-icon>attach_file</mat-icon>-->
+<!--                                    Fichiers joints ({{ selectedInformation()?.fileUrls?.length }})-->
+<!--                                </h4>-->
+<!--                                <div class="file-attachment" *ngFor="let fileUrl of selectedInformation()?.fileUrls; let i = index">-->
+<!--&lt;!&ndash;                                <div class="file-attachment">&ndash;&gt;-->
+<!--                                    <button mat-raised-button-->
+<!--                                            color="accent"-->
+<!--                                            class="file-download-btn"-->
+<!--                                            (click)="downloadFile(fileUrl, getFileNameFromUrl(fileUrl))">-->
+<!--&lt;!&ndash;                                            (click)="downloadFile(selectedInformation()?.file?.fileUrl!,&ndash;&gt;-->
+<!--&lt;!&ndash;                                               selectedInformation()?.file?.fileName!)">&ndash;&gt;-->
+<!--                                        <mat-icon>download</mat-icon>-->
+<!--                                        {{ getFileNameFromUrl(fileUrl) || 'Fichier ' + (i + 1) }}-->
+<!--&lt;!&ndash;                                        {{ selectedInformation()?.file?.fileName }}&ndash;&gt;-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <div class="detail-section" *ngIf="hasFiles()">
                                 <h4 class="section-label">
                                     <mat-icon>attach_file</mat-icon>
-                                    Fichier joint
+                                    Fichiers joints ({{ selectedInfoFiles().length }})
                                 </h4>
-                                <div class="file-attachment">
-                                    <button mat-raised-button
-                                            color="accent"
-                                            class="file-download-btn"
-                                            (click)="downloadFile(selectedInformation()?.file?.fileUrl!,
-                                               selectedInformation()?.file?.fileName!)">
-                                        <mat-icon>download</mat-icon>
-                                        {{ selectedInformation()?.file?.fileName }}
-                                    </button>
+                                <div class="files-container">
+                                    <div class="file-attachment"
+                                         *ngFor="let fileUrl of selectedInfoFiles(); let i = index; trackBy: trackByFileUrl">
+                                        <div class="file-info">
+                                            <mat-icon class="file-icon">description</mat-icon>
+                                            <span class="file-name">{{ getFileNameFromUrl(fileUrl) || 'Fichier ' + (i + 1) }}</span>
+                                        </div>
+                                        <button mat-raised-button
+                                                color="accent"
+                                                class="file-download-btn"
+                                                (click)="downloadFile(fileUrl, getFileNameFromUrl(fileUrl))"
+                                                [disabled]="!fileUrl">
+                                            <mat-icon>download</mat-icon>
+                                            Télécharger
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Métadonnées -->
+
+                                <!-- Métadonnées -->
                             <div class="detail-section metadata-section">
                                 <h4 class="section-label">
                                     <mat-icon>info</mat-icon>

@@ -1,6 +1,6 @@
 <div class="students-container">
     <div class="students-header">
-        <h2>{{ isSuperAdmin ? 'Top Organization (Max Present)' : 'Top Students by Presence' }}</h2>
+        <h2>{{ isSuperAdmin ? 'Top Organization (Max Present)' : 'Top Utilisateurs Présence' }}</h2>
     </div>
 
     <div *ngIf="loading" class="loading-spinner">
@@ -17,7 +17,7 @@
                     </div>
                     <div class="details">
                         <div class="name">{{ establishment.nom }}</div>
-                        <div class="presence-rate">Max capacity: {{ establishment.nombreUtilisateursActuels }}</div>
+                        <div class="presence-rate">Capacité maximale: {{ establishment.nombreUtilisateursActuels }}</div>
                     </div>
                 </div>
                 <button class="btn-message">
@@ -35,7 +35,7 @@
                     </div>
                     <div class="details">
                         <div class="name">{{ student.userName }}</div>
-                        <div class="presence-rate">Presence: {{ student.presenceRate }}%</div>
+                        <div class="presence-rate">Présence: {{ student.presenceRate }}%</div>
                     </div>
                 </div>
                 <button class="btn-message">
@@ -46,37 +46,6 @@
     </div>
 
     <div class="no-data" *ngIf="!loading && ((isSuperAdmin && topEstablishments.length === 0) || (!isSuperAdmin && topStudents.length === 0))">
-        No data available
+        Aucune données disponibles
     </div>
 </div>
-
-
-
-
-
-
-
-
-<!--<div class="students-container">-->
-<!--    <div class="students-header">-->
-<!--        <h2>Top Students by Presence</h2>-->
-<!--    </div>-->
-
-<!--    <div class="students-list">-->
-<!--        <div class="student-item" *ngFor="let student of topStudents; let i = index">-->
-<!--            <div class="student-info">-->
-<!--                <div class="position-avatar" [style.background-color]="getPositionColor(i)">-->
-<!--                    {{ i + 1 }}-->
-<!--                </div>-->
-<!--                <div class="details">-->
-<!--                    <div class="name">{{ student.userName }}</div>-->
-<!--                    <div class="presence-rate">Presence: {{ student.presenceRate | percent }}</div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <button class="btn-message">-->
-<!--                <i class="feather-mail"></i>-->
-<!--            </button>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--</div>-->

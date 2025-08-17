@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import {environment} from "../../../../environments/environment";
+import {Router} from "@angular/router";
 
 interface AuthResponse {
 	accessToken: string;
@@ -31,7 +32,7 @@ export class AuthService {
 	private readonly USER_KEY = 'user_data';
 	private readonly API_URL = `${environment.apiUrl}/v1/auth`;
 
-	constructor(private http: HttpClient) {}
+	constructor(private http: HttpClient, private router: Router) {}
 
 	login(phoneNumber: string, password: string, rememberMe: boolean): Observable<AuthResponse> {
 		const headers = new HttpHeaders({
@@ -63,24 +64,50 @@ export class AuthService {
 	}
 
 	logout(): Observable<any> {
-		// Optionally call logout endpoint to invalidate token on server
-		const logout$ = this.http.post(`${this.API_URL}/logout`, {})
-			.pipe(
-				catchError(() => {
-					// Even if server logout fails, clear local storage
-					return of(null);
-				})
-			);
-
-		return logout$.pipe(
+		// Créer la requête POST
+		const logout$ = this.http.post(`${this.API_URL}/logout`, {}).pipe(
+			// Tap pour des effets secondaires comme le logging
+			tap(() => console.log('Logout request sent to server')),
+			// Même en cas d'erreur, on continue pour nettoyer le local storage
+			catchError((error) => {
+				console.error('Logout failed:', error);
+				return of(null); // Continuer le flux même après une erreur
+			}),
+			// Nettoyer le stockage dans tous les cas (succès ou erreur)
 			tap(() => {
 				localStorage.removeItem(this.TOKEN_KEY);
 				localStorage.removeItem(this.USER_KEY);
 				sessionStorage.removeItem(this.TOKEN_KEY);
 				sessionStorage.removeItem(this.USER_KEY);
+				console.log('Storage cleared');
+				this.router.navigate(['/login']);
 			})
 		);
+
+		// Retourner l'Observable (doit être souscrit par l'appelant)
+		return logout$;
 	}
+
+	// logout(): Observable<any> {
+	// 	const logout$ = this.http.post(`${this.API_URL}/logout`, {})
+	// 		.pipe(
+	// 			catchError(() => {
+	// 				// Even if server logout fails, clear local storage
+	// 				return of(null);
+	// 			})
+	// 		);
+	//
+	// 	console.log('Logout:', logout$);
+	//
+	// 	return logout$.pipe(
+	// 		tap(() => {
+	// 			localStorage.removeItem(this.TOKEN_KEY);
+	// 			localStorage.removeItem(this.USER_KEY);
+	// 			sessionStorage.removeItem(this.TOKEN_KEY);
+	// 			sessionStorage.removeItem(this.USER_KEY);
+	// 		})
+	// 	);
+	// }
 
 	changePassword(currentPassword: string, newPassword: string, confirmNewPassword: string): Observable<any> {
 		// Vérification côté client que les nouveaux mots de passe correspondent

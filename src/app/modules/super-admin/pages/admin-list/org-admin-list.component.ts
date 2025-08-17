@@ -59,6 +59,7 @@ export class OrgAdminListComponent implements OnInit {
     console.log('Starting loadAdmins'); // Debug
     this.loading = true;
     this.error = null;
+    const backendPage = this.currentPage - 1;
 
     const establishmentId = this.getEstablishmentIdFromStorage();
     if (!establishmentId) {
@@ -69,7 +70,7 @@ export class OrgAdminListComponent implements OnInit {
 
     this.adminService.getAdvancedUsersByEstablishment(
         establishmentId,
-        this.currentPage,
+        backendPage,
         this.pageSize,
         this.currentSort
     ).pipe(

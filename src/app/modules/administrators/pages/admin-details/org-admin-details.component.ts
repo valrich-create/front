@@ -7,6 +7,7 @@ import {LayoutComponent} from "../../../base-component/components/layout/layout.
 import {UserResponse} from "../../../users/users.models";
 import {AdministratorServiceService} from "../../services/administrator-service.service";
 import {UserService} from "../../../users/services/user.service";
+import {UserDetailCardComponent} from "../../../base-component/components/user-detail-card/user-detail-card.component";
 
 @Component({
   selector: 'app-administrator-detail',
@@ -15,7 +16,8 @@ import {UserService} from "../../../users/services/user.service";
     CommonModule,
     FormsModule,
     NavbarComponent,
-    LayoutComponent
+    LayoutComponent,
+    UserDetailCardComponent
   ],
   templateUrl: 'org-admin-details.component.html',
   styleUrls: ['org-admin-details.component.scss']

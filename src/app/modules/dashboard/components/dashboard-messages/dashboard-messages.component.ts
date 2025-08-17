@@ -2,11 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import {EventService} from "../../../events/events.service";
 import {InformationResponse} from "../../../events/information";
+import {RouterLink} from "@angular/router";
 
 @Component({
 	selector: 'app-dashboard-messages',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, RouterLink],
 	templateUrl: './dashboard-messages.component.html',
 	styleUrls: ['./dashboard-messages.component.scss']
 })

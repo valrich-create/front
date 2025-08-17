@@ -1,19 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
-import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
 import {UserPermission, UserResponse, UserRole} from "../../users.models";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ClassServiceService} from "../../../services/class-service.service";
 import {OrganizationService} from "../../../organizations/organization.service";
 import {ToastService} from "../../../base-component/services/toast/toast.service";
+import {NavbarComponent} from "../../../base-component/components/navbar/navbar.component";
 
 @Component({
 	selector: 'app-user-form',
 	standalone: true,
-	imports: [CommonModule, ReactiveFormsModule, LayoutComponent, NavbarComponent, NavbarComponent],
+	imports: [CommonModule, ReactiveFormsModule, LayoutComponent, NavbarComponent],
 	templateUrl: './user-form.component.html',
 	styleUrls: ['./user-form.component.scss']
 })
@@ -129,27 +129,6 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
-	// getEstablishmentIdFromStorage() {
-	// 	const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
-	//
-	// 	if (userData) {
-	// 		try {
-	// 			const user = JSON.parse(userData);
-	// 			this.establishmentId = user.establishment?.id || null;
-	//
-	// 			if (this.establishmentId) {
-	// 				this.userForm.patchValue({
-	// 					establishmentId: this.establishmentId
-	// 				});
-	// 			} else {
-	// 				console.warn('No establishment ID found in user data');
-	// 			}
-	// 		} catch (e) {
-	// 			console.error('Error parsing user data from storage', e);
-	// 		}
-	// 	}
-	// }
-
 	getEstablishmentIdFromStorage(): Promise<string | null> {
 		return new Promise((resolve) => {
 			const userData = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
@@ -166,10 +145,12 @@ export class UserFormComponent implements OnInit {
 						resolve(this.establishmentId);
 					} else {
 						console.warn('No establishment ID found in user data');
+						this.toastService.error("Impossible de lire votre organisation")
 						resolve(null);
 					}
 				} catch (e) {
 					console.error('Error parsing user data from storage', e);
+					this.toastService.error("Impossible de lire votre organisation")
 					resolve(null);
 				}
 			} else {
@@ -252,11 +233,11 @@ export class UserFormComponent implements OnInit {
 				// Mode édition
 				this.userService.updateUser(this.currentUserId, formData).subscribe({
 					next: (response) => {
-						this.toastService.show('Update successfully done!', 'success');
+						this.toastService.success('Operation reussie!');
 						this.router.navigate(['/users']);
 					},
 					error: (error) => {
-						this.toastService.show('Error occurred, Try again later', 'danger');
+						this.toastService.error(error.error.message || error.message);
 						console.error('Error updating user', error);
 					}
 				});
@@ -264,28 +245,16 @@ export class UserFormComponent implements OnInit {
 				// Mode création
 				this.userService.createUser(formData).subscribe({
 					next: (response) => {
-						this.toastService.show('Creation successfully done!', 'success');
+						this.toastService.success('Operation reussie!');
 						console.log('User created successfully', response);
 						this.router.navigate(['/users']);
 					},
 					error: (error) => {
-						this.toastService.show('Error occurred, Try again later', 'danger');
+						this.toastService.error(error.error.message || error.message);
 						console.error('Error creating user', error);
 					}
 				});
 			}
-
-			// this.userService.createUser(formData).subscribe({
-			//   next: (response) => {
-			//     console.log('User added successfully', response);
-			//     console.log('User created successfully');
-			//     this.router.navigate(['/users']);
-			//   },
-			//   error: (error) => {
-			//     console.error('Error adding user', error);
-			//     postMessage(error);
-			//   }
-			// });
 		} else {
 			this.markFormGroupTouched(this.userForm);
 		}
@@ -377,26 +346,6 @@ export class UserFormComponent implements OnInit {
 			}
 		});
 	}
-
-	// private loadClassesForEstablishment(): void {
-	// 	if (!this.establishmentId) {
-	// 		establishmentId = this.getEstablishmentIdFromStorage();
-	// 		console.warn('No establishment ID available');
-	// 		return;
-	// 	}
-	//
-	// 	this.classServiceService.getClassServicesByEstablishment(this.establishmentId).subscribe({
-	// 		next: (classes) => {
-	// 			this.options = classes.map(cls => ({
-	// 				id: cls.id,
-	// 				nom: cls.nom // Utilisez le nom de la classe/service
-	// 			}));
-	// 		},
-	// 		error: (err) => {
-	// 			console.error('Failed to load classes/services', err);
-	// 		}
-	// 	});
-	// }
 
 	private async loadClassesForEstablishment(): Promise<void> {
 		if (!this.establishmentId) {

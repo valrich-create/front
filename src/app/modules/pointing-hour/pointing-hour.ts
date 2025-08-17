@@ -31,14 +31,16 @@ export interface PointingHourResponse {
 }
 
 export interface PointingHourRequest {
-	time: Date;
+	startTime: Date;
 	marge: number;
+	endTime: Date;
 	classServiceId: string;
 	userId: string;
 	validatorId: string;
 }
 
 export interface PointingHourUpdateRequest {
-	time: Date;
+	startTime: Date;
 	marge: number;
+	endTime: Date;
 }

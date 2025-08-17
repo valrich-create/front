@@ -81,8 +81,10 @@ export class ClassServiceFormComponent implements OnInit {
           });
         } else {
           console.warn('No establishment ID found in user data');
+          this.toastService.error({ message: 'Impossible de lire votre organisation!' });
         }
       } catch (e) {
+        this.toastService.error("Impossible de lire votre organisation")
         console.error('Error parsing user data from storage', e);
       }
     }
@@ -99,11 +101,11 @@ export class ClassServiceFormComponent implements OnInit {
         const updateRequest: ClassServiceUpdateRequest = this.classServiceForm.value;
         this.classServiceService.updateClassService(this.classServiceId, updateRequest).subscribe({
           next: () => {
-            this.toastService.show('Operation successfully done!', 'success');
+            this.toastService.success('Operation reussie!');
             this.router.navigate(['/class-services']);
           },
           error: (error) => {
-            this.toastService.show('Error occurred, Try again later', 'danger');
+            this.toastService.error(error.error.message || error.message);
             console.error('Error updating class/service:', error);
           }
         });
@@ -111,11 +113,11 @@ export class ClassServiceFormComponent implements OnInit {
         const createRequest: ClassServiceRequest = this.classServiceForm.value;
         this.classServiceService.createClassService(createRequest).subscribe({
           next: () => {
-            this.toastService.show('Operation successfully done', 'danger');
+            this.toastService.show('Operation reussie', 'danger');
             this.router.navigate(['/class-services']);
           },
           error: (error) => {
-            this.toastService.show('Error occurred, Try again later', 'danger');
+            this.toastService.error(error.error.message || error.message);
             console.error('Error creating class/service:', error);
           }
         });
