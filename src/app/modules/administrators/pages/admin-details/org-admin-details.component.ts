@@ -15,8 +15,6 @@ import {UserDetailCardComponent} from "../../../base-component/components/user-d
   imports: [
     CommonModule,
     FormsModule,
-    NavbarComponent,
-    LayoutComponent,
     UserDetailCardComponent
   ],
   templateUrl: 'org-admin-details.component.html',

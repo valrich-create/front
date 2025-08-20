@@ -42,7 +42,7 @@ export class OrganizationFormComponent implements OnInit {
 			codePostal: ['', Validators.required],
 			ville: ['', Validators.required],
 			pays: ['', Validators.required],
-			telephone: [''],
+			telephone: ['', [Validators.required, this.cameroonPhoneValidator]],
 			email: ['', [Validators.email]],
 			logoUrl: [''],
 			nombreMaxUtilisateurs: [1, [Validators.required, Validators.min(1)]]
@@ -61,6 +61,12 @@ export class OrganizationFormComponent implements OnInit {
 			this.establishmentForm.get('superAdminId')?.clearValidators();
 			this.establishmentForm.get('superAdminId')?.updateValueAndValidity();
 		}
+	}
+
+	cameroonPhoneValidator(control: any) {
+		if (!control.value) return null;
+		const phoneRegex = /^\+237[0-9]{9}$/;
+		return phoneRegex.test(control.value) ? null : { invalidPhone: true };
 	}
 
 	loadEstablishmentData(): void {
@@ -92,13 +98,49 @@ export class OrganizationFormComponent implements OnInit {
 		return field ? (field.invalid && (field.dirty || field.touched)) : false;
 	}
 
+	getFieldErrorMessage(fieldName: string): string {
+		const field = this.establishmentForm.get(fieldName);
+		if (field?.errors && (field.dirty || field.touched)) {
+			if (field.errors['required']) {
+				switch (fieldName) {
+					case 'nom': return 'Le nom de l\'établissement est obligatoire';
+					case 'adresse': return 'L\'adresse est obligatoire';
+					case 'codePostal': return 'Le code postal est obligatoire';
+					case 'ville': return 'La ville est obligatoire';
+					case 'pays': return 'Le pays est obligatoire';
+					case 'telephone': return 'Le numéro de téléphone est obligatoire';
+					case 'nombreMaxUtilisateurs': return 'Le nombre maximum d\'utilisateurs est obligatoire';
+					default: return 'Ce champ est obligatoire';
+				}
+			}
+			if (field.errors['email']) {
+				return 'Veuillez saisir une adresse email valide';
+			}
+			if (field.errors['invalidPhone']) {
+				return 'Numéro invalide, utilisez le format +237 6XX XXX XXX';
+			}
+			if (field.errors['min']) {
+				return 'Veuillez saisir un nombre valide (minimum 1)';
+			}
+		}
+		return '';
+	}
+
 	onSubmit(): void {
 		if (this.establishmentForm.valid) {
+			const formValue = this.establishmentForm.value;
+
+			const cleanedData = {
+				...formValue,
+				email: formValue.email?.trim() || null,
+				logoUrl: formValue.logoUrl?.trim() || null
+			};
+
 			if (this.isEditMode && this.establishmentId) {
-				const updateRequest: EstablishmentUpdateRequest = this.establishmentForm.value;
+				const updateRequest: EstablishmentUpdateRequest = cleanedData;
 				this.organizationService.updateEstablishment(this.establishmentId, updateRequest).subscribe({
 					next: () => {
-						this.toastService.success('Mise a jour réussie!');
+						this.toastService.success('Mise à jour réussie!');
 						this.router.navigate(['/establishments']);
 					},
 					error: (error) => {
@@ -108,7 +150,7 @@ export class OrganizationFormComponent implements OnInit {
 					}
 				});
 			} else {
-				const createRequest: EstablishmentRequest = this.establishmentForm.value;
+				const createRequest: EstablishmentRequest = cleanedData;
 				this.organizationService.createEstablishment(createRequest).subscribe({
 					next: () => {
 						this.toastService.success("Organisation créée avec succès!");

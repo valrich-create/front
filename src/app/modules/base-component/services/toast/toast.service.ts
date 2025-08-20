@@ -34,19 +34,29 @@ export class ToastService {
     return titles[type as keyof typeof titles] || 'Notification';
   }
 
+  private getDefaultMessage(type: string): string {
+    const messages = {
+      success: 'Opération réalisée avec succès.',
+      danger: 'Une erreur est survenue.',
+      warning: 'Veuillez vérifier les informations saisies.',
+      info: 'Nouvelle information disponible.'
+    };
+    return messages[type as keyof typeof messages] || 'Notification système.';
+  }
+
   private formatErrorMessage(error: any): string {
     // Gestion des erreurs avec structure backend
-    if (error?.error?.message) {
-      return error.error.message;
+    if (error?.error?.message && error.error.message.trim()) {
+      return error.error.message.trim();
     }
 
-    if (error?.message) {
-      return error.message;
+    if (error?.message && error.message.trim()) {
+      return error.message.trim();
     }
 
     // Gestion des erreurs sous forme de string
-    if (typeof error === 'string') {
-      return error;
+    if (typeof error === 'string' && error.trim()) {
+      return error.trim();
     }
 
     // Gestion des erreurs HTTP avec status
@@ -71,6 +81,19 @@ export class ToastService {
     return 'Une erreur serveur inattendue s\'est produite.';
   }
 
+  private calculateDuration(message: string): number {
+    const baseTime = 5000; // 5 secondes minimum
+    const maxTime = 15000; // 15 secondes maximum
+    const calculatedTime = Math.max(baseTime, Math.min(maxTime, message.length * 120));
+    return calculatedTime;
+  }
+
+  private isValidContent(title: string, message: string): boolean {
+    const hasValidTitle = !!title && title.trim().length > 0;
+    const hasValidMessage = !!message && message.trim().length > 0;
+    return hasValidTitle && hasValidMessage;
+  }
+
   show(messageOrOptions: string | ToastOptions, type: 'success' | 'danger' | 'warning' | 'info', options?: ToastOptions): void {
     let title: string;
     let message: string;
@@ -79,12 +102,22 @@ export class ToastService {
     // Gestion des paramètres flexibles
     if (typeof messageOrOptions === 'string') {
       title = options?.title || this.getDefaultTitle(type);
-      message = messageOrOptions;
-      duration = options?.duration || 8000;
+      message = messageOrOptions || this.getDefaultMessage(type);
+      duration = options?.duration || this.calculateDuration(message);
     } else {
       title = messageOrOptions.title || this.getDefaultTitle(type);
-      message = messageOrOptions.message || '';
-      duration = messageOrOptions.duration || 8000;
+      message = messageOrOptions.message || this.getDefaultMessage(type);
+      duration = messageOrOptions.duration || this.calculateDuration(message);
+    }
+
+    // Nettoyer les espaces
+    title = title.trim();
+    message = message.trim();
+
+    // Ne pas afficher le toast si le contenu n'est pas valide
+    if (!this.isValidContent(title, message)) {
+      console.warn('Toast non affiché: titre ou message vide');
+      return;
     }
 
     const toast: Toast = {
@@ -105,26 +138,40 @@ export class ToastService {
   }
 
   // Méthodes spécialisées pour chaque type
-  success(message: string, options?: ToastOptions): void {
-    this.show(message, 'success', options);
+  success(message?: string, options?: ToastOptions): void {
+    const finalMessage = message || this.getDefaultMessage('success');
+    this.show(finalMessage, 'success', options);
   }
 
-  info(message: string, options?: ToastOptions): void {
-    this.show(message, 'info', options);
+  info(message?: string, options?: ToastOptions): void {
+    const finalMessage = message || this.getDefaultMessage('info');
+    this.show(finalMessage, 'info', options);
   }
 
-  warning(messageOrError: string | any, options?: ToastOptions): void {
-    const message = typeof messageOrError === 'string'
-        ? messageOrError
-        : this.formatErrorMessage(messageOrError);
+  warning(messageOrError?: string | any, options?: ToastOptions): void {
+    let message: string;
+
+    if (!messageOrError) {
+      message = this.getDefaultMessage('warning');
+    } else {
+      message = typeof messageOrError === 'string'
+          ? messageOrError
+          : this.formatErrorMessage(messageOrError);
+    }
 
     this.show(message, 'warning', options);
   }
 
-  error(messageOrError: string | any, options?: ToastOptions): void {
-    const message = typeof messageOrError === 'string'
-        ? messageOrError
-        : this.formatErrorMessage(messageOrError);
+  error(messageOrError?: string | any, options?: ToastOptions): void {
+    let message: string;
+
+    if (!messageOrError) {
+      message = this.getDefaultMessage('danger');
+    } else {
+      message = typeof messageOrError === 'string'
+          ? messageOrError
+          : this.formatErrorMessage(messageOrError);
+    }
 
     this.show(message, 'danger', options);
   }

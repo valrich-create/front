@@ -1,144 +1,155 @@
 <app-layout>
-    <app-navbar [pageTitle]="isEditMode ? 'Edit Establishment' : 'New Establishment'"></app-navbar>
+    <app-navbar [pageTitle]="isEditMode ? 'Modifier l\'établissement' : 'Nouvel établissement'"></app-navbar>
 
     <div class="content-container">
-        <div class="event-form-container">
+        <div class="establishment-form-container">
             <div class="form-card">
                 <div class="card-header">
-                    <h2>{{ isEditMode ? 'Edit Establishment' : 'Create New Establishment' }}</h2>
+                    <h2>{{ isEditMode ? 'Modifier l\'établissement' : 'Créer un nouvel établissement' }}</h2>
                 </div>
 
                 <div class="card-content">
                     <form [formGroup]="establishmentForm" (ngSubmit)="onSubmit()">
-                        <!-- Nom -->
-                        <div class="form-group">
-                            <label for="nom">Name <span class="required">*</span></label>
-                            <input
-                                    type="text"
-                                    id="nom"
-                                    formControlName="nom"
-                                    placeholder="Enter establishment name"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('nom')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('nom')">
-                                Name is required
+                        <div class="form-grid">
+                            <!-- Colonne gauche -->
+                            <div class="form-column">
+                                <!-- Nom -->
+                                <div class="form-group">
+                                    <label for="nom">Nom de l'établissement <span class="required">*</span></label>
+                                    <input
+                                            type="text"
+                                            id="nom"
+                                            formControlName="nom"
+                                            placeholder="Exemple : Collège Bilingue XYZ"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('nom')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('nom')">
+                                        {{ getFieldErrorMessage('nom') }}
+                                    </div>
+                                </div>
+
+                                <!-- Code Postal -->
+                                <div class="form-group">
+                                    <label for="codePostal">Code postal <span class="required">*</span></label>
+                                    <input
+                                            type="text"
+                                            id="codePostal"
+                                            formControlName="codePostal"
+                                            placeholder="Exemple : 12345"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('codePostal')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('codePostal')">
+                                        {{ getFieldErrorMessage('codePostal') }}
+                                    </div>
+                                </div>
+
+                                <!-- Pays -->
+                                <div class="form-group">
+                                    <label for="pays">Pays <span class="required">*</span></label>
+                                    <input
+                                            type="text"
+                                            id="pays"
+                                            formControlName="pays"
+                                            placeholder="Cameroun"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('pays')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('pays')">
+                                        {{ getFieldErrorMessage('pays') }}
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input
+                                            type="email"
+                                            id="email"
+                                            formControlName="email"
+                                            placeholder="Exemple : nom@example.com"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('email')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('email')">
+                                        {{ getFieldErrorMessage('email') }}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Adresse -->
-                        <div class="form-group">
-                            <label for="adresse">Address <span class="required">*</span></label>
-                            <input
-                                    type="text"
-                                    id="adresse"
-                                    formControlName="adresse"
-                                    placeholder="Enter establishment address"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('adresse')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('adresse')">
-                                Address is required
-                            </div>
-                        </div>
+                            <!-- Colonne droite -->
+                            <div class="form-column">
+                                <!-- Adresse -->
+                                <div class="form-group">
+                                    <label for="adresse">Adresse <span class="required">*</span></label>
+                                    <input
+                                            type="text"
+                                            id="adresse"
+                                            formControlName="adresse"
+                                            placeholder="Exemple : Rue 123, Quartier Melen"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('adresse')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('adresse')">
+                                        {{ getFieldErrorMessage('adresse') }}
+                                    </div>
+                                </div>
 
-                        <!-- Code Postal -->
-                        <div class="form-group">
-                            <label for="codePostal">Postal Code <span class="required">*</span></label>
-                            <input
-                                    type="text"
-                                    id="codePostal"
-                                    formControlName="codePostal"
-                                    placeholder="Enter postal code"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('codePostal')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('codePostal')">
-                                Postal code is required
-                            </div>
-                        </div>
+                                <!-- Ville -->
+                                <div class="form-group">
+                                    <label for="ville">Ville <span class="required">*</span></label>
+                                    <input
+                                            type="text"
+                                            id="ville"
+                                            formControlName="ville"
+                                            placeholder="Exemple : Yaoundé"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('ville')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('ville')">
+                                        {{ getFieldErrorMessage('ville') }}
+                                    </div>
+                                </div>
 
-                        <!-- Ville -->
-                        <div class="form-group">
-                            <label for="ville">City <span class="required">*</span></label>
-                            <input
-                                    type="text"
-                                    id="ville"
-                                    formControlName="ville"
-                                    placeholder="Enter city"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('ville')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('ville')">
-                                City is required
-                            </div>
-                        </div>
+                                <!-- Numéro de téléphone -->
+                                <div class="form-group">
+                                    <label for="telephone">Numéro de téléphone <span class="required">*</span></label>
+                                    <input
+                                            type="tel"
+                                            id="telephone"
+                                            formControlName="telephone"
+                                            placeholder="Exemple : +237 699 99 99 99"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('telephone')}"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('telephone')">
+                                        {{ getFieldErrorMessage('telephone') }}
+                                    </div>
+                                </div>
 
-                        <!-- Pays -->
-                        <div class="form-group">
-                            <label for="pays">Country <span class="required">*</span></label>
-                            <input
-                                    type="text"
-                                    id="pays"
-                                    formControlName="pays"
-                                    placeholder="Enter country"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('pays')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('pays')">
-                                Country is required
-                            </div>
-                        </div>
-
-                        <!-- Telephone -->
-                        <div class="form-group">
-                            <label for="telephone">Phone Number</label>
-                            <input
-                                    type="tel"
-                                    id="telephone"
-                                    formControlName="telephone"
-                                    placeholder="Enter phone number"
-                                    class="form-control"
-                            >
-                        </div>
-
-                        <!-- Email -->
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input
-                                    type="email"
-                                    id="email"
-                                    formControlName="email"
-                                    placeholder="Enter email"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('email')}"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('email')">
-                                Please enter a valid email
-                            </div>
-                        </div>
-
-                        <!-- Nombre Max Utilisateurs -->
-                        <div class="form-group">
-                            <label for="nombreMaxUtilisateurs">Max Users <span class="required">*</span></label>
-                            <input
-                                    type="number"
-                                    id="nombreMaxUtilisateurs"
-                                    formControlName="nombreMaxUtilisateurs"
-                                    placeholder="Enter maximum number of users"
-                                    class="form-control"
-                                    [ngClass]="{'invalid-input': isFieldInvalid('nombreMaxUtilisateurs')}"
-                                    min="1"
-                            >
-                            <div class="error-message" *ngIf="isFieldInvalid('nombreMaxUtilisateurs')">
-                                Please enter a valid number (minimum 1)
+                                <!-- Nombre Max Utilisateurs -->
+                                <div class="form-group">
+                                    <label for="nombreMaxUtilisateurs">Nombre maximum d'utilisateurs <span class="required">*</span></label>
+                                    <input
+                                            type="number"
+                                            id="nombreMaxUtilisateurs"
+                                            formControlName="nombreMaxUtilisateurs"
+                                            class="form-control"
+                                            [ngClass]="{'invalid-input': isFieldInvalid('nombreMaxUtilisateurs')}"
+                                            min="1"
+                                    >
+                                    <div class="error-message" *ngIf="isFieldInvalid('nombreMaxUtilisateurs')">
+                                        {{ getFieldErrorMessage('nombreMaxUtilisateurs') }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="button" class="btn-cancel" (click)="onCancel()">Cancel</button>
+                            <button type="button" class="btn-cancel" (click)="onCancel()">Annuler</button>
                             <button type="submit" class="btn-submit" [disabled]="establishmentForm.invalid">
-                                {{ isEditMode ? 'Update' : 'Create' }}
+                                {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
                             </button>
                         </div>
                     </form>

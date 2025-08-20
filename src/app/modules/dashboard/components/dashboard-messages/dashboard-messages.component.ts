@@ -7,7 +7,7 @@ import {RouterLink} from "@angular/router";
 @Component({
 	selector: 'app-dashboard-messages',
 	standalone: true,
-	imports: [CommonModule, RouterLink],
+	imports: [CommonModule],
 	templateUrl: './dashboard-messages.component.html',
 	styleUrls: ['./dashboard-messages.component.scss']
 })

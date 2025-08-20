@@ -26,31 +26,12 @@ import {Subscription} from "rxjs";
           </button>
         </div>
 
-        <!-- Corps avec message sur fond blanc -->
-        <div class="toast-body" *ngIf="toast.message">
+        <!-- Corps avec message sur fond blanc - affiché seulement si message valide -->
+        <div class="toast-body" *ngIf="toast.message && toast.message.trim().length > 0">
           {{ toast.message }}
         </div>
       </div>
     </div>
-<!--    <div class="toast-container position-fixed bottom-0 end-0 p-3">-->
-<!--      <div *ngFor="let toast of toasts"-->
-<!--           class="toast show"-->
-<!--           [ngClass]="'bg-' + toast.type"-->
-<!--           role="alert"-->
-<!--           aria-live="assertive"-->
-<!--           aria-atomic="true"-->
-<!--           [@fadeInOut]>-->
-<!--        <div class="d-flex">-->
-<!--          <div class="toast-body text-white">-->
-<!--            {{ toast.message }}-->
-<!--          </div>-->
-<!--          <button type="button"-->
-<!--                  class="btn-close btn-close-white me-2 m-auto"-->
-<!--                  (click)="close(toast.id)"-->
-<!--                  aria-label="Close"></button>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
   `,
   styles: [`
     .toast-container {
@@ -160,15 +141,13 @@ import {Subscription} from "rxjs";
     .bg-info { background-color: #17a2b8 !important; }
   `],
   animations: [
-    trigger('fadeInOut', [
+    trigger('slideIn', [
       transition(':enter', [
-        style({ opacity: 0, transform: 'translateY(20px)' }),
-        animate('300ms ease-out',
-            style({ opacity: 1, transform: 'translateY(0)' }))
+        style({ opacity: 0, transform: 'translateX(100%)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateX(0)' }))
       ]),
       transition(':leave', [
-        animate('200ms ease-in',
-            style({ opacity: 0, transform: 'translateX(100%)' }))
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateX(100%)' }))
       ])
     ])
   ]
