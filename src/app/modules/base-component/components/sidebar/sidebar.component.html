@@ -12,7 +12,8 @@
     <nav class="menu-container">
         <div *ngFor="let section of menuSections"
              class="menu-section"
-             [class.hidden]="!section.visible">
+             [class.hidden]="!section.visible"
+             [class.disabled]="section.disabled">
 
             <!-- Titre de section (visible uniquement en mode étendu) -->
             <div class="section-title" *ngIf="!sidebarCollapsed">
@@ -22,13 +23,17 @@
             <!-- Items du menu -->
             <ul class="menu">
                 <li *ngFor="let item of section.items"
-                    [class.active]="item.active"
+                    [class.active]="item.active && !section.disabled"
                     [attr.data-tooltip]="sidebarCollapsed ? item.label : null"
                     class="menu-item">
-                    <a [routerLink]="item.route">
+                    <a *ngIf="!section.disabled" [routerLink]="item.route">
                         <i [class]="item.icon"></i>
                         <span *ngIf="!sidebarCollapsed">{{ item.label }}</span>
                     </a>
+                    <span *ngIf="section.disabled" class="disabled-link">
+                        <i [class]="item.icon"></i>
+                        <span *ngIf="!sidebarCollapsed">{{ item.label }}</span>
+                    </span>
                 </li>
             </ul>
 

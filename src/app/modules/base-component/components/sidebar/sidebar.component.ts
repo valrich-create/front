@@ -16,6 +16,7 @@ interface MenuSection {
     title: string;
     items: MenuItem[];
     visible: boolean;
+    disabled?: boolean;
 }
 
 @Component({
@@ -32,9 +33,21 @@ interface MenuSection {
 
 export class SidebarComponent implements OnInit {
     role: string | null = null;
+    establishmentId: string = '';
     menuSections: MenuSection[] = [];
     sidebarOpen = false;
     sidebarCollapsed = false;
+
+    private getEstablishmentIdFromStorage(): void {
+        const data = sessionStorage.getItem('user_data') || localStorage.getItem('user_data');
+        if (data) {
+            try {
+                this.establishmentId = JSON.parse(data).establishment?.id || '';
+            } catch (e) {
+                console.error('Cannot read establishment id', e);
+            }
+        }
+    }
 
     private buildMenuSectionsForRole(role: string | null): MenuSection[] {
         const administrationItems: MenuItem[] = [
@@ -52,10 +65,10 @@ export class SidebarComponent implements OnInit {
             {icon: 'bi-clock', label: 'Horaires', route: '/schedule'},
             {icon: 'bi-geo', label: 'Zones', route: '/zone'},
             {icon: 'bi-list-check', label: 'Pointages', route: '/pointing-list'},
+            {icon: 'bi-chat', label: 'Messagerie', route: '/chat'},
         ];
 
         const compteItems: MenuItem[] = [
-            {icon: 'bi-chat', label: 'Messagerie', route: '/chat'},
             {icon: 'bi-person', label: 'Profil', route: '/profile'}
         ];
 
@@ -68,7 +81,8 @@ export class SidebarComponent implements OnInit {
             {
                 title: 'MON ÉTABLISSEMENT',
                 items: etablissementItems,
-                visible: true
+                visible: true,
+                disabled: !this.establishmentId
             },
             {
                 title: 'MON COMPTE',
@@ -86,6 +100,7 @@ export class SidebarComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        this.getEstablishmentIdFromStorage();
         this.role = this.authService.getUserRole();
         this.menuSections = this.buildMenuSectionsForRole(this.role);
 

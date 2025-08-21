@@ -40,7 +40,25 @@ export class PointingHourService {
     return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/by-class-service/${classServiceId}`);
   }
 
-  // Get pointing hours within a time range
+  // Get pointing hours by class/service within time range
+  getPointingHoursByClassServiceBetween(classId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+    const params = new HttpParams()
+        .set('start', start)
+        .set('end', end);
+
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${classId}/by-time-range`, { params });
+  }
+
+  // Get pointing hours by user within time range
+  getPointingHoursByUserBetween(userId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+    const params = new HttpParams()
+        .set('start', start)
+        .set('end', end);
+
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${userId}/by-time-range`, { params });
+  }
+
+  // Get all pointing hours within time range
   getPointingHoursBetween(start: string, end: string): Observable<PointingHourResponse[]> {
     const params = new HttpParams()
         .set('start', start)
@@ -49,26 +67,26 @@ export class PointingHourService {
     return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/by-time-range`, { params });
   }
 
-  getClassServicePointingHoursBetween(classId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+  // Get pointing hours by establishment ID
+  getPointingHourByEstablishmentBetween(establishmentId: string, start: string, end: string): Observable<PointingHourResponse[]> {
     const params = new HttpParams()
         .set('start', start)
         .set('end', end);
 
-    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${classId}/by-time-range`, { params });
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${establishmentId}/by-time-range`, { params });
   }
 
-  getUserPointingHoursBetween(classId: string, start: string, end: string): Observable<PointingHourResponse[]> {
+  getPointingHourByEstablishmentBetweenForConnectedUser(start: string, end: string): Observable<PointingHourResponse[]> {
     const params = new HttpParams()
         .set('start', start)
         .set('end', end);
 
-    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/${classId}/by-time-range`, { params });
+    return this.http.get<PointingHourResponse[]>(`${this.apiUrl}/establishment/by-time-range`, { params });
   }
 
   deleteHorairePointage(hourId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${hourId}`);
   }
-
 
   // Get paginated pointing hours
   getAllPointingHoursPaginated(

@@ -11,6 +11,7 @@ import {NavbarComponent} from "../../../base-component/components/navbar/navbar.
 import {MatNativeDateModule} from "@angular/material/core";
 import {catchError, of} from "rxjs";
 import {CalendarComponent} from "../../../events/calendar/calendar.component";
+import { format } from 'date-fns';
 
 @Component({
   selector: 'app-pointing-hour-list',
@@ -49,7 +50,10 @@ export class PointingHourListComponent implements OnInit {
     const start = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth(), 1);
     const end = new Date(this.currentMonth.getFullYear(), this.currentMonth.getMonth() + 1, 0);
 
-    this.pointingHourService.getPointingHoursBetween(start.toISOString(), end.toISOString())
+    const startDateStr = format(start, 'yyyy-MM-dd');
+    const endDateStr = format(end, 'yyyy-MM-dd');
+
+    this.pointingHourService.getPointingHourByEstablishmentBetweenForConnectedUser(startDateStr, endDateStr)
         .pipe(catchError(() => of([])))
         .subscribe(hours => {
           this.pointingHours = hours;
@@ -76,13 +80,15 @@ export class PointingHourListComponent implements OnInit {
         isSameDay(new Date(h.startTime), date)
     );
 
+    const dateStr = format(date, 'yyyy-MM-dd');
+
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    this.pointingHourService.getPointingHoursBetween(startOfDay.toISOString(), endOfDay.toISOString())
+    this.pointingHourService.getPointingHourByEstablishmentBetweenForConnectedUser(dateStr, dateStr)
         .pipe(catchError(() => of([])))
         .subscribe(hours => {
           this.pointingHours = hours;

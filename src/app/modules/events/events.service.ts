@@ -27,6 +27,10 @@ export class EventService {
     return this.http.get(`${this.apiUrl}/establishment/${establishmentId}?page=${page}&size=${size}`);
   }
 
+  getInformationsByEstablishmentForConnectedUser(page: number = 0, size: number = 100): Observable<any> {
+    return this.http.get(`${this.apiUrl}/establishment/?page=${page}&size=${size}`);
+  }
+
   getCurrentUserInformations(page: number = 0, size: number = 10): Observable<any> {
     return this.http.get(`${this.apiUrl}/my-informations?page=${page}&size=${size}`);
   }

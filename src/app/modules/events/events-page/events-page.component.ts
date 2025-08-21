@@ -63,7 +63,7 @@ export class EventsPageComponent implements OnInit {
   }
 
   loadInformations(): void {
-    this.eventService.getCurrentUserInformations().subscribe({
+    this.eventService.getInformationsByEstablishmentForConnectedUser().subscribe({
       next: (response) => {
         this.informations.set(response.content || []);
       },
