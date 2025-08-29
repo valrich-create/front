@@ -154,10 +154,11 @@ export class ProfileComponent implements OnInit {
         ? '/admin/edit'
         : '/users/edit';
     this.router.navigate([route, this.userData.id]);
+    console.log(this.userData.id);
   }
 
   deleteProfile = (): void => {
-    // Implémentez selon vos besoins
+    this.toastService.warning("Vous ne pouvez supprimer votre compte. Veuillez contacter l'admin pour cela! \n Merci!");
   }
 
   changePassword = (): void => {
