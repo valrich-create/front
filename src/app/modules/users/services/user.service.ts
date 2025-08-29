@@ -162,6 +162,17 @@ export class UserService {
 			);
 	}
 
+	addMultipleUsersToClassService(userIds: string[], classId: string): Observable<UserResponse[]> {
+		const requestBody = { userIds: userIds };
+		return this.http.put<UserResponse[]>(`${this.apiUrl}/assign-class/${classId}`, requestBody)
+			.pipe(
+				catchError(error => {
+					console.error('Error adding multiple users to class', error);
+					return throwError(() => new Error('Failed to add multiple users to class'));
+				})
+			);
+	}
+
 	addUserToEstablishment(userId: string, establishmentId: string): Observable<UserResponse> {
 		return this.http.put<UserResponse>(`${this.apiUrl}/${userId}/assign-establishment/${establishmentId}`, {})
 			.pipe(

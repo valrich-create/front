@@ -57,12 +57,6 @@
                                     {{ user.phoneNumber || 'N/A' }}
                                 </span>
                             </li>
-                            <li class="info-item">
-                                <span class="info-label">Lieu de naissance</span>
-                                <span class="info-value" [class.na-value]="!user.placeOfBirth">
-                                    {{ user.placeOfBirth || 'N/A' }}
-                                </span>
-                            </li>
                         </ul>
                     </div>
 
@@ -80,11 +74,17 @@
                                 </span>
                             </li>
                             <li class="info-item">
-                                <span class="info-label">Dernier accès</span>
-                                <span class="info-value" [class.na-value]="!user.lastAccess">
-                                    {{ user.lastAccess ? (user.lastAccess | date) : 'N/A' }}
+                                <span class="info-label">Lieu de naissance</span>
+                                <span class="info-value" [class.na-value]="!user.placeOfBirth">
+                                    {{ user.placeOfBirth || 'N/A' }}
                                 </span>
                             </li>
+<!--                            <li class="info-item">-->
+<!--                                <span class="info-label">Dernier accès</span>-->
+<!--                                <span class="info-value" [class.na-value]="!user.lastAccess">-->
+<!--                                    {{ user.lastAccess ? (user.lastAccess | date) : 'N/A' }}-->
+<!--                                </span>-->
+<!--                            </li>-->
                         </ul>
                     </div>
 

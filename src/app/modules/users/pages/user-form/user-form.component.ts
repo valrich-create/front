@@ -1,5 +1,5 @@
 import {Component, input, OnInit} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { UserService } from '../../services/user.service';
 import {LayoutComponent} from "../../../base-component/components/layout/layout.component";
@@ -27,10 +27,12 @@ export class UserFormComponent implements OnInit {
 	previewImageUrl: string | ArrayBuffer | null = null;
 	establishmentId: string | null = null;
 	showPermissions = false;
-	permissionsList: UserPermission[] = []; // Exemple de permissions
+	permissionsList: UserPermission[] = [];
 	rolesWithoutPermissions = ['DELEGATE', 'RELEGATE_DELEGATE', 'TEACHER', 'USER'];
 	isEditMode = false;
 	currentUserId: string | null = null;
+	showPassword = false;
+	showConfirmPassword = false;
 
 	constructor(
 		private fb: FormBuilder,
@@ -39,34 +41,67 @@ export class UserFormComponent implements OnInit {
 		private organizationService: OrganizationService,
 		private toastService: ToastService,
 		private router: Router,
+		private location: Location,
 		private route: ActivatedRoute
 	) {
 		this.createForm();
 	}
 
 	async ngOnInit() {
-		this.checkEditMode();
-		this.getCurrentUserRole();
-		await this.getEstablishmentIdFromStorage(); // Attendre la résolution
-		this.loadOptions();
-		this.setupRoleChangeListener();
-		this.permissionsList = Object.values(UserPermission);
+		try {
+			await this.checkEditMode();
+			this.getCurrentUserRole();
+			await this.getEstablishmentIdFromStorage();
+			this.loadOptions();
+			this.setupRoleChangeListener();
+			this.permissionsList = Object.values(UserPermission);
+		} catch (error) {
+			console.error('Initialization error:', error);
+			this.toastService.warning('Erreur lors de l\'initialisation du formulaire');
+		}
 	}
 
-	private checkEditMode(): void {
-		this.route.params.subscribe(params => {
-			if (params['id']) {
-				this.isEditMode = true;
-				this.currentUserId = params['id'];
-				if (this.currentUserId) { // Ajoutez cette vérification
-					this.loadUserData(this.currentUserId);
-					// Modifiez les validateurs pour le mot de passe en mode édition
-					this.userForm.get('password')?.clearValidators();
-					this.userForm.get('confirmPassword')?.clearValidators();
-					this.userForm.get('password')?.updateValueAndValidity();
-					this.userForm.get('confirmPassword')?.updateValueAndValidity();
+	// private checkEditMode(): void {
+	// 	this.route.params.subscribe(params => {
+	// 		// Vérifier que params existe et contient un id
+	// 		if (params && params['id']) {
+	// 			this.isEditMode = true;
+	// 			this.currentUserId = params['id'];
+	// 			if (this.currentUserId) {
+	// 				this.loadUserData(this.currentUserId);
+	// 				// Modifiez les validateurs pour le mot de passe en mode édition
+	// 				this.userForm.get('password')?.clearValidators();
+	// 				this.userForm.get('confirmPassword')?.clearValidators();
+	// 				this.userForm.get('password')?.updateValueAndValidity();
+	// 				this.userForm.get('confirmPassword')?.updateValueAndValidity();
+	// 			}
+	// 		} else {
+	// 			this.isEditMode = false;
+	// 			this.currentUserId = null;
+	// 		}
+	// 	});
+	// }
+
+	private checkEditMode(): Promise<void> {
+		return new Promise((resolve) => {
+			this.route.params.subscribe(params => {
+				if (params && params['id']) {
+					this.isEditMode = true;
+					this.currentUserId = params['id'];
+					if (this.currentUserId) {
+						this.loadUserData(this.currentUserId);
+						// Modifier les validateurs
+						this.userForm.get('password')?.clearValidators();
+						this.userForm.get('confirmPassword')?.clearValidators();
+						this.userForm.get('password')?.updateValueAndValidity();
+						this.userForm.get('confirmPassword')?.updateValueAndValidity();
+					}
+				} else {
+					this.isEditMode = false;
+					this.currentUserId = null;
 				}
-			}
+				resolve();
+			});
 		});
 	}
 
@@ -77,22 +112,26 @@ export class UserFormComponent implements OnInit {
 			},
 			error: (err) => {
 				console.error('Failed to load user data', err);
+				this.toastService.warning('Impossible de charger les données utilisateur');
 				this.router.navigate(['/users']);
 			}
 		});
 	}
 
 	private patchFormWithUserData(user: UserResponse): void {
+		const formattedDate = user.dateOfBirth ?
+			new Date(user.dateOfBirth).toISOString().split('T')[0] : '';
+
 		this.userForm.patchValue({
 			firstName: user.firstName,
 			lastName: user.lastName,
-			dateOfBirth: user.dateOfBirth,
+			dateOfBirth: formattedDate,
 			placeOfBirth: user.placeOfBirth,
 			role: user.role,
 			email: user.email,
 			phoneNumber: user.phoneNumber,
-			establishmentId: user.establishmentId,
-			classServiceId: user.classeServiceId
+			establishmentId: user.establishmentId || '',
+			classServiceId: user.classeServiceId || ''
 		});
 
 		if (user.profileImageUrl) {
@@ -110,23 +149,52 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
+	// getCurrentUserRole() {
+	// 	const storedRole = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
+	//
+	// 	if (storedRole && Object.values(UserRole).includes(storedRole as UserRole)) {
+	// 		this.userRole = storedRole as UserRole;
+	//
+	// 		if (this.userRole === UserRole.SUPER_ADMIN) {
+	// 			this.filteredRoles = [UserRole.ADMIN];
+	// 		} else {
+	// 			this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
+	// 		}
+	// 	} else {
+	// 		console.error('Invalid or missing user role in localStorage or sessionStorage');
+	// 		this.userRole = UserRole.ADMIN;
+	// 		this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
+	// 	}
+	// }
 
 	getCurrentUserRole() {
-		const storedRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
+		// Récupérer les données utilisateur complètes
+		const userData = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
 
-		if (storedRole && Object.values(UserRole).includes(storedRole as UserRole)) {
-			this.userRole = storedRole as UserRole;
+		if (userData) {
+			try {
+				const user = JSON.parse(userData);
+				const storedRole = user.role; // Lire le rôle depuis l'objet user
 
-			if (this.userRole === UserRole.SUPER_ADMIN) {
-				this.filteredRoles = [UserRole.ADMIN];
-			} else {
-				this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
+				if (storedRole && Object.values(UserRole).includes(storedRole as UserRole)) {
+					this.userRole = storedRole as UserRole;
+
+					if (this.userRole === UserRole.SUPER_ADMIN) {
+						this.filteredRoles = [UserRole.ADMIN];
+					} else {
+						this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
+					}
+					return; // Sortir si tout est bon
+				}
+			} catch (e) {
+				console.error('Error parsing user data', e);
 			}
-		} else {
-			console.error('Invalid or missing user role in localStorage or sessionStorage');
-			this.userRole = UserRole.ADMIN; // Valeur par défaut
-			this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
 		}
+
+		// Fallback si erreur ou données manquantes
+		console.error('Invalid or missing user role in storage');
+		this.userRole = UserRole.ADMIN;
+		this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
 	}
 
 	getEstablishmentIdFromStorage(): Promise<string | null> {
@@ -136,7 +204,9 @@ export class UserFormComponent implements OnInit {
 			if (userData) {
 				try {
 					const user = JSON.parse(userData);
-					this.establishmentId = user.establishment?.id || null;
+					this.establishmentId = user.establishment?.id ||
+						user.establishmentId ||
+						null;
 
 					if (this.establishmentId) {
 						this.userForm.patchValue({
@@ -188,10 +258,24 @@ export class UserFormComponent implements OnInit {
 		return password === confirmPassword ? null : { passwordMismatch: true };
 	}
 
+	togglePasswordVisibility(field: 'password' | 'confirmPassword') {
+		if (field === 'password') {
+			this.showPassword = !this.showPassword;
+		} else {
+			this.showConfirmPassword = !this.showConfirmPassword;
+		}
+	}
+
 	onSubmit(): void {
 		if (this.userForm.valid) {
 			if (!this.userForm.get('establishmentId')?.value && this.establishmentId) {
 				this.userForm.patchValue({ establishmentId: this.establishmentId });
+			}
+			const phoneNumber = this.userForm.get('phoneNumber')?.value;
+			if (phoneNumber) {
+				this.userForm.patchValue({
+					phoneNumber: this.cleanPhoneNumber(phoneNumber)
+				});
 			}
 
 			const formData = new FormData();
@@ -302,8 +386,12 @@ export class UserFormComponent implements OnInit {
 	}
 
 	onCancel(): void {
-		// Navigate back or reset form
 		this.userForm.reset();
+		if (window.history.length > 1) {
+			window.history.back();
+		} else {
+			this.location.back();
+		}
 	}
 
 	onFileSelected(event: Event): void {
@@ -338,13 +426,25 @@ export class UserFormComponent implements OnInit {
 			next: (page) => {
 				this.options = page.content.map(est => ({
 					id: est.id,
-					nom: est.nom
+					name: est.nom
 				}));
 			},
 			error: (err) => {
 				console.error('Failed to load establishments', err);
 			}
 		});
+	}
+
+	/**
+	 * Nettoie le numéro de téléphone en supprimant tous les espaces
+	 * @param phoneNumber - Le numéro de téléphone à nettoyer
+	 * @returns Le numéro de téléphone sans espaces
+	 */
+	private cleanPhoneNumber(phoneNumber: string): string {
+		if (!phoneNumber) {
+			return phoneNumber;
+		}
+		return phoneNumber.replace(/\s+/g, '');
 	}
 
 	private async loadClassesForEstablishment(): Promise<void> {
