@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import {
     FormBuilder,
     FormGroup,
@@ -28,6 +28,7 @@ import {UserService} from "../../../users/services/user.service";
     templateUrl: 'admin-form.component.html',
     styleUrls: ['admin-form.component.scss']
 })
+
 export class AdminFormComponent implements OnInit {
     @Input() adminData: UserResponse | null = null;
     isEditMode = false;
@@ -57,6 +58,7 @@ export class AdminFormComponent implements OnInit {
         private route: ActivatedRoute,
         private adminService: AdministratorServiceService,
         private userService: UserService,
+        private location: Location,
         private router: Router
     ) {
         this.adminForm = this.fb.group({
@@ -71,10 +73,12 @@ export class AdminFormComponent implements OnInit {
             establishmentId: ['', Validators.required],
             password: ['', [Validators.minLength(8)]],
             confirmPassword: [''],
-            permissions: this.fb.array<FormControl<boolean>>([])
+            permissions: this.fb.array([])
+            // permissions: this.fb.array<FormControl<boolean>>([])
         }, { validators: this.passwordMatchValidator });
 
-        this.permissionsFormArray = this.adminForm.get('permissions') as FormArray<FormControl<boolean | null>>;
+        this.permissionsFormArray = this.adminForm.get('permissions') as FormArray;
+        // this.permissionsFormArray = this.adminForm.get('permissions') as FormArray<FormControl<boolean | null>>;
     }
 
     ngOnInit(): void {
@@ -89,14 +93,6 @@ export class AdminFormComponent implements OnInit {
         }
     }
 
-    initializePermissions(): void {
-        this.permissionsFormArray.clear();
-        this.authorizations.forEach(() => {
-            const control = new FormControl<boolean>(false);
-            this.permissionsFormArray.push(control);
-        });
-    }
-
     loadAdminData(id: string): void {
         this.adminService.getAdministratorById(id).subscribe({
             next: (admin) => this.populateForm(admin),
@@ -106,6 +102,22 @@ export class AdminFormComponent implements OnInit {
                 console.error('Error loading admin:', err);
             }
         });
+    }
+
+    initializePermissions(): void {
+        this.permissionsFormArray.clear();
+        // this.authorizations.forEach(() => {
+        //     const control = new FormControl<boolean>(false);
+        //     this.permissionsFormArray.push(control);
+        // });
+
+        this.authorizations.forEach(() => {
+            this.permissionsFormArray.push(this.fb.control(false));
+        });
+    }
+
+    get permissionsArray(): FormArray {
+        return this.adminForm.get('permissions') as FormArray;
     }
 
     populateForm(admin: UserResponse): void {
@@ -134,6 +146,11 @@ export class AdminFormComponent implements OnInit {
             const hasPermission = admin.permissions?.includes(permission) ?? false;
             const control = new FormControl<boolean>(hasPermission);
             this.permissionsFormArray.push(control);
+        });
+
+        this.authorizations.forEach((permission, index) => {
+            const hasPermission = admin.permissions?.includes(permission) ?? false;
+            this.permissionsFormArray.at(index).setValue(hasPermission);
         });
 
         if (this.isEditMode) {
@@ -241,6 +258,13 @@ export class AdminFormComponent implements OnInit {
 
     onSubmit(): void {
         if (this.adminForm.valid) {
+            const phoneNumber = this.adminForm.get('phoneNumber')?.value;
+            if (phoneNumber) {
+                this.adminForm.patchValue({
+                    phoneNumber: this.cleanPhoneNumber(phoneNumber)
+                });
+            }
+
             const formData = new FormData();
 
             // Add all form fields to FormData
@@ -344,7 +368,23 @@ export class AdminFormComponent implements OnInit {
         });
     }
 
+    /**
+     * Nettoie le numéro de téléphone en supprimant tous les espaces
+     * @param phoneNumber - Le numéro de téléphone à nettoyer
+     * @returns Le numéro de téléphone sans espaces
+     */
+    private cleanPhoneNumber(phoneNumber: string): string {
+        if (!phoneNumber) {
+            return phoneNumber;
+        }
+        return phoneNumber.replace(/\s+/g, '');
+    }
+
     cancel(): void {
-        this.router.navigate(['/administrators']);
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            this.location.back();
+        }
     }
 }

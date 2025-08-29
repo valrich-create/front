@@ -29,6 +29,10 @@ export class OrganizationService {
 		return this.http.put<Establishment>(`${this.apiUrl}/${id}`, updateRequest);
 	}
 
+	deleteEstablishment(id: string): Observable<any>{
+		return this.http.delete<Establishment>(`${this.apiUrl}/${id}`);
+	}
+
 	getEstablishmentById(id: string): Observable<Establishment> {
 		return this.http.get<Establishment>(`${this.apiUrl}/${id}`);
 	}

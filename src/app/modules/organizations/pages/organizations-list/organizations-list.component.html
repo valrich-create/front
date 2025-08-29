@@ -26,7 +26,10 @@
                     *ngFor="let org of organizations"
                     [establishment]="org"
                     [timePeriod]="selectedTimePeriod"
-                    (click)="navigateToDetail(org.id)">
+                    (click)="navigateToDetail(org.id)"
+                    (viewDetails)="onViewDetails($event)"
+                    (editEstablishment)="onEditEstablishment($event)"
+                    (deleteEstablishment)="onDeleteEstablishment($event)">
             </app-organization-card>
         </div>
 
@@ -58,6 +61,64 @@
 
         <div class="pagination-info">
             Showing {{ (currentPage - 1) * itemsPerPage + 1 }}-{{ Math.min(currentPage * itemsPerPage, totalItems) }} from {{ totalItems }} data
+        </div>
+    </div>
+
+    <!-- Modal de détails -->
+    <div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetailsModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Détails {{ establishmentName }}</h2>
+                <button class="close-button" (click)="closeDetailsModal()">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body" *ngIf="selectedEstablishment">
+                <div class="detail-row">
+                    <label>Nom :</label>
+                    <span>{{ selectedEstablishment.nom }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Adresse :</label>
+                    <span>{{ selectedEstablishment.adresse }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Code Postal :</label>
+                    <span>{{ selectedEstablishment.codePostal }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Ville :</label>
+                    <span>{{ selectedEstablishment.ville }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Pays :</label>
+                    <span>{{ selectedEstablishment.pays }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Téléphone :</label>
+                    <span>{{ selectedEstablishment.telephone }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Email :</label>
+                    <span>{{ selectedEstablishment.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Utilisateurs actuels :</label>
+                    <span>{{ selectedEstablishment.nombreUtilisateursActuels }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Utilisateurs maximum :</label>
+                    <span>{{ selectedEstablishment.nombreMaxUtilisateurs }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Créé le :</label>
+                    <span>{{ selectedEstablishment.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Mis à jour le :</label>
+                    <span>{{ selectedEstablishment.updatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </app-layout>

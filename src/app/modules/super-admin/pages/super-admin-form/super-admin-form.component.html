@@ -2,37 +2,58 @@
     <div class="admin-form-container">
         <app-navbar [pageTitle]="isEditMode ? 'Edit Super Admin' : 'Create Super Admin'"></app-navbar>
 
-        <form [formGroup]="adminForm" (ngSubmit)="onSubmit()">
-            <div class="form-section">
-                <h2>Super Admin Details</h2>
+        <div class="form-wrapper">
+            <form [formGroup]="adminForm" (ngSubmit)="onSubmit()" class="modern-form">
 
-                <!-- Section Photo de profil -->
-                <div class="form-row">
-                    <div class="form-group full-width">
-                        <label for="photoInput">Profile Photo</label>
-                        <div class="photo-upload-container">
-                            <div class="photo-preview-wrapper">
-                                <!-- Aperçu de la nouvelle photo sélectionnée -->
-                                <div *ngIf="photoPreviewUrl" class="photo-preview">
-                                    <img [src]="photoPreviewUrl" alt="Photo Preview" class="preview-image">
-                                    <button type="button" class="remove-photo-btn" (click)="removePhoto()" title="Remove photo">
-                                        <i class="fa fa-times"></i>
+                <!-- Header Section -->
+                <div class="form-header">
+                    <div class="header-content">
+                        <h1 class="form-title">
+                            <i class="fas fa-user-shield"></i>
+                            {{ isEditMode ? 'Edit Super Admin' : 'Create Super Admin' }}
+                        </h1>
+                        <p class="form-subtitle">
+                            {{ isEditMode ? 'Update administrator information' : 'Add a new super administrator to your system' }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="form-content">
+
+                    <!-- Profile Photo Section -->
+                    <div class="form-section photo-section">
+                        <div class="section-header">
+                            <h3>Profile Photo</h3>
+                            <span class="section-badge">Optional</span>
+                        </div>
+
+                        <div class="photo-upload-area">
+                            <div class="photo-preview-container">
+                                <!-- New photo preview -->
+                                <div *ngIf="photoPreviewUrl" class="photo-display">
+                                    <img [src]="photoPreviewUrl" alt="Photo Preview" class="profile-image">
+                                    <button type="button" class="remove-btn" (click)="removePhoto()" title="Remove photo">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
 
-                                <!-- Affichage de la photo existante (mode édition) -->
-                                <div *ngIf="existingPhotoUrl && !photoPreviewUrl" class="photo-preview">
-                                    <img [src]="existingPhotoUrl" alt="Current Photo" class="preview-image">
-                                    <button type="button" class="remove-photo-btn" (click)="removePhoto()" title="Remove photo">
-                                        <i class="fa fa-times"></i>
+                                <!-- Existing photo display -->
+                                <div *ngIf="existingPhotoUrl && !photoPreviewUrl" class="photo-display">
+                                    <img [src]="existingPhotoUrl" alt="Current Photo" class="profile-image">
+                                    <button type="button" class="remove-btn" (click)="removePhoto()" title="Remove photo">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
 
-                                <!-- Zone d'upload par défaut -->
-                                <div *ngIf="!photoPreviewUrl && !existingPhotoUrl" class="photo-upload-placeholder">
-                                    <i class="fa fa-camera"></i>
-                                    <p>Click to upload photo</p>
-                                    <small>JPG, PNG, GIF up to 5MB</small>
+                                <!-- Upload placeholder -->
+                                <div *ngIf="!photoPreviewUrl && !existingPhotoUrl" class="upload-placeholder">
+                                    <div class="upload-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <h4>Upload Profile Photo</h4>
+                                    <p>Choose a professional photo</p>
+                                    <span class="file-info">JPG, PNG, GIF up to 5MB</span>
                                 </div>
                             </div>
 
@@ -41,143 +62,209 @@
                                     id="photoInput"
                                     accept="image/*"
                                     (change)="onFileSelected($event)"
-                                    class="photo-input"
+                                    class="file-input"
                                     formControlName="photo"
                             >
 
-                            <label for="photoInput" class="photo-upload-btn">
+                            <label for="photoInput" class="upload-btn">
+                                <i class="fas fa-upload"></i>
                                 {{ (photoPreviewUrl || existingPhotoUrl) ? 'Change Photo' : 'Select Photo' }}
                             </label>
                         </div>
                     </div>
+
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3>Personal Information</h3>
+                            <span class="section-badge required">Required</span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="firstName" class="form-label">
+                                    First Name <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input
+                                            type="text"
+                                            id="firstName"
+                                            formControlName="firstName"
+                                            placeholder="Enter first name"
+                                            class="form-input"
+                                            [class.error]="adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched"
+                                    >
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('firstName')?.errors?.['required'] && adminForm.get('firstName')?.touched">
+                                    First name is required
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('firstName')?.errors?.['minlength'] || adminForm.get('firstName')?.errors?.['maxlength']">
+                                    Must be between 2-50 characters
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="lastName" class="form-label">
+                                    Last Name <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input
+                                            type="text"
+                                            id="lastName"
+                                            formControlName="lastName"
+                                            placeholder="Enter last name"
+                                            class="form-input"
+                                            [class.error]="adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched"
+                                    >
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('lastName')?.errors?.['required'] && adminForm.get('lastName')?.touched">
+                                    Last name is required
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('lastName')?.errors?.['minlength'] || adminForm.get('lastName')?.errors?.['maxlength']">
+                                    Must be between 2-50 characters
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <h3>Contact Information</h3>
+                            <span class="section-badge required">Required</span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="email" class="form-label">
+                                    Email Address <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input
+                                            type="email"
+                                            id="email"
+                                            formControlName="email"
+                                            placeholder="admin@example.com"
+                                            class="form-input"
+                                            [class.error]="adminForm.get('email')?.invalid && adminForm.get('email')?.touched"
+                                    >
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('email')?.errors?.['required'] && adminForm.get('email')?.touched">
+                                    Email is required
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('email')?.errors?.['email']">
+                                    Please enter a valid email address
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="phoneNumber" class="form-label">
+                                    Phone Number <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-phone input-icon"></i>
+                                    <input
+                                            type="tel"
+                                            id="phoneNumber"
+                                            formControlName="phoneNumber"
+                                            placeholder="+237 6 99 99 99 99"
+                                            class="form-input"
+                                            [class.error]="adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched"
+                                    >
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('phoneNumber')?.errors?.['required'] && adminForm.get('phoneNumber')?.touched">
+                                    Phone number is required
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('phoneNumber')?.errors?.['invalidPhone']">
+                                    Must be 10-15 digits, can start with +
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Section - Only for creation -->
+                    <div *ngIf="!isEditMode" class="form-section">
+                        <div class="section-header">
+                            <h3>Security Information</h3>
+                            <span class="section-badge required">Required</span>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label for="password" class="form-label">
+                                    Password <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input
+                                            [type]="showPassword ? 'text' : 'password'"
+                                            id="password"
+                                            formControlName="password"
+                                            placeholder="Enter secure password"
+                                            class="form-input"
+                                            [class.error]="adminForm.get('password')?.invalid && adminForm.get('password')?.touched"
+                                    >
+                                    <button type="button" class="toggle-password" (click)="togglePasswordVisibility('password')">
+                                        <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength">
+                                    <small class="help-text">
+                                        Password must contain: uppercase, lowercase, digit, special character (&#64;#$%^&+=), no spaces
+                                    </small>
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">
+                                    Password is required
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('password')?.errors?.['minlength']">
+                                    Must be at least 8 characters
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">
+                                    Password does not meet security requirements
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="confirmPassword" class="form-label">
+                                    Confirm Password <span class="required-star">*</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input
+                                            [type]="showConfirmPassword ? 'text' : 'password'"
+                                            id="confirmPassword"
+                                            formControlName="confirmPassword"
+                                            placeholder="Confirm your password"
+                                            class="form-input"
+                                            [class.error]="(adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched"
+                                    >
+                                    <button type="button" class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')">
+                                        <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                    </button>
+                                </div>
+                                <div class="error-text" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">
+                                    Passwords do not match
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="firstName"
-                                formControlName="firstName"
-                                placeholder="John"
-                                [ngClass]="{'invalid': adminForm.get('firstName')?.invalid && adminForm.get('firstName')?.touched}"
-                        >
-                        <div class="error-message" *ngIf="adminForm.get('firstName')?.errors?.['required'] && adminForm.get('firstName')?.touched">
-                            First name is required
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('firstName')?.errors?.['minlength'] || adminForm.get('firstName')?.errors?.['maxlength']">
-                            Must be between 2-50 characters
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lastName">Last Name <span class="required">*</span></label>
-                        <input
-                                type="text"
-                                id="lastName"
-                                formControlName="lastName"
-                                placeholder="Doe"
-                                [ngClass]="{'invalid': adminForm.get('lastName')?.invalid && adminForm.get('lastName')?.touched}"
-                        >
-                        <div class="error-message" *ngIf="adminForm.get('lastName')?.errors?.['required'] && adminForm.get('lastName')?.touched">
-                            Last name is required
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('lastName')?.errors?.['minlength'] || adminForm.get('lastName')?.errors?.['maxlength']">
-                            Must be between 2-50 characters
-                        </div>
-                    </div>
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" (click)="cancel()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary" [disabled]="adminForm.invalid">
+                        {{ isEditMode ? 'Update' : 'Create' }}
+                    </button>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="email">Email <span class="required">*</span></label>
-                        <input
-                                type="email"
-                                id="email"
-                                formControlName="email"
-                                placeholder="john.doe@example.com"
-                                [ngClass]="{'invalid': adminForm.get('email')?.invalid && adminForm.get('email')?.touched}"
-                        >
-                        <div class="error-message" *ngIf="adminForm.get('email')?.errors?.['required'] && adminForm.get('email')?.touched">
-                            Email is required
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('email')?.errors?.['email']">
-                            Please enter a valid email
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phoneNumber">Phone Number <span class="required">*</span></label>
-                        <input
-                                type="tel"
-                                id="phoneNumber"
-                                formControlName="phoneNumber"
-                                placeholder="+1234567890"
-                                [ngClass]="{'invalid': adminForm.get('phoneNumber')?.invalid && adminForm.get('phoneNumber')?.touched}"
-                        >
-                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.errors?.['required'] && adminForm.get('phoneNumber')?.touched">
-                            Phone number is required
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('phoneNumber')?.errors?.['invalidPhone']">
-                            Must be 10-15 digits, can start with +
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section mot de passe - Afficher uniquement en mode création -->
-                <div *ngIf="!isEditMode" class="form-row">
-                    <div class="form-group">
-                        <label for="password">Password <span class="required">*</span></label>
-                        <div class="password-input-container">
-                            <input
-                                    [type]="showPassword ? 'text' : 'password'"
-                                    id="password"
-                                    formControlName="password"
-                                    placeholder="••••••••"
-                                    [ngClass]="{'invalid': adminForm.get('password')?.invalid && adminForm.get('password')?.touched}"
-                            >
-                            <span class="toggle-password" (click)="togglePasswordVisibility('password')">
-                                <i [class]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-                            </span>
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['required'] && adminForm.get('password')?.touched">
-                            Password is required
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['minlength']">
-                            Must be at least 8 characters
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.get('password')?.errors?.['passwordWeak']">
-                            Must contain: digit, lowercase, uppercase, special character (&#64;#$%^&+=), no spaces
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
-                        <div class="password-input-container">
-                            <input
-                                    [type]="showConfirmPassword ? 'text' : 'password'"
-                                    id="confirmPassword"
-                                    formControlName="confirmPassword"
-                                    placeholder="••••••••"
-                                    [ngClass]="{'invalid': (adminForm.get('confirmPassword')?.invalid || adminForm.hasError('mismatch')) && adminForm.get('confirmPassword')?.touched}"
-                            >
-                            <span class="toggle-password" (click)="togglePasswordVisibility('confirmPassword')">
-                                <i [class]="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
-                            </span>
-                        </div>
-                        <div class="error-message" *ngIf="adminForm.hasError('mismatch') && adminForm.get('confirmPassword')?.touched">
-                            Passwords do not match
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn-cancel" (click)="cancel()">Cancel</button>
-                <button type="submit" class="btn-submit" [disabled]="adminForm.invalid">
-                    {{ isEditMode ? 'Update' : 'Create' }} Super Admin
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </app-layout>

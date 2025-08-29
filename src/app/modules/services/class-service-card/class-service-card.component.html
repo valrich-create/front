@@ -16,29 +16,29 @@
     </div>
 
     <!-- Indicateur de croissance -->
-    <div class="stat-item">
-        <app-growth-indicator
-                [currentUsers]="classService.utilisateursCount"
-                [maxUsers]="classService.establishment?.nombreMaxUtilisateurs || 0">
-        </app-growth-indicator>
-    </div>
+<!--    <div class="stat-item">-->
+<!--        <app-growth-indicator-->
+<!--                [currentUsers]="classService.utilisateursCount"-->
+<!--                [maxUsers]="classService.establishment?.nombreMaxUtilisateurs || 0">-->
+<!--        </app-growth-indicator>-->
+<!--    </div>-->
 
-    <!-- Cercle de pourcentage -->
-    <div class="stat-item">
-        <app-percentage-circle
-                [current]="classService.utilisateursCount"
-                [max]="classService.establishment?.nombreMaxUtilisateurs || 0">
-        </app-percentage-circle>
-    </div>
+<!--    &lt;!&ndash; Cercle de pourcentage &ndash;&gt;-->
+<!--    <div class="stat-item">-->
+<!--        <app-percentage-circle-->
+<!--                [current]="classService.utilisateursCount"-->
+<!--                [max]="classService.establishment?.nombreMaxUtilisateurs || 0">-->
+<!--        </app-percentage-circle>-->
+<!--    </div>-->
 
     <!-- Actions -->
-    <div class="actions">
-        <button class="action-button" (click)="toggleActions($event)">
-            <span class="material-icons">more_horiz</span>
-            <div class="actions-menu" *ngIf="showActions">
-                <div class="action-item" (click)="onEdit($event)">Edit</div>
-                <div class="action-item" (click)="onViewDetail($event)">View Detail</div>
-            </div>
-        </button>
-    </div>
+<!--    <div class="actions">-->
+<!--        <button class="action-button" (click)="toggleActions($event)">-->
+<!--            <span class="material-icons">more_horiz</span>-->
+<!--            <div class="actions-menu" *ngIf="showActions">-->
+<!--                <div class="action-item" (click)="onEdit($event)">Edit</div>-->
+<!--                <div class="action-item" (click)="onViewDetail($event)">View Detail</div>-->
+<!--            </div>-->
+<!--        </button>-->
+<!--    </div>-->
 </div>

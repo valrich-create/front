@@ -113,7 +113,7 @@ export class ClassServiceFormComponent implements OnInit {
         const createRequest: ClassServiceRequest = this.classServiceForm.value;
         this.classServiceService.createClassService(createRequest).subscribe({
           next: () => {
-            this.toastService.show('Operation reussie', 'danger');
+            this.toastService.success('Operation reussie');
             this.router.navigate(['/class-services']);
           },
           error: (error) => {

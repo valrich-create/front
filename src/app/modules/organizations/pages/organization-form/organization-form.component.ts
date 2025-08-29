@@ -128,6 +128,13 @@ export class OrganizationFormComponent implements OnInit {
 
 	onSubmit(): void {
 		if (this.establishmentForm.valid) {
+			const phoneNumber = this.establishmentForm.get('phoneNumber')?.value;
+			if (phoneNumber) {
+				this.establishmentForm.patchValue({
+					phoneNumber: this.cleanPhoneNumber(phoneNumber)
+				});
+			}
+
 			const formValue = this.establishmentForm.value;
 
 			const cleanedData = {
@@ -170,6 +177,18 @@ export class OrganizationFormComponent implements OnInit {
 				control?.markAsTouched();
 			});
 		}
+	}
+
+	/**
+	 * Nettoie le numéro de téléphone en supprimant tous les espaces
+	 * @param phoneNumber - Le numéro de téléphone à nettoyer
+	 * @returns Le numéro de téléphone sans espaces
+	 */
+	private cleanPhoneNumber(phoneNumber: string): string {
+		if (!phoneNumber) {
+			return phoneNumber;
+		}
+		return phoneNumber.replace(/\s+/g, '');
 	}
 
 	onCancel(): void {

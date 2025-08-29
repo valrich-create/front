@@ -41,6 +41,11 @@ export class OrganizationsListComponent implements OnInit {
 
 	Math = Math; // Pour utiliser Math dans le template
 
+	// Variables pour le pop-up de détails
+	showDetailsModal = false;
+	selectedEstablishment: Establishment | null = null;
+	establishmentName: string = '';
+
 	constructor(
 		private organizationService: OrganizationService,
 		private router: Router
@@ -121,5 +126,29 @@ export class OrganizationsListComponent implements OnInit {
 	onSearchChange(searchTerm: string): void {
 		this.currentSearchTerm = searchTerm;
 		this.loadOrganizations();
+	}
+
+	// Nouvelles méthodes pour les actions
+	onViewDetails(establishment: Establishment): void {
+		this.selectedEstablishment = establishment;
+		this.establishmentName = this.selectedEstablishment.nom;
+		this.showDetailsModal = true;
+	}
+
+	onEditEstablishment(id: string): void {
+		this.router.navigate(['/organizations/edit', id]);
+	}
+
+	onDeleteEstablishment(id: string): void {
+		if (confirm('Êtes-vous sûr de vouloir supprimer cet établissement ?')) {
+			this.organizationService.deleteEstablishment(id).subscribe(() => {
+				this.loadOrganizations(); // Recharger la liste après suppression
+			});
+		}
+	}
+
+	closeDetailsModal(): void {
+		this.showDetailsModal = false;
+		this.selectedEstablishment = null;
 	}
 }

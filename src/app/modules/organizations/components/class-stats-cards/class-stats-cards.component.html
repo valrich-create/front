@@ -1,5 +1,6 @@
 <!-- stats-cards.component.html -->
 <div class="stats-cards">
+    <!-- Menu d'actions avec overlay -->
     <div class="options-menu">
         <button class="options-button" (click)="toggleOptionsMenu($event)">
             <i class="material-icons">more_vert</i>
@@ -7,23 +8,27 @@
 
         <div class="dropdown-menu" [class.show]="showOptionsMenu" (click)="$event.stopPropagation()">
             <button class="dropdown-item" (click)="openEditClass()">
-                <i class="material-icons">edit</i> Edit Class
+                <i class="material-icons">edit</i>
+                <span>Modifier la classe</span>
             </button>
             <button class="dropdown-item" (click)="openAddUserModal()">
-                <i class="material-icons">person_add</i> Add User to Class
+                <i class="material-icons">person_add</i>
+                <span>Ajouter des utilisateurs</span>
             </button>
-            <button class="dropdown-item" (click)="openPointingHours()">
-                <i class="material-icons">schedule</i> Pointing Hours
+            <button class="dropdown-item" (click)="openStructureModal()">
+                <i class="material-icons">account_tree</i>
+                <span>Associer à une structure</span>
             </button>
         </div>
     </div>
 
+    <!-- Cartes de statistiques -->
     <div class="stat-card">
         <div class="stat-icon user-icon">
             <i class="material-icons">group</i>
         </div>
         <div class="stat-content">
-            <div class="stat-label">Total users</div>
+            <div class="stat-label">Utilisateurs totaux</div>
             <div class="stat-value">{{ totalUsers }}</div>
         </div>
     </div>
@@ -33,7 +38,7 @@
             <i class="material-icons">person</i>
         </div>
         <div class="stat-content">
-            <div class="stat-label">Total chiefs</div>
+            <div class="stat-label">Chefs totaux</div>
             <div class="stat-value">{{ totalChiefs }}</div>
         </div>
     </div>
@@ -43,62 +48,123 @@
             <i class="material-icons">verified_user</i>
         </div>
         <div class="stat-content">
-            <div class="stat-label">Today Presence</div>
+            <div class="stat-label">Présence aujourd'hui</div>
             <div class="stat-value">{{ presenceRate }}%</div>
         </div>
     </div>
 
-    <!-- Modale pour ajouter un utilisateur -->
+    <!-- Actions modernes -->
+    <div class="action-cards">
+        <button class="action-card primary" (click)="openEditClass()">
+            <i class="material-icons">edit</i>
+            <span>Modifier</span>
+        </button>
+        <button class="action-card secondary" (click)="openAddUserModal()">
+            <i class="material-icons">person_add</i>
+            <span>Ajouter utilisateurs</span>
+        </button>
+        <button class="action-card tertiary" (click)="openStructureModal()">
+            <i class="material-icons">account_tree</i>
+            <span>Associer structure</span>
+        </button>
+    </div>
+
+    <!-- Modal pour ajouter des utilisateurs -->
     <div class="modal-backdrop" *ngIf="showAddUserModal" (click)="closeAddUserModal()"></div>
-    <div class="add-user-modal" *ngIf="showAddUserModal">
+    <div class="modal add-user-modal" *ngIf="showAddUserModal">
         <div class="modal-header">
-            <h3>Add User to Class</h3>
-            <button class="close-button" (click)="closeAddUserModal()">&times;</button>
+            <h3>Ajouter des utilisateurs à la classe</h3>
+            <button class="close-button" (click)="closeAddUserModal()">
+                <i class="material-icons">close</i>
+            </button>
         </div>
         <div class="modal-body">
             <div class="search-box">
-                <input type="text" placeholder="Search users..." [(ngModel)]="searchQuery"
-                       (input)="searchUsers()">
+                <i class="material-icons">search</i>
+                <input type="text" placeholder="Rechercher des utilisateurs..."
+                       [(ngModel)]="searchQuery" (input)="searchUsers()">
+            </div>
+            <div class="selected-count" *ngIf="selectedUsers.length > 0">
+                {{ selectedUsers.length }} utilisateur(s) sélectionné(s)
             </div>
             <div class="users-list">
-                <div *ngIf="allUsers.length === 0 && !searchQuery" class="loading-message">
-                    Loading users...
+                <div *ngIf="allUsers.length === 0" class="loading-message">
+                    Chargement des utilisateurs...
                 </div>
-                <div *ngFor="let user of filteredUsers" class="user-item"
-                     (click)="selectUser(user)">
+                <div *ngFor="let user of filteredUsers"
+                     class="user-item"
+                     [class.selected]="isUserSelected(user)"
+                     (click)="toggleUserSelection(user)">
                     <div class="user-info">
-                        <div class="user-avatar"></div>
-                        <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                        <div class="user-avatar">{{ getInitials(user) }}</div>
+                        <div class="user-details">
+                            <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+                            <div class="user-id">ID: {{ user.id }}</div>
+                        </div>
                     </div>
-                    <div class="user-id">ID: {{ user.id }}</div>
+                    <div class="selection-indicator" *ngIf="isUserSelected(user)">
+                        <i class="material-icons">check_circle</i>
+                    </div>
                 </div>
                 <div *ngIf="filteredUsers.length === 0" class="no-users">
-                    No users found
+                    Aucun utilisateur trouvé
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <button class="cancel-button" (click)="closeAddUserModal()">Cancel</button>
-            <button class="confirm-button" (click)="confirmAddUser()"
-                    [disabled]="!selectedUser">Add Selected User</button>
+            <button class="btn-cancel" (click)="closeAddUserModal()">Annuler</button>
+            <button class="btn-confirm" (click)="confirmAddUsers()"
+                    [disabled]="selectedUsers.length === 0">
+                Ajouter {{ selectedUsers.length }} utilisateur(s)
+            </button>
         </div>
     </div>
 
-    <div class="stat-actions">
-        <button class="action-button pointing-zone" [routerLink]="pointingZonesRoute">
-            View Pointing Zone
-        </button>
-    </div>
-
-    <!-- Modale pour les heures de pointage -->
-    <div class="modal-backdrop" *ngIf="showPointingHoursModal" (click)="closePointingHours()"></div>
-    <div class="pointing-hours-modal" *ngIf="showPointingHoursModal">
+    <!-- Modal pour associer à une structure -->
+    <div class="modal-backdrop" *ngIf="showStructureModal" (click)="closeStructureModal()"></div>
+    <div class="modal structure-modal" *ngIf="showStructureModal">
         <div class="modal-header">
-            <h3>Class Pointing Hours</h3>
-            <button class="close-button" (click)="closePointingHours()">&times;</button>
+            <h3>Associer à un niveau de structure</h3>
+            <button class="close-button" (click)="closeStructureModal()">
+                <i class="material-icons">close</i>
+            </button>
         </div>
         <div class="modal-body">
-            <app-pointing-hour-list></app-pointing-hour-list>
+            <div class="structure-list">
+                <div *ngIf="structureItems.length === 0" class="loading-message">
+                    Chargement des structures...
+                </div>
+                <div *ngFor="let structure of structureItems"
+                     class="structure-item"
+                     [class.selected]="selectedStructure?.id === structure.id"
+                     (click)="selectStructure(structure)">
+                    <div class="structure-info">
+                        <div class="structure-icon">
+                            <i class="material-icons">
+                                {{ structure.type === 'department' ? 'business' :
+                                structure.type === 'subDepartment' ? 'domain' : 'account_tree' }}
+                            </i>
+                        </div>
+                        <div class="structure-details">
+                            <div class="structure-name">{{ structure.name }}</div>
+                            <div class="structure-type">{{ getStructureTypeLabel(structure.type) }}</div>
+                        </div>
+                    </div>
+                    <div class="selection-indicator" *ngIf="selectedStructure?.id === structure.id">
+                        <i class="material-icons">check_circle</i>
+                    </div>
+                </div>
+                <div *ngIf="structureItems.length === 0" class="no-structures">
+                    Aucune structure disponible
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" (click)="closeStructureModal()">Annuler</button>
+            <button class="btn-confirm" (click)="confirmStructureAssociation()"
+                    [disabled]="!selectedStructure">
+                Associer
+            </button>
         </div>
     </div>
 </div>

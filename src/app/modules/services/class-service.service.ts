@@ -52,4 +52,37 @@ export class ClassServiceService {
 	getTotalUsersCount(classId: string): Observable<number> {
 		return this.http.get<number>(`${this.apiUrl}/${classId}/users/count`);
 	}
+
+	getClassServicesByDepartment(departmentId: string): Observable<ClassServiceResponse[]> {
+		return this.http.get<ClassServiceResponse[]>(`${this.apiUrl}/department/${departmentId}`);
+	}
+
+	getClassServicesBySubDepartment(subDepartmentId: string): Observable<ClassServiceResponse[]> {
+		return this.http.get<ClassServiceResponse[]>(`${this.apiUrl}/sub-department/${subDepartmentId}`);
+	}
+
+	getClassServicesByThirdLevelDepartment(thirdLevelDepartmentId: string): Observable<ClassServiceResponse[]> {
+		return this.http.get<ClassServiceResponse[]>(`${this.apiUrl}/third-level-department/${thirdLevelDepartmentId}`);
+	}
+
+	addClassServiceToDepartment(departmentId: string, classServiceId: string): Observable<ClassServiceResponse> {
+		return this.http.post<ClassServiceResponse>(
+			`${this.apiUrl}/${classServiceId}/department/${departmentId}`,
+			{}
+		);
+	}
+
+	addClassServiceToSubDepartment(subDepartmentId: string, classServiceId: string): Observable<ClassServiceResponse> {
+		return this.http.post<ClassServiceResponse>(
+			`${this.apiUrl}/${classServiceId}/sub-department/${subDepartmentId}`,
+			{}
+		);
+	}
+
+	addClassServiceToThirdLevelDepartment(thirdLevelDepartmentId: string, classServiceId: string): Observable<ClassServiceResponse> {
+		return this.http.post<ClassServiceResponse>(
+			`${this.apiUrl}/${classServiceId}/third-level-department/${thirdLevelDepartmentId}`,
+			{}
+		);
+	}
 }

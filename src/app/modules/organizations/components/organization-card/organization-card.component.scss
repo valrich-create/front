@@ -102,7 +102,7 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   min-width: 10rem;
-  z-index: 10;
+  z-index: 9998; /* Z-index élevé pour être au-dessus de tout */
 }
 
 .action-item {

@@ -1,5 +1,5 @@
 // organization-card.component.ts
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {BarChartComponent} from "../bar-chart/bar-chart.component";
 import { UsersCountIndicatorComponent} from "../growth-indicator/growth-indicator.component";
@@ -22,6 +22,10 @@ export class OrganizationCardComponent implements OnChanges {
   @Input() establishment!: Establishment;
   @Input() timePeriod: string = 'Today';
 
+  @Output() viewDetails = new EventEmitter<Establishment>();
+  @Output() editEstablishment = new EventEmitter<string>();
+  @Output() deleteEstablishment = new EventEmitter<string>();
+
   showActions = false;
 
   ngOnChanges(): void {
@@ -41,16 +45,19 @@ export class OrganizationCardComponent implements OnChanges {
 
   onEdit(event: MouseEvent): void {
     event.stopPropagation();
-    // Logique pour éditer
+    this.editEstablishment.emit(this.establishment.id);
+    this.showActions = false;
   }
 
   onViewDetail(event: MouseEvent): void {
     event.stopPropagation();
-    // Logique pour voir les détails (alternative au clic sur la ligne)
+    this.viewDetails.emit(this.establishment);
+    this.showActions = false;
   }
 
   onDelete(event: MouseEvent): void {
     event.stopPropagation();
-    // Logique pour supprimer
+    this.deleteEstablishment.emit(this.establishment.id);
+    this.showActions = false;
   }
 }

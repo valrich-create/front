@@ -3,6 +3,7 @@ import {ClassServiceResponse} from "../class-service";
 import {UsersCountIndicatorComponent} from "../../organizations/components/growth-indicator/growth-indicator.component";
 import {PercentageCircleComponent} from "../../organizations/components/percentage-circle/percentage-circle.component";
 import {CommonModule} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
 	selector: 'app-class-service-card',
@@ -21,6 +22,12 @@ export class ClassServiceCardComponent implements OnChanges{
 	@Input() timePeriod: string = 'Today';
 
 	showActions = false;
+	classId: string = '';
+
+	constructor(
+		private router: Router
+	) {
+	}
 
 	ngOnChanges(): void {
 		this.updateData();
@@ -37,7 +44,7 @@ export class ClassServiceCardComponent implements OnChanges{
 
 	onEdit(event: MouseEvent): void {
 		event.stopPropagation();
-		// Logique pour éditer la classe/service
+		this.router.navigate(['/class-services/edit', this.classId]);
 	}
 
 	onViewDetail(event: MouseEvent): void {

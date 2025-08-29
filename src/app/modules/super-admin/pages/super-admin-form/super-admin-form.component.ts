@@ -162,6 +162,13 @@ export class SuperAdminFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.adminForm.valid) {
+      const phoneNumber = this.adminForm.get('phoneNumber')?.value;
+      if (phoneNumber) {
+        this.adminForm.patchValue({
+          phoneNumber: this.cleanPhoneNumber(phoneNumber)
+        });
+      }
+
       const formData = new FormData();
 
       // Ajouter tous les champs du formulaire à FormData
@@ -219,5 +226,17 @@ export class SuperAdminFormComponent implements OnInit {
 
   cancel(): void {
     this.router.navigate(['/super-admin']);
+  }
+
+  /**
+   * Nettoie le numéro de téléphone en supprimant tous les espaces
+   * @param phoneNumber - Le numéro de téléphone à nettoyer
+   * @returns Le numéro de téléphone sans espaces
+   */
+  private cleanPhoneNumber(phoneNumber: string): string {
+    if (!phoneNumber) {
+      return phoneNumber;
+    }
+    return phoneNumber.replace(/\s+/g, '');
   }
 }

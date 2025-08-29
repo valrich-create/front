@@ -109,7 +109,7 @@ export class OrgAdminListComponent implements OnInit {
     switch(event.type) {
       case 'edit':
         console.log('Edit Super admins', event.admin);
-        this.router.navigate(['administrators', 'edit', event.admin.id]);
+        this.router.navigate(['organization-admin', 'edit', event.admin.id]);
         break;
       case 'delete':
         if(confirm('Are you sure you want to delete this Super admin?')) {
@@ -121,7 +121,7 @@ export class OrgAdminListComponent implements OnInit {
         break;
       case 'details':
         console.log('View details', event.admin);
-        this.router.navigate(['administrators', event.admin.id]);
+        this.router.navigate(['organization-admin', event.admin.id]);
         break;
     }
   }

@@ -59,6 +59,7 @@ export class SidebarComponent implements OnInit {
         const etablissementItems: MenuItem[] = [
             {icon: 'bi-house', label: 'Tableau de bord', route: '/dashboard'},
             {icon: 'bi-shield', label: 'Administrateurs', route: '/organization-admin'},
+            {icon: 'bi-diagram-2', label: 'Structure', route: '/structure'},
             {icon: 'bi-collection', label: 'Classes / Services', route: '/class-services'},
             {icon: 'bi-people', label: 'Utilisateurs', route: '/users'},
             {icon: 'bi-calendar', label: 'Tableau d\'annonce', route: '/informations'},

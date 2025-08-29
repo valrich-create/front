@@ -48,23 +48,13 @@ export class SuperAdminListComponent implements OnInit {
                 },
                 error: (err) => console.error('Erreur chargement', err)
             });
-
-        // this.administratorServiceService
-        //     .getAllAdministratorByEstablishment(this.currentPage, this.pageSize, this.currentSort, this.currentSearchTerm)
-        //     .subscribe({
-        //         next: (admins) => {
-        //             this.admins = admins;
-        //             this.totalAdmins = admins.length;
-        //         },
-        //         error: (err) => console.error('Erreur chargement', err)
-        //     });
     }
 
     handleAction(event: {type: string, admin: any}): void {
         switch(event.type) {
             case 'edit':
                 console.log('Edit Super admins', event.admin);
-                this.router.navigate(['administrators', 'edit', event.admin.id]);
+                this.router.navigate(['super-admin', 'edit', event.admin.id]);
                 break;
             case 'delete':
                 if(confirm('Are you sure you want to delete this Super admin?')) {
@@ -76,7 +66,7 @@ export class SuperAdminListComponent implements OnInit {
                 break;
             case 'details':
                 console.log('View details', event.admin);
-                this.router.navigate(['administrators', event.admin.id]);
+                this.router.navigate(['super-admin', event.admin.id]);
                 break;
         }
     }

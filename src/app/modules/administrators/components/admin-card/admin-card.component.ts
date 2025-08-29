@@ -12,6 +12,7 @@ import {Admin} from "../../admin";
   templateUrl: "./admin-card.component.html",
   styleUrls: ['./admin-card.component.scss']
 })
+
 export class AdminCardComponent {
   @Input() admin!: any;
   @Output() action = new EventEmitter<{ type: string, admin: Admin }>();
