@@ -29,6 +29,7 @@ import {
     AdvanceUsersListComponent
 } from "./modules/super-admin/pages/all-advance-users-list/advance-users-list.component";
 import {PointingListComponent} from "./modules/pointing/pointing-list/pointing-list.component";
+import {StructureComponent} from "./modules/department/structure/structure.component";
 
 export const routes: Routes = [
     {
@@ -108,6 +109,10 @@ export const routes: Routes = [
             { path: ':id', component: OrganizationDetailsComponent },
             { path: 'edit/:id', component: ClassServiceFormComponent }
         ]
+    },
+    {
+        path: 'structure',
+        component: StructureComponent,
     },
     {
         path: 'informations',

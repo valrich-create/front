@@ -1,0 +1,378 @@
+<app-layout>
+    <app-navbar [pageTitle]="'Structure'">{{ pageTitle }}</app-navbar>
+    <div class="structure-container">
+        <!-- Three Column Layout -->
+        <div class="columns-wrapper">
+
+            <!-- Column 1: Departments -->
+            <div class="column" [class.collapsed]="isDepartmentCollapsed">
+                <div class="column-header">
+                    <div class="header-content">
+                        <h3>Départements</h3>
+                        <button class="collapse-btn" (click)="toggleDepartmentColumn()">
+                            <i class="icon-chevron" [class.rotated]="isDepartmentCollapsed"></i>
+                        </button>
+                    </div>
+                    <button class="add-btn" (click)="openDepartmentPopup()" [disabled]="isDepartmentCollapsed">
+                        <i class="icon-plus"></i>
+                        Ajouter un département
+                    </button>
+                </div>
+
+                <div class="column-content" *ngIf="!isDepartmentCollapsed">
+                    <div class="items-list">
+                        <div
+                                *ngFor="let department of departments"
+                                class="item"
+                                [class.selected]="selectedDepartment?.id === department.id"
+                                (click)="selectDepartment(department)"
+                        >
+                            <div class="item-content">
+                                <h4>{{ department.title }}</h4>
+                                <p>{{ department.description }}</p>
+                            </div>
+                            <div class="item-actions" *ngIf="selectedDepartment?.id === department.id">
+                                <button class="action-btn edit-btn"
+                                        (click)="$event.stopPropagation(); editItem(department.id, 'department')"
+                                        title="Modifier">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="action-btn delete-btn"
+                                        (click)="$event.stopPropagation(); deleteDepartment(department.id)"
+                                        title="Supprimer">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="departments.length === 0" class="empty-state">
+                            <i class="icon-info"></i>
+                            <p>Aucun département trouvé</p>
+                            <small>Commencez par ajouter votre premier département</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Sub-Departments -->
+            <div class="column" [class.collapsed]="isSubDepartmentCollapsed">
+                <div class="column-header">
+                    <div class="header-content">
+                        <h3>Sous-départements</h3>
+                        <button class="collapse-btn" (click)="toggleSubDepartmentColumn()">
+                            <i class="icon-chevron" [class.rotated]="isSubDepartmentCollapsed"></i>
+                        </button>
+                    </div>
+                    <button
+                            class="add-btn"
+                            (click)="openSubDepartmentPopup()"
+                            [disabled]="isSubDepartmentCollapsed || !selectedDepartment"
+                    >
+                        <i class="icon-plus"></i>
+                        Ajouter un sous-département
+                    </button>
+                </div>
+
+                <div class="column-content" *ngIf="!isSubDepartmentCollapsed">
+                    <div class="items-list">
+                        <div
+                                *ngFor="let subDepartment of subDepartments"
+                                class="item"
+                                [class.selected]="selectedSubDepartment?.id === subDepartment.id"
+                                (click)="selectSubDepartment(subDepartment)"
+                        >
+                            <div class="item-content">
+                                <h4>{{ subDepartment.title }}</h4>
+                                <p>{{ subDepartment.description }}</p>
+                            </div>
+                            <div class="item-actions" *ngIf="selectedSubDepartment?.id === subDepartment.id">
+                                <button class="action-btn edit-btn"
+                                        (click)="$event.stopPropagation(); editItem(subDepartment.id, 'subDepartment')"
+                                        title="Modifier">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="action-btn delete-btn"
+                                        (click)="$event.stopPropagation(); deleteSubDepartment(subDepartment.id)"
+                                        title="Supprimer">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!selectedDepartment" class="empty-state">
+                            <i class="icon-arrow-left"></i>
+                            <p>Sélectionnez un département</p>
+                            <small>Cliquez sur un département dans la liste de gauche pour afficher ses sous-départements</small>
+                        </div>
+
+                        <div *ngIf="selectedDepartment && subDepartments.length === 0" class="empty-state">
+                            <i class="icon-info"></i>
+                            <p>Aucun sous-département trouvé</p>
+                            <small>Ajoutez un sous-département à ce département</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Third Level Departments -->
+            <div class="column" [class.collapsed]="isThirdLevelCollapsed">
+                <div class="column-header">
+                    <div class="header-content">
+                        <h3>Troisième niveau</h3>
+                        <button class="collapse-btn" (click)="toggleThirdLevelColumn()">
+                            <i class="icon-chevron" [class.rotated]="isThirdLevelCollapsed"></i>
+                        </button>
+                    </div>
+                    <button
+                            class="add-btn"
+                            (click)="openThirdLevelPopup()"
+                            [disabled]="isThirdLevelCollapsed || !selectedSubDepartment"
+                    >
+                        <i class="icon-plus"></i>
+                        Ajouter un troisième niveau
+                    </button>
+                </div>
+
+                <div class="column-content" *ngIf="!isThirdLevelCollapsed">
+                    <div class="items-list">
+                        <div
+                                *ngFor="let thirdLevel of thirdLevelDepartments; let isLast = last"
+                                class="item"
+                        >
+                            <div class="item-content">
+                                <h4>{{ thirdLevel.title }}</h4>
+                                <p>{{ thirdLevel.description }}</p>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit-btn"
+                                        (click)="$event.stopPropagation(); editItem(thirdLevel.id, 'thirdLevel')"
+                                        title="Modifier">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="action-btn delete-btn"
+                                        (click)="$event.stopPropagation(); deleteThirdLevel(thirdLevel.id)"
+                                        title="Supprimer">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!selectedSubDepartment" class="empty-state">
+                            <i class="icon-arrow-left"></i>
+                            <p>Sélectionnez un sous-département</p>
+                            <small>Cliquez sur un sous-département pour afficher ses éléments de troisième niveau</small>
+                        </div>
+
+                        <div *ngIf="selectedSubDepartment && thirdLevelDepartments.length === 0" class="empty-state">
+                            <i class="icon-info"></i>
+                            <p>Aucun troisième niveau trouvé</p>
+                            <small>Ajoutez un élément de troisième niveau à ce sous-département</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for Details -->
+    <div class="popup-overlay" *ngIf="showDetailsPopup" (click)="closePopups()">
+        <div class="popup-content" (click)="$event.stopPropagation()">
+            <div class="popup-header">
+                <h2>Détails</h2>
+                <button class="close-btn" (click)="closePopups()">&times;</button>
+            </div>
+
+            <div class="details-content" *ngIf="detailsItem">
+                <div class="detail-group">
+                    <label>ID :</label>
+                    <p>{{ detailsItem.id }}</p>
+                </div>
+                <div class="detail-group">
+                    <label>Titre :</label>
+                    <p>{{ detailsItem.title }}</p>
+                </div>
+                <div class="detail-group">
+                    <label>Description :</label>
+                    <p>{{ detailsItem.description }}</p>
+                </div>
+                <div class="detail-group" *ngIf="detailsItem.createdAt">
+                    <label>Date de création :</label>
+                    <p>{{ detailsItem.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+                <div class="detail-group" *ngIf="detailsItem.updatedAt">
+                    <label>Dernière modification :</label>
+                    <p>{{ detailsItem.updatedAt | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+                <div class="detail-group" *ngIf="detailsItem.departmentId && detailsType === 'subDepartment'">
+                    <label>ID du département parent :</label>
+                    <p>{{ detailsItem.departmentId }}</p>
+                </div>
+                <div class="detail-group" *ngIf="detailsItem.sousDepartmentId && detailsType === 'thirdLevel'">
+                    <label>ID du sous-département parent :</label>
+                    <p>{{ detailsItem.sousDepartmentId }}</p>
+                </div>
+            </div>
+
+            <div class="popup-actions">
+                <button type="button" class="btn-secondary" (click)="closePopups()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup for Department Creation -->
+    <div class="popup-overlay" *ngIf="showDepartmentPopup" (click)="closePopups()">
+        <div class="popup-content" (click)="$event.stopPropagation()">
+            <div class="popup-header">
+                <h2>{{ isEditMode ? 'Modifier le département' : 'Ajouter un département' }}</h2>
+                <button class="close-btn" (click)="closePopups()">&times;</button>
+            </div>
+
+            <form [formGroup]="departmentForm" (ngSubmit)="createDepartment()">
+                <div class="form-group">
+                    <label for="dept-title">Titre *</label>
+                    <input
+                            type="text"
+                            id="dept-title"
+                            formControlName="title"
+                            placeholder="Entrez le titre du département"
+                    >
+                    <div class="error" *ngIf="departmentForm.get('title')?.invalid && departmentForm.get('title')?.touched">
+                        Le titre est obligatoire
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="dept-description">Description *</label>
+                    <textarea
+                            id="dept-description"
+                            formControlName="description"
+                            placeholder="Entrez la description du département"
+                            rows="3"
+                    ></textarea>
+                    <div class="error" *ngIf="departmentForm.get('description')?.invalid && departmentForm.get('description')?.touched">
+                        La description est obligatoire
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" class="btn-secondary" (click)="closePopups()">Annuler</button>
+                    <button type="submit" class="btn-primary" [disabled]="departmentForm.invalid">
+                        {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup for Sub-Department Creation -->
+    <div class="popup-overlay" *ngIf="showSubDepartmentPopup" (click)="closePopups()">
+        <div class="popup-content" (click)="$event.stopPropagation()">
+            <div class="popup-header">
+                <h2>{{ isEditMode ? 'Modifier le sous-département' : 'Ajouter un sous-département' }}</h2>
+                <button class="close-btn" (click)="closePopups()">&times;</button>
+            </div>
+
+            <form [formGroup]="subDepartmentForm" (ngSubmit)="createSubDepartment()">
+                <div class="form-group">
+                    <label for="subdept-title">Titre *</label>
+                    <input
+                            type="text"
+                            id="subdept-title"
+                            formControlName="title"
+                            placeholder="Entrez le titre du sous-département"
+                    >
+                    <div class="error" *ngIf="subDepartmentForm.get('title')?.invalid && subDepartmentForm.get('title')?.touched">
+                        Le titre est obligatoire
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="subdept-description">Description *</label>
+                    <textarea
+                            id="subdept-description"
+                            formControlName="description"
+                            placeholder="Entrez la description du sous-département"
+                            rows="3"
+                    ></textarea>
+                    <div class="error" *ngIf="subDepartmentForm.get('description')?.invalid && subDepartmentForm.get('description')?.touched">
+                        La description est obligatoire
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="subdept-department">Département parent *</label>
+                    <select id="subdept-department" formControlName="departmentId">
+                        <option value="">Sélectionnez un département</option>
+                        <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.title }}</option>
+                    </select>
+                    <div class="error" *ngIf="subDepartmentForm.get('departmentId')?.invalid && subDepartmentForm.get('departmentId')?.touched">
+                        Le département parent est obligatoire
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" class="btn-secondary" (click)="closePopups()">Annuler</button>
+                    <button type="submit" class="btn-primary" [disabled]="subDepartmentForm.invalid">
+                        {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Popup for Third Level Creation -->
+    <div class="popup-overlay" *ngIf="showThirdLevelPopup" (click)="closePopups()">
+        <div class="popup-content" (click)="$event.stopPropagation()">
+            <div class="popup-header">
+                <h2>{{ isEditMode ? 'Modifier le troisième niveau' : 'Ajouter un troisième niveau' }}</h2>
+                <button class="close-btn" (click)="closePopups()">&times;</button>
+            </div>
+
+            <form [formGroup]="thirdLevelForm" (ngSubmit)="createThirdLevel()">
+                <div class="form-group">
+                    <label for="third-title">Titre *</label>
+                    <input
+                            type="text"
+                            id="third-title"
+                            formControlName="title"
+                            placeholder="Entrez le titre du troisième niveau"
+                    >
+                    <div class="error" *ngIf="thirdLevelForm.get('title')?.invalid && thirdLevelForm.get('title')?.touched">
+                        Le titre est obligatoire
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="third-description">Description *</label>
+                    <textarea
+                            id="third-description"
+                            formControlName="description"
+                            placeholder="Entrez la description du troisième niveau"
+                            rows="3"
+                    ></textarea>
+                    <div class="error" *ngIf="thirdLevelForm.get('description')?.invalid && thirdLevelForm.get('description')?.touched">
+                        La description est obligatoire
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="third-subdept">Sous-département parent *</label>
+                    <select id="third-subdept" formControlName="sousDepartmentId">
+                        <option value="">Sélectionnez un sous-département</option>
+                        <option *ngFor="let subDept of subDepartments" [value]="subDept.id">{{ subDept.title }}</option>
+                    </select>
+                    <div class="error" *ngIf="thirdLevelForm.get('sousDepartmentId')?.invalid && thirdLevelForm.get('sousDepartmentId')?.touched">
+                        Le sous-département parent est obligatoire
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" class="btn-secondary" (click)="closePopups()">Annuler</button>
+                    <button type="submit" class="btn-primary" [disabled]="thirdLevelForm.invalid">
+                        {{ isEditMode ? 'Modifier' : 'Ajouter' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</app-layout>
