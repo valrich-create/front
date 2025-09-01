@@ -42,10 +42,9 @@
                                 <div class="zone-info">
                                     <h3>{{ zone.nom }}</h3>
                                     <p>
-                                        {{ zone.ownerType === OwnerType.CLASS' ? 'CLASS' : 'USER' }} :
+<!--                                        {{ zone.ownerType === OwnerType.CLASS' ? 'CLASS' : 'USER' }} :-->
                                         {{ getOwnerName(zone) }}
                                     </p>
-<!--                                    <p>{{ zone.ownerType === 'class' ? 'Class' : 'User' }} : {{ this.ownerName }}</p>-->
                                     <p>Radius : {{ zone.rayonMetres }} m</p>
                                     <p *ngIf="zone.description">{{ zone.description }}</p>
                                 </div>

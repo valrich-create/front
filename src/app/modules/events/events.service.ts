@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -28,7 +28,12 @@ export class EventService {
   }
 
   getInformationsByEstablishmentForConnectedUser(page: number = 0, size: number = 100): Observable<any> {
-    return this.http.get(`${this.apiUrl}/establishment/?page=${page}&size=${size}`);
+    const params = new HttpParams()
+        .set('page', page.toString())
+        .set('size', size.toString());
+
+    return this.http.get(`${this.apiUrl}/my-establishment`, { params });
+    // return this.http.get(`${this.apiUrl}/my-establishment?page=${page}&size=${size}`);
   }
 
   getCurrentUserInformations(page: number = 0, size: number = 10): Observable<any> {

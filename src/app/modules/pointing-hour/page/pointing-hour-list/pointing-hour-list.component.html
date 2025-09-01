@@ -23,7 +23,7 @@
                     <h3>Hours for {{ selectedDate | date:'fullDate' }}</h3>
 
                     <div *ngFor="let hour of pointingHours" class="hour-item">
-                        {{ hour.startTime | date:'HH:mm' }} - {{ hour.endTime | date:'HH:mm' }}
+                        {{ hour.startTime | date:'HH:mm' }} - {{ hour.endTime | date:'HH:mm' }} ➜ {{hour.classServiceName || hour.userFirstName+ ' '+ hour.userLastName}}
                     </div>
 
                     <div *ngIf="!pointingHours.length" class="no-hours">
