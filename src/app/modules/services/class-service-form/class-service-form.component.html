@@ -38,6 +38,63 @@
                             ></textarea>
                         </div>
 
+                        <!-- Department Selection -->
+                        <div class="form-group">
+                            <label for="departmentId">Département</label>
+                            <select
+                                    id="departmentId"
+                                    formControlName="departmentId"
+                                    class="form-control"
+                                    [disabled]="isLoadingDepartments"
+                            >
+                                <option value="">-- Sélectionner un département --</option>
+                                <option *ngFor="let department of departments" [value]="department.id">
+                                    {{ department.title }}
+                                </option>
+                            </select>
+                            <small class="form-text" *ngIf="classServiceForm.get('departmentId')?.disabled">
+                                Choisir soit Département, soit Sous-département, soit Niveau 3
+                            </small>
+                        </div>
+
+                        <!-- Sub-Department Selection -->
+                        <div class="form-group">
+                            <label for="subDepartmentId">Sous-département</label>
+                            <select
+                                    id="subDepartmentId"
+                                    formControlName="subDepartmentId"
+                                    class="form-control"
+                                    [disabled]="isLoadingSubDepartments"
+                            >
+                                <option value="">-- Sélectionner un sous-département --</option>
+                                <option *ngFor="let subDepartment of subDepartments" [value]="subDepartment.id">
+                                    {{ subDepartment.title }}
+                                </option>
+                            </select>
+                            <small class="form-text" *ngIf="classServiceForm.get('subDepartmentId')?.disabled">
+                                Choisir soit Département, soit Sous-département, soit Niveau 3
+                            </small>
+                        </div>
+
+                        <!-- Third Level Department Selection -->
+                        <div class="form-group">
+                            <label for="thirdLevelDepartmentId">Département Niveau 3</label>
+                            <select
+                                    id="thirdLevelDepartmentId"
+                                    formControlName="thirdLevelDepartmentId"
+                                    class="form-control"
+                                    [disabled]="isLoadingThirdLevelDepartments"
+                            >
+                                <option value="">-- Sélectionner un département niveau 3 --</option>
+                                <option *ngFor="let thirdLevelDept of thirdLevelDepartments" [value]="thirdLevelDept.id">
+                                    {{ thirdLevelDept.title }}
+                                </option>
+                            </select>
+                            <small class="form-text" *ngIf="classServiceForm.get('thirdLevelDepartmentId')?.disabled">
+                                Choisir soit Département, soit Sous-département, soit Niveau 3
+                            </small>
+                        </div>
+
                         <!-- Hidden establishment ID -->
                         <input type="hidden" formControlName="establishmentId">
 
@@ -50,11 +107,11 @@
 
                         <!-- Information notes -->
                         <div class="form-notes">
-                            <p><strong>After creating this class/service, don't forget to:</strong></p>
+                            <p><strong>Après avoir créé cette classe ou ce service, n'oubliez pas de :</strong></p>
                             <ul>
-                                <li>Set up the attendance schedules for this class</li>
-                                <li>Assign users to this class</li>
-                                <li>Configure the attendance zone for this class</li>
+                                <li>Configurer les plannings de présence</li>
+                                <li>Assigner des utilisateurs</li>
+                                <li>Configurer la zone de présence</li>
                             </ul>
                         </div>
                     </form>

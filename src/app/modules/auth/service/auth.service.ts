@@ -4,6 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import {environment} from "../../../../environments/environment";
 import {Router} from "@angular/router";
+import {ToastService} from "../../base-component/services/toast/toast.service";
 
 interface AuthResponse {
 	accessToken: string;
@@ -32,7 +33,7 @@ export class AuthService {
 	private readonly USER_KEY = 'user_data';
 	private readonly API_URL = `${environment.apiUrl}/v1/auth`;
 
-	constructor(private http: HttpClient, private router: Router) {}
+	constructor(private http: HttpClient, private router: Router, private toastService: ToastService) {}
 
 	login(phoneNumber: string, password: string, rememberMe: boolean): Observable<AuthResponse> {
 		const headers = new HttpHeaders({
@@ -148,6 +149,34 @@ export class AuthService {
 				}
 
 				return throwError(() => new Error(errorMessage));
+			})
+		);
+	}
+
+	/**
+	 * Reset du mot de passe d’un utilisateur (action ADMIN)
+	 * @param userId UUID de l’utilisateur cible
+	 * @param newPassword nouveau mot de passe en clair
+	 */
+	resetPassword(userId: string, newPassword: string): Observable<{ message: string }> {
+		const headers = new HttpHeaders({
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${this.getToken()}`
+		});
+
+		return this.http.post<{ message: string }>(
+			`${this.API_URL}/${userId}/reset-password`,
+			{ newPassword },
+			{ headers }
+		).pipe(
+			tap(
+				() => console.log('Admin reset password OK for', userId),
+				this.toastService.success
+			),
+			catchError(err => {
+				const msg = err?.error?.error || err?.error || 'Erreur lors du reset admin';
+				this.toastService.error(msg);
+				return throwError(() => new Error(msg));
 			})
 		);
 	}

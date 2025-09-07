@@ -79,12 +79,6 @@
                                     {{ user.placeOfBirth || 'N/A' }}
                                 </span>
                             </li>
-<!--                            <li class="info-item">-->
-<!--                                <span class="info-label">Dernier accès</span>-->
-<!--                                <span class="info-value" [class.na-value]="!user.lastAccess">-->
-<!--                                    {{ user.lastAccess ? (user.lastAccess | date) : 'N/A' }}-->
-<!--                                </span>-->
-<!--                            </li>-->
                         </ul>
                     </div>
 
@@ -142,11 +136,11 @@
                 <!-- Action Buttons -->
                 <div class="profile-actions-buttons">
                     <button class="action-button edit-button" (click)="onEdit(user)">
-                        <i class="fa-solid fa-pen-to-square"></i> Modifier
+                        <i class="fas fa-pen-to-square"></i> Modifier
                     </button>
 
                     <button class="action-button delete-button" (click)="onDelete(user)">
-                        <i class="fa-solid fa-trash"></i> Supprimer
+                        <i class="fas fa-trash"></i> Supprimer
                     </button>
 
                     <button *ngIf="onAssignToClass"
@@ -154,6 +148,84 @@
                             (click)="onAssignToClass(user)">
                         <i [class]="getAssignButtonIcon()"></i>
                         {{ getAssignButtonLabel() }}
+                    </button>
+
+                    <button class="action-button reset-password-button" (click)="openPasswordResetModal()">
+                        <i class="fas fa-key"></i> Réinitialiser le mot de passe
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de réinitialisation du mot de passe -->
+        <div class="password-reset-modal-overlay" *ngIf="showPasswordResetModal" (click)="closePasswordResetModal()">
+            <div class="password-reset-modal" (click)="$event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>Réinitialiser le mot de passe</h3>
+                    <button class="close-button" (click)="closePasswordResetModal()" type="button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newPassword">Nouveau mot de passe</label>
+                        <div class="password-input-container">
+                            <input
+                                    [type]="showPassword ? 'text' : 'password'"
+                                    id="newPassword"
+                                    class="form-input"
+                                    [(ngModel)]="newPassword"
+                                    (input)="onPasswordInput()"
+                                    placeholder="Saisir le nouveau mot de passe"
+                                    [disabled]="isSubmitting"
+                            />
+                            <button
+                                    type="button"
+                                    class="password-toggle"
+                                    (click)="togglePasswordVisibility()"
+                                    [disabled]="isSubmitting"
+                            >
+                                <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                            </button>
+                        </div>
+
+                        <div class="password-requirements">
+                            <small>Le mot de passe doit contenir :</small>
+                            <ul>
+                                <li>Au moins 8 caractères</li>
+                                <li>Au moins une majuscule</li>
+                                <li>Au moins un chiffre</li>
+                                <li>Au moins un caractère spécial</li>
+                            </ul>
+                        </div>
+
+                        <div class="error-message" *ngIf="passwordError">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {{ passwordError }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button
+                            type="button"
+                            class="btn btn-cancel"
+                            (click)="closePasswordResetModal()"
+                            [disabled]="isSubmitting"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                            type="button"
+                            class="btn btn-confirm"
+                            (click)="confirmPasswordReset()"
+                            [disabled]="isSubmitting || !newPassword || !!passwordError"
+                    >
+                        <span *ngIf="isSubmitting">
+                            <i class="fas fa-spinner fa-spin"></i> En cours...
+                        </span>
+                        <span *ngIf="!isSubmitting">Confirmer</span>
                     </button>
                 </div>
             </div>

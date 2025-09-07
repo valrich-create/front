@@ -180,3 +180,11 @@ input[type="number"] {
     padding: 1rem;
   }
 }
+
+// Add this to your existing SCSS file
+.form-text {
+  color: #000000;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}

@@ -18,7 +18,6 @@ import {ToastService} from "../../../base-component/services/toast/toast.service
   selector: 'app-super-admin-form',
   imports: [
     CommonModule,
-    NgClass,
     ReactiveFormsModule,
     NavbarComponent,
     LayoutComponent
