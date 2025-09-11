@@ -143,7 +143,6 @@ export class UserDetailCardComponent {
 			await firstValueFrom(
 				this.authService.resetPassword(this.user.id, this.newPassword)
 			);
-			// await this.authService.resetPassword(this.user.id, this.newPassword);
 			this.closePasswordResetModal();
 			console.log(this.user.id);
 			console.log(this.newPassword);

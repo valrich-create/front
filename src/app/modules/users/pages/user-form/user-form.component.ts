@@ -61,27 +61,6 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
-	// private checkEditMode(): void {
-	// 	this.route.params.subscribe(params => {
-	// 		// Vérifier que params existe et contient un id
-	// 		if (params && params['id']) {
-	// 			this.isEditMode = true;
-	// 			this.currentUserId = params['id'];
-	// 			if (this.currentUserId) {
-	// 				this.loadUserData(this.currentUserId);
-	// 				// Modifiez les validateurs pour le mot de passe en mode édition
-	// 				this.userForm.get('password')?.clearValidators();
-	// 				this.userForm.get('confirmPassword')?.clearValidators();
-	// 				this.userForm.get('password')?.updateValueAndValidity();
-	// 				this.userForm.get('confirmPassword')?.updateValueAndValidity();
-	// 			}
-	// 		} else {
-	// 			this.isEditMode = false;
-	// 			this.currentUserId = null;
-	// 		}
-	// 	});
-	// }
-
 	private checkEditMode(): Promise<void> {
 		return new Promise((resolve) => {
 			this.route.params.subscribe(params => {
@@ -149,24 +128,6 @@ export class UserFormComponent implements OnInit {
 		}
 	}
 
-	// getCurrentUserRole() {
-	// 	const storedRole = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
-	//
-	// 	if (storedRole && Object.values(UserRole).includes(storedRole as UserRole)) {
-	// 		this.userRole = storedRole as UserRole;
-	//
-	// 		if (this.userRole === UserRole.SUPER_ADMIN) {
-	// 			this.filteredRoles = [UserRole.ADMIN];
-	// 		} else {
-	// 			this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
-	// 		}
-	// 	} else {
-	// 		console.error('Invalid or missing user role in localStorage or sessionStorage');
-	// 		this.userRole = UserRole.ADMIN;
-	// 		this.filteredRoles = this.roles.filter(r => r !== UserRole.SUPER_ADMIN);
-	// 	}
-	// }
-
 	getCurrentUserRole() {
 		// Récupérer les données utilisateur complètes
 		const userData = localStorage.getItem('user_data') || sessionStorage.getItem('user_data');
@@ -231,7 +192,7 @@ export class UserFormComponent implements OnInit {
 
 	createForm(): void {
 		this.userForm = this.fb.group({
-			profileImage: [''],
+			profileImage: ['', Validators.required],
 			firstName: ['', Validators.required],
 			lastName: ['', Validators.required],
 			dateOfBirth: ['', Validators.required],
@@ -277,6 +238,11 @@ export class UserFormComponent implements OnInit {
 					phoneNumber: this.cleanPhoneNumber(phoneNumber)
 				});
 			}
+			const profileImage = this.userForm.get('profileImage')?.value;
+			if (!profileImage || !(profileImage instanceof File)) {
+				this.toastService.error('Veuillez sélectionner une image de profil.');
+				return;
+			}
 
 			const formData = new FormData();
 			const formValue = {
@@ -306,6 +272,8 @@ export class UserFormComponent implements OnInit {
 							(value as string[]).forEach(permission => {
 								formData.append('permissions', permission);
 							});
+						} else if (key !== 'profileImage') {
+							formData.append(key, value.toString());
 						} else {
 							formData.append(key, value.toString());
 						}
@@ -416,7 +384,7 @@ export class UserFormComponent implements OnInit {
 			this.fieldLabel = 'Établissement';
 			this.loadEstablishments();
 		} else {
-			this.fieldLabel = 'Classe';
+			this.fieldLabel = 'Classe/Service';
 			this.loadClassesForEstablishment();
 		}
 	}
